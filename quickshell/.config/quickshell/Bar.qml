@@ -46,9 +46,6 @@ PanelWindow {
         anchors.verticalCenter: parent.verticalCenter
         spacing: 0                       // language & λ cells touch, like #workspaces
 
-        Wifi    { anchorWin: bar }
-        Battery { anchorWin: bar }
-
         Language {}
 
         // λ control-center toggle. Same fixed box as a workspace/language

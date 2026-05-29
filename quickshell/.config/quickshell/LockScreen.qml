@@ -153,53 +153,7 @@ Scope {
                     }
                 }
 
-                // Battery readout, top-right. Mirrors the greeter's: reads the
-                // world-readable BAT0/uevent via cat (no upower dep), cream text
-                // with a "+" prefix while charging (Terminus-safe glyphs only).
-                // Declared before the blackout so it hides under it when asleep.
-                Row {
-                    id: battery
-                    anchors.top: parent.top
-                    anchors.right: parent.right
-                    anchors.margins: 24
-                    spacing: 8
-
-                    property int    capacity: 0
-                    property string status: ""
-
-                    Process {
-                        id: batRead
-                        command: ["cat", "/sys/class/power_supply/BAT0/uevent"]
-                        stdout: StdioCollector {
-                            onStreamFinished: {
-                                const lines = text.split('\n')
-                                for (let i = 0; i < lines.length; ++i) {
-                                    const idx = lines[i].indexOf('=')
-                                    if (idx < 0) continue
-                                    const k = lines[i].substring(0, idx)
-                                    const v = lines[i].substring(idx + 1)
-                                    if (k === "POWER_SUPPLY_CAPACITY")    battery.capacity = parseInt(v)
-                                    else if (k === "POWER_SUPPLY_STATUS") battery.status   = v
-                                }
-                            }
-                        }
-                    }
-
-                    Timer {
-                        interval: 30000
-                        running: true; repeat: true; triggeredOnStart: true
-                        onTriggered: batRead.running = true
-                    }
-
-                    Text {
-                        text: (battery.status === "Charging" ? "+" : "") + battery.capacity + "%"
-                        color: battery.status === "Charging" ? Theme.accentSoft : Theme.bg
-                        font.family: Theme.fontFamily
-                        font.pixelSize: Theme.fontSize
-                        font.hintingPreference: Font.PreferFullHinting
-                        renderType: Text.NativeRendering
-                    }
-                }
+                // (battery readout removed — celestia is a desktop, no BAT0)
 
                 // Asleep blackout. Sits above wallpaper, dim, and clock —
                 // when scope.awake is false, the screen is fully black; the
