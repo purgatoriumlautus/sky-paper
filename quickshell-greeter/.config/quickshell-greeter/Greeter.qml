@@ -112,54 +112,7 @@ FloatingWindow {
             }
         }
 
-        // Battery readout, top-right. greeter user can read sysfs (BAT0/uevent
-        // is world-readable — same source the main shell's Battery.qml uses, no
-        // upower dep). Declared before the blackout so it hides under it when
-        // asleep. Plain "90%" cream text; "+" prefix while charging (Terminus-
-        // safe glyphs only — no Nerd battery icon).
-        Row {
-            id: battery
-            anchors.top: parent.top
-            anchors.right: parent.right
-            anchors.margins: 24
-            spacing: 8
-
-            property int    capacity: 0
-            property string status: ""
-
-            Process {
-                id: batRead
-                command: ["cat", "/sys/class/power_supply/BAT0/uevent"]
-                stdout: StdioCollector {
-                    onStreamFinished: {
-                        const lines = text.split('\n')
-                        for (let i = 0; i < lines.length; ++i) {
-                            const idx = lines[i].indexOf('=')
-                            if (idx < 0) continue
-                            const k = lines[i].substring(0, idx)
-                            const v = lines[i].substring(idx + 1)
-                            if (k === "POWER_SUPPLY_CAPACITY")    battery.capacity = parseInt(v)
-                            else if (k === "POWER_SUPPLY_STATUS") battery.status   = v
-                        }
-                    }
-                }
-            }
-
-            Timer {
-                interval: 30000
-                running: true; repeat: true; triggeredOnStart: true
-                onTriggered: batRead.running = true
-            }
-
-            Text {
-                text: (battery.status === "Charging" ? "+" : "") + battery.capacity + "%"
-                color: battery.status === "Charging" ? Theme.accentSoft : Theme.bg
-                font.family: Theme.fontFamily
-                font.pixelSize: Theme.fontSize
-                font.hintingPreference: Font.PreferFullHinting
-                renderType: Text.NativeRendering
-            }
-        }
+        // (battery readout removed — celestia is a desktop, no BAT0)
 
         // Asleep blackout — sits above wallpaper, dim, clock, and box.
         // awake=false → opaque black covers everything. First key/click
