@@ -421,7 +421,7 @@ require('lazy').setup({
     'nvim-lualine/lualine.nvim',
     dependencies = { 'nvim-tree/nvim-web-devicons' },
     config = function()
-      -- Sky Paper — see ~/dotfiles/PALETTE.md
+      -- Sky Paper — see ~/celestia/PALETTE.md
       local sky_paper = {
         normal = {
           a = { bg = '#A8C0D5', fg = '#1F1812', gui = 'bold' },

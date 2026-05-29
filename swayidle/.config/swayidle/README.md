@@ -1,6 +1,6 @@
 # swayidle — idle pipeline
 
-The idle daemon for laniakea (niri session). Watches "seconds since last
+The idle daemon for celestia (niri session). Watches "seconds since last
 input" and fires actions on a timeline. Started by niri:
 `spawn-at-startup "swayidle" "-w"` (niri restarts it if it dies).
 

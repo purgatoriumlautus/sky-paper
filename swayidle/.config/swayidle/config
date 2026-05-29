@@ -1,4 +1,4 @@
-# swayidle — laniakea idle pipeline.
+# swayidle — celestia idle pipeline.
 # Spawned by niri (`spawn-at-startup "swayidle" "-w"`).
 # One config for AC and battery (deliberate — see README.md / spec).
 #

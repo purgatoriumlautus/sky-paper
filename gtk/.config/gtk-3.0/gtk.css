@@ -1,4 +1,4 @@
-/* Sky Paper — GTK3. Overrides Adwaita named colors. Mirrors ~/dotfiles/PALETTE.md. */
+/* Sky Paper — GTK3. Overrides Adwaita named colors. Mirrors ~/celestia/PALETTE.md. */
 
 @define-color theme_bg_color        #F0EBE0; /* bg — cream */
 @define-color theme_base_color      #F0EBE0; /* entry/view surface */

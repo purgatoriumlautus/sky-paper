@@ -1,5 +1,5 @@
 /* Sky Paper for Obsidian — overrides Minimal theme via Obsidian CSS vars.
-   Palette source: ~/dotfiles/PALETTE.md
+   Palette source: ~/celestia/PALETTE.md
    Forced light: appearance.json sets theme="obsidian", so .theme-dark
    never applies. We only paint .theme-light. */
 

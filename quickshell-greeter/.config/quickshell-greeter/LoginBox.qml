@@ -125,7 +125,7 @@ Rectangle {
         // hostname strip — small, dim, restored.
         Text {
             width: parent.width
-            text: "laniakea"
+            text: "celestia"
             color: Theme.muted
             horizontalAlignment: Text.AlignHCenter
             font.family: Theme.fontFamily

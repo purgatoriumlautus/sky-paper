@@ -5,7 +5,7 @@ Sky Paper themed zathura (PDF / ePub / XPS / CBZ viewer). Stow package.
 ## Deploy
 
 ```bash
-cd ~/dotfiles && stow zathura     # symlinks ~/.config/zathura → here
+cd ~/celestia && stow zathura     # symlinks ~/.config/zathura → here
 ./zathura/install.sh              # pacman pkgs + xdg-mime defaults (sudo)
 ```
 

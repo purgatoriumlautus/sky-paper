@@ -3,7 +3,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 
-// Sky Paper — greeter copy. Mirrors ~/dotfiles/quickshell/.config/quickshell/Theme.qml.
+// Sky Paper — greeter copy. Mirrors ~/celestia/quickshell/.config/quickshell/Theme.qml.
 // Separate file because greeter runs as `greeter` user and can't traverse /home/segfault (mode 700).
 // If you re-tone the main palette, update this too.
 Singleton {

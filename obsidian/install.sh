@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# obsidian on laniakea — links the Sky Paper snippet + vimrc into the
+# obsidian on celestia — links the Sky Paper snippet + vimrc into the
 # vault and patches appearance.json + community-plugins.json.
 #
 # This pkg is NOT stowed into ~/.config; Obsidian settings live per-vault

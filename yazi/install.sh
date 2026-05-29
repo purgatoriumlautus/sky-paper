@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Optional preview helpers for yazi on laniakea.
+# Optional preview helpers for yazi on celestia.
 #
 # Why a script and not part of stow: these are pacman packages, not config.
 # The yazi config itself is deployed with `stow yazi` (not this script).

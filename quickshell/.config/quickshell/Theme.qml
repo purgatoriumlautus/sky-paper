@@ -4,7 +4,7 @@ import QtQuick
 import Quickshell
 
 // Sky Paper — single source of truth for the whole shell.
-// Edit here, everything re-themes. Mirrors ~/dotfiles/PALETTE.md.
+// Edit here, everything re-themes. Mirrors ~/celestia/PALETTE.md.
 Singleton {
     readonly property color bg:         "#F0EBE0"
     readonly property color bgAlt:      "#E4DED0"

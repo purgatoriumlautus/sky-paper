@@ -1,4 +1,4 @@
-" laniakea Obsidian vimrc — loaded by the 'Vimrc Support' community plugin.
+" celestia Obsidian vimrc — loaded by the 'Vimrc Support' community plugin.
 "
 " Scope: PURE VIM ONLY. CodeMirror 6 vim doesn't support
 "   - `let mapleader` (ignored)
