@@ -1,0 +1,35 @@
+# A package-local ignore REPLACES stow's built-in defaults (it doesn't
+# extend them), so reproduce the defaults here and append our own.
+# Patterns are Perl regexes matched against basename or full path.
+#
+# Note: this pkg is NOT meant to be stowed into $HOME — install.sh links
+# everything into ~/Documents/Obsidian/.../ instead. The ignore list
+# makes `stow obsidian` a safe no-op (nothing leaks to $HOME) for anyone
+# who runs it by reflex.
+
+# --- stow built-in defaults (2.4.x) ---
+RCS
+.+,v
+CVS
+\.\#.+
+\.cvsignore
+\.svn
+_darcs
+\.hg
+\.git.*
+\.gitignore
+\.bzr.*
+.+\.bak
+.+\.swp
+\.DS_Store
+\._.+
+LICENSE.*
+COPYING.*
+README.*
+
+# --- package-specific: nothing in this pkg goes to $HOME via stow ---
+^/install\.sh$
+^/CHEATSHEET\.txt$
+^/sky-paper\.css$
+^/vimrc$
+^/hotkeys\.json$

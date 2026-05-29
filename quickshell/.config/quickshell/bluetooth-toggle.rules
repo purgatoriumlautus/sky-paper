@@ -1,0 +1,19 @@
+// Lets the BT row in quickshell start/stop bluetooth.service without a
+// password prompt, so Bluetooth stays OFF (no daemon, no radio, no battery
+// cost) until the toggle is flipped — instead of being `enable`d always-on.
+//
+// Least-privilege: ONLY bluetooth.service, ONLY user `aru`. Everything else
+// still goes through normal polkit auth.
+//
+// Install once (needs root):
+//   sudo install -m 0644 ~/.config/quickshell/bluetooth-toggle.rules \
+//        /etc/polkit-1/rules.d/49-bluetooth-toggle.rules
+// No daemon restart needed; polkit picks up rules.d changes live.
+
+polkit.addRule(function (action, subject) {
+    if (action.id == "org.freedesktop.systemd1.manage-units" &&
+        action.lookup("unit") == "bluetooth.service" &&
+        subject.user == "aru") {
+        return polkit.Result.YES;
+    }
+});

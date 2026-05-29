@@ -1,0 +1,20 @@
+" laniakea Obsidian vimrc — loaded by the 'Vimrc Support' community plugin.
+"
+" Scope: PURE VIM ONLY. CodeMirror 6 vim doesn't support
+"   - `let mapleader` (ignored)
+"   - `set langmap` (ignored)
+"   - `noremap`/`nnoremap`/`xnoremap` family (only `nmap`/`vmap`/`imap`)
+"   - Multi-key <Space>-leader sequences fire unreliably.
+" so the leader-prefix file/edit binds went to hotkeys.json (Obsidian's
+" app-level Ctrl-chord system, works in all modes uniformly).
+
+nmap <Esc> :nohlsearch<CR>
+vmap p     "_dP
+" Increment/decrement moved off <C-a>/<C-x> to free <C-a> for select-all.
+nmap +     <C-a>
+nmap -     <C-x>
+nmap <C-a> ggVG
+nmap <Up>    <Nop>
+nmap <Down>  <Nop>
+nmap <Left>  <Nop>
+nmap <Right> <Nop>

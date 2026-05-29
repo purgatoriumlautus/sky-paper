@@ -1,0 +1,19 @@
+// Lets the Power row in quickshell change CPU EPP without a password
+// prompt — Power.qml shells out to `pkexec /usr/local/bin/set-epp <v>`
+// every time the user cycles the row.
+//
+// Least-privilege: ONLY the exact /usr/local/bin/set-epp path, ONLY
+// user `aru`. Everything else still goes through normal polkit auth.
+//
+// Install once (needs root):
+//   sudo install -m 0644 ~/.config/quickshell/epp-toggle.rules \
+//        /etc/polkit-1/rules.d/49-epp-toggle.rules
+// No daemon restart needed; polkit picks up rules.d changes live.
+
+polkit.addRule(function (action, subject) {
+    if (action.id == "org.freedesktop.policykit.exec" &&
+        action.lookup("program") == "/usr/local/bin/set-epp" &&
+        subject.user == "aru") {
+        return polkit.Result.YES;
+    }
+});

@@ -1,0 +1,12 @@
+#:schema https://yazi-rs.github.io/schemas/yazi.json
+
+# Sky Paper — behavior overrides only; everything else inherits yazi defaults.
+# Theming lives in theme.toml; code-preview syntax in sky-paper.tmTheme.
+
+[mgr]
+# Show file size as the right-hand line annotation (default is "none").
+linemode = "size"
+
+# Preview adapter is left on auto-detection: inside kitty, yazi uses the
+# kitty graphics protocol for images automatically. Video/PDF thumbnails
+# need ffmpegthumbnailer + poppler (see install.sh).

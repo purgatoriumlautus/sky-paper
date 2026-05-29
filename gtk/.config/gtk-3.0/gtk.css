@@ -1,0 +1,148 @@
+/* Sky Paper — GTK3. Overrides Adwaita named colors. Mirrors ~/dotfiles/PALETTE.md. */
+
+@define-color theme_bg_color        #F0EBE0; /* bg — cream */
+@define-color theme_base_color      #F0EBE0; /* entry/view surface */
+@define-color theme_fg_color        #1F1812; /* fg — 15:1 */
+@define-color theme_text_color      #1F1812;
+
+@define-color theme_selected_bg_color #A8C0D5; /* accent-soft (= launcher sel) */
+@define-color theme_selected_fg_color #1F1812; /* dark text on sky */
+
+@define-color insensitive_fg_color  #7A716A; /* muted */
+@define-color insensitive_bg_color  #E4DED0;
+@define-color borders               #C5BFB5; /* border-dim */
+@define-color unfocused_borders     #C5BFB5;
+
+/* panels / headerbars / window manager = bg-alt */
+@define-color theme_unfocused_bg_color #F0EBE0;
+@define-color theme_unfocused_fg_color #1F1812;
+@define-color wm_bg                  #E4DED0;
+@define-color headerbar_bg_color     #E4DED0;
+@define-color headerbar_fg_color     #1F1812;
+
+@define-color warning_color #7A716A;
+@define-color error_color   #9C5450;
+@define-color success_color #1F1812;
+
+/* link / accent text — readable deep-sky (5.5:1), not the soft fill */
+@define-color link_color    #4A6F8E;
+@define-color link_visited_color #4A6F8E;
+
+/* ── Win95 bevel tones (Sky Paper) ──────────────────────────────────────── */
+@define-color w95_face #E4DED0; /* bg-alt — buttonface */
+@define-color w95_hi   #FFFFFF; /* crisp highlight (top-left) */
+@define-color w95_sh   #C5BFB5; /* border-dim — inner shadow */
+@define-color w95_dk   #7A716A; /* muted — outer dark edge */
+
+/* square everything to match niri/quickshell */
+* { border-radius: 0; }
+
+/* ── Win95 chunky chrome ────────────────────────────────────────────────── */
+
+/* raised controls */
+button,
+button.toggle,
+combobox button,
+spinbutton {
+    background-image: none;
+    background-color: @w95_face;
+    color: #1F1812;
+    border: 2px solid;
+    border-color: @w95_hi @w95_dk @w95_dk @w95_hi; /* top right bottom left */
+    box-shadow: inset -1px -1px @w95_sh, inset 1px 1px @w95_hi;
+    padding: 3px 10px;
+    text-shadow: none;
+}
+button:hover { background-color: shade(@w95_face, 1.04); }
+button:active, button:checked, button.toggle:checked {
+    background-color: @w95_face;
+    border-color: @w95_dk @w95_hi @w95_hi @w95_dk;
+    box-shadow: inset 1px 1px @w95_sh;
+    padding: 4px 9px 2px 11px;
+}
+headerbar button, .titlebar button { background-color: @w95_face; }
+
+/* sunken fields */
+entry, textview, textview text, spinbutton entry, treeview.view {
+    background-color: #F0EBE0;
+    color: #1F1812;
+    border: 2px solid;
+    border-color: @w95_dk @w95_hi @w95_hi @w95_dk;
+    box-shadow: inset 1px 1px @w95_sh;
+    padding: 3px 6px;
+}
+
+/* solid sky selection */
+*:selected, row:selected { background-color: #A8C0D5; color: #1F1812; }
+
+/* dotted Win95 focus rectangle */
+*:focus { outline: 1px dotted #1F1812; outline-offset: -3px; }
+
+/* chunky square scrollbars */
+scrollbar { background-color: @w95_sh; }
+scrollbar slider {
+    background-color: @w95_face;
+    border: 2px solid;
+    border-color: @w95_hi @w95_dk @w95_dk @w95_hi;
+    box-shadow: inset -1px -1px @w95_sh, inset 1px 1px @w95_hi;
+    min-width: 14px; min-height: 14px; margin: 0;
+}
+
+/* square checks / radios */
+check, radio {
+    background-color: #F0EBE0;
+    border: 2px solid;
+    border-color: @w95_dk @w95_hi @w95_hi @w95_dk;
+    box-shadow: inset 1px 1px @w95_sh;
+    min-width: 13px; min-height: 13px;
+}
+check:checked, radio:checked { color: #1F1812; background-color: #A8C0D5; }
+
+/* sliders / progress / level meters */
+scale > trough          { background-color: #F0EBE0; border: 1px solid @w95_dk; min-height: 6px; }
+scale > trough > highlight,
+scale > trough > fill   { background-color: #A8C0D5; }
+scale > trough > slider {
+    background-color: @w95_face;
+    background-image: none;
+    border: 2px solid;
+    border-color: @w95_hi @w95_dk @w95_dk @w95_hi;
+    box-shadow: none;
+    min-width: 14px; min-height: 14px;
+    margin: -6px 0;
+}
+progressbar > trough {
+    background-color: #F0EBE0;
+    border: 2px solid;
+    border-color: @w95_dk @w95_hi @w95_hi @w95_dk;
+}
+progressbar > trough > progress { background-color: #A8C0D5; border: none; margin: 1px; }
+levelbar block.filled   { background-color: #A8C0D5; border-color: #A8C0D5; }
+levelbar block.full     { background-color: #4A6F8E; border-color: #4A6F8E; }
+
+/* notebook folder tabs: raised, selected = sunken + sky underline */
+notebook > header { background-color: @w95_face; }
+notebook > header > tabs > tab {
+    background-color: @w95_face;
+    color: #1F1812;
+    border: 2px solid;
+    border-color: @w95_hi @w95_dk @w95_dk @w95_hi;
+    box-shadow: none;
+    margin: 1px;
+    padding: 3px 10px;
+}
+notebook > header > tabs > tab:checked {
+    border-color: @w95_dk @w95_hi @w95_hi @w95_dk;
+    box-shadow: inset 0 -3px #A8C0D5, inset 1px 1px @w95_sh;
+}
+
+/* menus / popovers: raised beveled box, flat items, sky hover */
+popover.background, menu, .menu, .context-menu {
+    background-color: @w95_face;
+    border: 2px solid;
+    border-color: @w95_hi @w95_dk @w95_dk @w95_hi;
+    box-shadow: inset -1px -1px @w95_sh, inset 1px 1px @w95_hi;
+    padding: 2px;
+}
+menuitem { border: none; box-shadow: none; padding: 4px 8px; }
+menuitem:hover { background-color: #A8C0D5; color: #1F1812; }
