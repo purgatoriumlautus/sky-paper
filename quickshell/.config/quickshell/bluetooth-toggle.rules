@@ -2,7 +2,7 @@
 // password prompt, so Bluetooth stays OFF (no daemon, no radio, no battery
 // cost) until the toggle is flipped — instead of being `enable`d always-on.
 //
-// Least-privilege: ONLY bluetooth.service, ONLY user `aru`. Everything else
+// Least-privilege: ONLY bluetooth.service, ONLY user `segfault`. Everything else
 // still goes through normal polkit auth.
 //
 // Install once (needs root):
@@ -13,7 +13,7 @@
 polkit.addRule(function (action, subject) {
     if (action.id == "org.freedesktop.systemd1.manage-units" &&
         action.lookup("unit") == "bluetooth.service" &&
-        subject.user == "aru") {
+        subject.user == "segfault") {
         return polkit.Result.YES;
     }
 });

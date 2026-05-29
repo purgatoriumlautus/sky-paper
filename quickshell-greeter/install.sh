@@ -2,7 +2,7 @@
 # Install the Quickshell greetd greeter. Run with sudo.
 #
 # Why a script and not stow: the greeter runs as the `greeter` user, which
-# cannot traverse /home/aru (mode 700), so the QML + wallpaper must live under
+# cannot traverse /home/segfault (mode 700), so the QML + wallpaper must live under
 # /etc, and /etc/greetd/config.toml + the /var/cache state dir are root-owned.
 # None of that is stow-able — this script is the source of truth instead.
 #
@@ -21,7 +21,7 @@ if [[ $EUID -ne 0 ]]; then echo "run with sudo" >&2; exit 1; fi
 
 SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 QML_SRC="$SRC/.config/quickshell-greeter"
-WALLPAPER_SRC="${WALLPAPER_SRC:-/home/aru/Pictures/wallpapers/clouds.png}"
+WALLPAPER_SRC="${WALLPAPER_SRC:-/home/segfault/Pictures/wallpapers/clouds.png}"
 
 # 1. QML -> /etc (world-readable; greeter user reads it here)
 install -d -m 755 /etc/quickshell-greeter

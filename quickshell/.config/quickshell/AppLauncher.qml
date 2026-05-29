@@ -26,15 +26,15 @@ Singleton {
     Process {
         id: stateInitProc
         command: ["sh", "-c",
-            "mkdir -p /home/aru/.local/state/quickshell && " +
-            "[ -f /home/aru/.local/state/quickshell/launcher-frecency.json ] || " +
-            "echo '{}' > /home/aru/.local/state/quickshell/launcher-frecency.json"]
+            "mkdir -p /home/segfault/.local/state/quickshell && " +
+            "[ -f /home/segfault/.local/state/quickshell/launcher-frecency.json ] || " +
+            "echo '{}' > /home/segfault/.local/state/quickshell/launcher-frecency.json"]
         Component.onCompleted: running = true
     }
 
     FileView {
         id: frecencyFile
-        path: "/home/aru/.local/state/quickshell/launcher-frecency.json"
+        path: "/home/segfault/.local/state/quickshell/launcher-frecency.json"
         blockLoading: true
         printErrors: false        // first-run "missing file" is expected; we handle it
 

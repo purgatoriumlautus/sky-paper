@@ -6,7 +6,7 @@ switch = true
 [default_session]
 # Quickshell greeter inside the cage kiosk compositor.
 #   Source : ~/dotfiles/quickshell-greeter/.config/quickshell-greeter/
-#   Install: /etc/quickshell-greeter/  (greeter user can't traverse /home/aru, mode 700)
+#   Install: /etc/quickshell-greeter/  (greeter user can't traverse /home/segfault, mode 700)
 #
 #   QT_QPA_PLATFORM=wayland               : minimal greetd env else Qt picks the
 #                                           xcb plugin (no X display) and dies FATAL

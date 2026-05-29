@@ -1,7 +1,7 @@
 #!/bin/sh
 # Set CPU energy_performance_preference for all cores. Called via pkexec
 # from Quickshell's Power.qml — the polkit rule (epp-toggle.rules) allows
-# user `aru` to pkexec this path without a password prompt.
+# user `segfault` to pkexec this path without a password prompt.
 #
 # Argv: one of the allowed EPP tokens. Anything else exits 1.
 #

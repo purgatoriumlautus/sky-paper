@@ -4,7 +4,7 @@ import QtQuick
 import Quickshell
 
 // Sky Paper — greeter copy. Mirrors ~/dotfiles/quickshell/.config/quickshell/Theme.qml.
-// Separate file because greeter runs as `greeter` user and can't traverse /home/aru (mode 700).
+// Separate file because greeter runs as `greeter` user and can't traverse /home/segfault (mode 700).
 // If you re-tone the main palette, update this too.
 Singleton {
     readonly property color bg:         "#F0EBE0"

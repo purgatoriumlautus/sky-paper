@@ -302,7 +302,7 @@ layout {
 
 // quickshell (qs) provides the bar + control-center + lock + launcher.
 spawn-at-startup "qs"
-spawn-at-startup "swaybg" "-i" "/home/aru/Pictures/wallpapers/clouds.png" "-m" "fill"
+spawn-at-startup "swaybg" "-i" "/home/segfault/Pictures/wallpapers/clouds.png" "-m" "fill"
 spawn-at-startup "swayidle" "-w"
 spawn-at-startup "mako"
 

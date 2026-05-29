@@ -3,7 +3,7 @@
 // every time the user cycles the row.
 //
 // Least-privilege: ONLY the exact /usr/local/bin/set-epp path, ONLY
-// user `aru`. Everything else still goes through normal polkit auth.
+// user `segfault`. Everything else still goes through normal polkit auth.
 //
 // Install once (needs root):
 //   sudo install -m 0644 ~/.config/quickshell/epp-toggle.rules \
@@ -13,7 +13,7 @@
 polkit.addRule(function (action, subject) {
     if (action.id == "org.freedesktop.policykit.exec" &&
         action.lookup("program") == "/usr/local/bin/set-epp" &&
-        subject.user == "aru") {
+        subject.user == "segfault") {
         return polkit.Result.YES;
     }
 });
