@@ -1,4 +1,4 @@
-# Laptop firewall. inet family covers v4 + v6 in one table.
+# celestia firewall. inet family covers v4 + v6 in one table.
 #
 # Findings baked in (don't relearn the hard way):
 #   - DHCP replies often arrive before conntrack can track them (src 0.0.0.0,
@@ -6,8 +6,9 @@
 #     `ct state invalid drop`, not after.
 #   - `pkttype host` excludes broadcast/multicast, so mDNS/SSDP fall through
 #     to policy drop silently rather than getting reject'd (no reflection risk).
-#   - `forward policy drop` is correct for a non-router; Docker/libvirt
-#     re-add their own forward allows in separate chains.
+#   - `forward policy accept`: celestia runs Docker, which manages its own
+#     forward rules via iptables-nft (separate ip/ip6 tables). A drop in this
+#     inet table would ALSO drop Docker-forwarded packets, breaking containers.
 #   - virbr0 allow is commented: uncomment when libvirt VMs need host
 #     services (dnsmasq DNS, etc.). Off by default = smaller attack surface.
 
@@ -34,7 +35,8 @@ table inet filter {
   }
 
   chain forward {
-    type filter hook forward priority filter; policy drop;
+    type filter hook forward priority filter; policy accept;
+    # Docker manages its own forward rules via iptables-nft.
   }
 
   chain output {
