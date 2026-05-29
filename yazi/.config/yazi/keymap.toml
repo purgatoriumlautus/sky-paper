@@ -1,0 +1,12 @@
+#:schema https://yazi-rs.github.io/schemas/keymap.json
+
+# Sky Paper — keymap overrides only. `prepend_keymap` wins over stock binds.
+# Stock keymap otherwise inherited verbatim — see CHEATSHEET.txt.
+
+[mgr]
+prepend_keymap = [
+  # Mirror `h` — Esc goes to parent dir from normal mode.
+  # Trade-off: clobbers the default Esc-clears-find/filter behavior;
+  # use `,` or `<Bspace>` to clear find/filter instead.
+  { on = "<Esc>", run = "leave", desc = "Go to parent directory" },
+]

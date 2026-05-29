@@ -1,0 +1,6 @@
+{
+  "editor:toggle-code":          [{ "modifiers": ["Mod"],          "key": "`" }],
+  "editor:toggle-heading-up":    [{ "modifiers": ["Mod", "Alt"],   "key": "]" }],
+  "editor:toggle-heading-down":  [{ "modifiers": ["Mod", "Alt"],   "key": "[" }],
+  "app:toggle-left-sidebar":     [{ "modifiers": ["Mod"],          "key": "\\" }]
+}

@@ -1,0 +1,19 @@
+[terminal]
+# VT to run the greeter on.
+vt = 1
+switch = true
+
+[default_session]
+# Quickshell greeter inside the cage kiosk compositor.
+#   Source : ~/dotfiles/quickshell-greeter/.config/quickshell-greeter/
+#   Install: /etc/quickshell-greeter/  (greeter user can't traverse /home/aru, mode 700)
+#
+#   QT_QPA_PLATFORM=wayland               : minimal greetd env else Qt picks the
+#                                           xcb plugin (no X display) and dies FATAL
+#   QT_WAYLAND_DISABLE_WINDOWDECORATION=1 : kill Qt's client-side titlebar/buttons
+#
+# NOTE: the greeter is a normal FloatingWindow (xdg-toplevel), NOT a layer
+# surface — cage does not implement wlr-layer-shell. Do not wrap the session in
+# `sh -c`; greetd execs it directly and a wrapper makes it exit (bounce loop).
+command = "cage -s -- env QT_QPA_PLATFORM=wayland QT_WAYLAND_DISABLE_WINDOWDECORATION=1 qs -p /etc/quickshell-greeter"
+user = "greeter"

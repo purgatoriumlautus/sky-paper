@@ -1,0 +1,32 @@
+# mako — Sky Paper themed notifications.
+# Cream card on the wallpaper, top-left, two-line layout
+# (bold summary + muted body). Aligned 1px right of niri's window border.
+
+font=Terminess Nerd Font Mono 12
+background-color=#F0EBE0E6
+text-color=#1F1812
+border-size=1
+border-color=#C5BFB5
+border-radius=0
+padding=14,18
+margin=8,9,8,8
+width=360
+height=90
+anchor=top-left
+default-timeout=5000
+ignore-timeout=0
+max-visible=4
+max-history=50
+layer=overlay
+icons=0
+markup=1
+format=<b>%s</b>\n<span foreground="#7A716A">%b</span>
+
+[urgency=low]
+default-timeout=3000
+
+[urgency=high]
+default-timeout=0
+
+[mode=do-not-disturb]
+invisible=1

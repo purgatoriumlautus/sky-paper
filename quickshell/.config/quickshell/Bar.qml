@@ -1,0 +1,122 @@
+import QtQuick
+import Quickshell
+import Quickshell.Wayland
+import Quickshell.Io
+
+// Top bar. Layout: [workspace №]  ···  [clock]  ···  [language] [⊞]
+PanelWindow {
+    id: bar
+
+    anchors {
+        top: true
+        left: true
+        right: true
+    }
+    implicitHeight: Theme.barHeight
+    color: Theme.barBg
+    WlrLayershell.namespace: "quickshell-bar"
+    // OnDemand so xdg-popup grab from the control-center can route Esc/Q to it.
+    // Without this the bar layer is non-focusable, the grab fails, and the
+    // popup never sees key events.
+    WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
+
+    // left — workspaces. 12px inset, symmetric with the right edge (λ).
+    Row {
+        anchors.left: parent.left
+        anchors.leftMargin: 9          // matches niri's visible per-side window gap
+        anchors.verticalCenter: parent.verticalCenter
+        Workspaces {}
+    }
+
+    // center — clock. Integer-snapped position (centerIn gives fractional
+    // x/y → Qt Quick renders text blurry; Pango always pixel-snaps).
+    // Fades out while the launcher owns the center.
+    Clock {
+        id: clockMod
+        x: Math.round((parent.width - width) / 2)
+        y: Math.round((parent.height - height) / 2)
+        opacity: launcher.visible ? 0 : 1
+        Behavior on opacity { NumberAnimation { duration: 280; easing.type: Easing.OutCubic } }
+    }
+
+    // right — language + control-center icon
+    Row {
+        anchors.right: parent.right
+        anchors.rightMargin: 9          // matches niri's visible per-side window gap          // symmetric with left workspace inset
+        anchors.verticalCenter: parent.verticalCenter
+        spacing: 0                       // language & λ cells touch, like #workspaces
+
+        Wifi    { anchorWin: bar }
+        Battery { anchorWin: bar }
+
+        Language {}
+
+        // λ control-center toggle. Same fixed box as a workspace/language
+        // cell: blue at rest, white box + dark glyph when selected (open).
+        Rectangle {
+            id: ccBox
+            height: Theme.barHeight
+            width: Theme.cellSize
+            radius: 0
+            color: cc.visible ? "#FFFFFF" : "transparent"
+            anchors.verticalCenter: parent.verticalCenter
+
+            Text {
+                id: ccIcon
+                x: Math.round((parent.width - width) / 2)
+                y: Math.round((parent.height - height) / 2)
+                renderType: Text.NativeRendering
+                font.hintingPreference: Font.PreferFullHinting
+                text: "λ"
+                color: cc.visible ? Theme.fg : Theme.accentText   // blue at rest
+                font.family: Theme.fontFamily
+                font.pixelSize: Theme.fontSize
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: cc.toggleCc()
+            }
+        }
+    }
+
+    ControlCenter {
+        id: cc
+        anchorWin: bar
+    }
+
+    Launcher {
+        id: launcher
+        anchorWin: bar
+    }
+
+    // niri binds:
+    //   Mod+Space     → `qs ipc call controlcenter toggle`      (lands on row 0, power hidden)
+    //   Mod+Shift+E   → `qs ipc call controlcenter togglePower` (reveals power, lands on Lock)
+    //
+    // togglePower semantics:
+    //   CC closed                     → open CC, show power, focus Lock
+    //   CC open & power visible       → close CC (toggle)
+    //   CC open & power NOT visible   → show power, focus Lock (don't close)
+    //
+    // Esc inside the power section hides it and returns focus to row 0
+    // without closing the CC. Note: ControlCenter.onVisibleChanged
+    // synchronously resets focusedRow to 0 and powerVisible to false on
+    // open, so we set both AFTER openCc().
+    IpcHandler {
+        target: "controlcenter"
+        function toggle(): void { cc.toggleCc(); }
+        function open(): void { cc.openCc(); }
+        function close(): void { cc.closeCc(); }
+        function togglePower(): void {
+            if (cc.visible && !cc.closing && cc.powerVisible) {
+                cc.closeCc();
+                return;
+            }
+            if (!cc.visible || cc.closing) cc.openCc();
+            cc.powerVisible = true;
+            cc.focusedRow = 10;
+            cc.footerCol = 0;
+        }
+    }
+}
