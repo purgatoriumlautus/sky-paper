@@ -1,0 +1,22 @@
+#!/bin/sh
+# sync-ws <index> — focus workspace <index> on EVERY output, then restore focus
+# to the monitor you started on.
+#
+# Why a script: niri's `focus-workspace` only targets the *focused* monitor, and
+# there is no single action to switch all outputs at once. So to keep both
+# screens on the same workspace (mirrored bars + content moving together) we
+# briefly visit each output and switch it, then hop back to the origin.
+#
+# Safe to focus-dance: focus-follows-mouse is OFF in the niri config, so the
+# pointer can't re-grab focus mid-run. niri actions are synchronous + instant.
+n="$1"
+[ -n "$n" ] || exit 1
+
+orig=$(niri msg --json workspaces | jq -r '.[] | select(.is_focused) | .output')
+
+for out in $(niri msg --json outputs | jq -r 'keys[]'); do
+    niri msg action focus-monitor "$out" || continue
+    niri msg action focus-workspace "$n"
+done
+
+[ -n "$orig" ] && niri msg action focus-monitor "$orig"

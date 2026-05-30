@@ -11,11 +11,18 @@ import Quickshell.Io
 Singleton {
     id: root
 
-    // [{ idx, urgent, empty }] sorted by idx. Reassigned ONLY when the set
-    // actually changes (dedupe) so delegates don't rebuild on every event.
+    // [{ idx, output, urgent, empty }] sorted by (output, idx). Reassigned
+    // ONLY when the set actually changes (dedupe) so delegates don't rebuild
+    // on every event. NOTE: per-output "active" is deliberately NOT in here —
+    // it lives in activeByOutput so a workspace switch updates the highlight
+    // without rebuilding the strip.
     property var workspaces: []
-    // active workspace idx — cheap int, updates every refresh, drives blink.
-    property int activeWs: -1
+    // { "DP-3": idx, "DP-2": idx } — each output's currently-shown workspace.
+    // Cheap object, reassigned every refresh; drives per-monitor highlight.
+    property var activeByOutput: ({})
+    // output name of the globally focused workspace (the monitor the user is
+    // on). Routes the control-center / launcher popups to the right bar.
+    property string focusedOutput: ""
     property string layoutShort: ""
     property string _wsCache: ""
 
@@ -40,9 +47,12 @@ Singleton {
             onStreamFinished: {
                 try {
                     var arr = JSON.parse(text);
-                    arr.sort((a, b) => a.idx - b.idx);
+                    arr.sort((a, b) => a.output === b.output
+                        ? a.idx - b.idx
+                        : (a.output < b.output ? -1 : 1));
                     var list = arr.map(w => ({
                         idx: w.idx,
+                        output: w.output,
                         urgent: w.is_urgent,
                         empty: w.active_window_id === null
                     }));
@@ -51,8 +61,13 @@ Singleton {
                         root._wsCache = key;
                         root.workspaces = list;   // rebuild only on real change
                     }
-                    var a = arr.find(w => w.is_active);
-                    root.activeWs = a ? a.idx : -1;
+                    // per-output active idx + focused output — cheap, every refresh
+                    var act = {};
+                    for (var i = 0; i < arr.length; i++)
+                        if (arr[i].is_active) act[arr[i].output] = arr[i].idx;
+                    root.activeByOutput = act;
+                    var f = arr.find(w => w.is_focused);
+                    root.focusedOutput = f ? f.output : "";
                 } catch (e) {}
             }
         }

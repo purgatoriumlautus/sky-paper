@@ -1,18 +1,21 @@
 import QtQuick
 import Quickshell
 
-// 1:1 with waybar #workspaces. Active = white box full bar height.
-// Active state comes from NiriIpc.activeWs (reactive int — no delegate
-// rebuild on switch).
+// Per-monitor workspace strip. `screenName` filters NiriIpc.workspaces to this
+// output so each bar shows only its own monitor's workspaces; the white box
+// tracks that output's active workspace (NiriIpc.activeByOutput) — a reactive
+// lookup, so switching doesn't rebuild the delegates.
 Row {
+    id: wsRoot
+    property string screenName: ""
     spacing: 0
 
     Repeater {
-        model: NiriIpc.workspaces
+        model: NiriIpc.workspaces.filter(w => w.output === wsRoot.screenName)
 
         delegate: Rectangle {
             required property var modelData
-            readonly property bool isActive: NiriIpc.activeWs === modelData.idx
+            readonly property bool isActive: NiriIpc.activeByOutput[wsRoot.screenName] === modelData.idx
 
             height: Theme.barHeight
             width: Theme.cellSize   // fixed square — same as language & λ

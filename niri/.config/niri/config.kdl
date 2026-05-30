@@ -82,14 +82,14 @@ cursor {
 // DP-3 = ASUS VG259QR @165Hz on the left (origin 0,0).
 // DP-2 = BenQ ZOWIE XL @144Hz directly to its right (x=1920).
 output "DP-3" {
-    mode "1920x1080@165.000"
+    mode "1920x1080@165.004"
     scale 1
     transform "normal"
     position x=0 y=0
 }
 
 output "DP-2" {
-    mode "1920x1080@144.000"
+    mode "1920x1080@144.001"
     scale 1
     transform "normal"
     position x=1920 y=0
@@ -469,17 +469,19 @@ binds {
     Mod+Q repeat=false { close-window; }
 
     // Scheme 1 — unified vertical. Modifier = verb, hjkl = direction.
-    // Focus (no verb). h/l = columns. j/k flow down/up through the
-    // windows in a column, then fall through into the next workspace.
-    Mod+H { focus-column-left; }
-    Mod+L { focus-column-right; }
+    // Focus (no verb). h/l = columns; at a monitor edge they fall THROUGH to
+    // the next monitor, so DP-3 + DP-2 read as one continuous scroll strip.
+    // j/k flow down/up through the windows in a column, then into the next ws.
+    Mod+H { focus-column-or-monitor-left; }
+    Mod+L { focus-column-or-monitor-right; }
     Mod+J { focus-window-or-workspace-down; }
     Mod+K { focus-window-or-workspace-up; }
 
-    // Move (verb = Shift): carry the window, same hjkl directions.
-    // Shift+J past the column edge sends the window to the next workspace.
-    Mod+Shift+H { move-column-left; }
-    Mod+Shift+L { move-column-right; }
+    // Move (verb = Shift): carry the window, same hjkl directions. h/l past the
+    // strip edge throws the column onto the adjacent monitor (fill one screen,
+    // leave the other empty, fling windows across).
+    Mod+Shift+H { move-column-left-or-to-monitor-left; }
+    Mod+Shift+L { move-column-right-or-to-monitor-right; }
     Mod+Shift+J { move-window-down-or-to-workspace-down; }
     Mod+Shift+K { move-window-up-or-to-workspace-up; }
 
@@ -488,7 +490,11 @@ binds {
     Mod+Ctrl+Home { move-column-to-first; }
     Mod+Ctrl+End  { move-column-to-last; }
 
-    // Monitor binds removed: X280 has a single internal output (eDP-1).
+    // Instant screen jump (skip scrolling column-by-column across the strip).
+    // Carrying a window across is handled by Mod+Shift+H/L's edge fall-through.
+    Mod+Ctrl+H { focus-monitor-left; }
+    Mod+Ctrl+L { focus-monitor-right; }
+
     // Mod+U/I, Mod+Page_*, Mod+Shift+U/I removed: sequential workspace
     // nav now flows through Mod+J/K above. Direct jump is Mod+1..9 below.
 
@@ -503,15 +509,17 @@ binds {
     //
     // For example, with 2 workspaces + 1 empty, indices 3, 4, 5 and so on
     // will all refer to the 3rd workspace.
-    Mod+1 { focus-workspace 1; }
-    Mod+2 { focus-workspace 2; }
-    Mod+3 { focus-workspace 3; }
-    Mod+4 { focus-workspace 4; }
-    Mod+5 { focus-workspace 5; }
-    Mod+6 { focus-workspace 6; }
-    Mod+7 { focus-workspace 7; }
-    Mod+8 { focus-workspace 8; }
-    Mod+9 { focus-workspace 9; }
+    // Synced: switch workspace N on BOTH monitors at once (see scripts/sync-ws).
+    // Both outputs land on N → both bars mirror the same number automatically.
+    Mod+1 { spawn-sh "$HOME/.config/niri/scripts/sync-ws 1"; }
+    Mod+2 { spawn-sh "$HOME/.config/niri/scripts/sync-ws 2"; }
+    Mod+3 { spawn-sh "$HOME/.config/niri/scripts/sync-ws 3"; }
+    Mod+4 { spawn-sh "$HOME/.config/niri/scripts/sync-ws 4"; }
+    Mod+5 { spawn-sh "$HOME/.config/niri/scripts/sync-ws 5"; }
+    Mod+6 { spawn-sh "$HOME/.config/niri/scripts/sync-ws 6"; }
+    Mod+7 { spawn-sh "$HOME/.config/niri/scripts/sync-ws 7"; }
+    Mod+8 { spawn-sh "$HOME/.config/niri/scripts/sync-ws 8"; }
+    Mod+9 { spawn-sh "$HOME/.config/niri/scripts/sync-ws 9"; }
     // Shift+digit = send the focused window to workspace N (verb = Shift,
     // consistent with Mod+Shift+J/K move binds above).
     Mod+Shift+1 { move-window-to-workspace 1; }

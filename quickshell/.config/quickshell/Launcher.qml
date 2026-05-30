@@ -209,10 +209,7 @@ PopupWindow {
         }
     }
 
-    IpcHandler {
-        target: "launcher"
-        function toggle(): void { launcher.toggle(); }
-        function open(): void { launcher.open(); }
-        function close(): void { launcher.close(); }
-    }
+    // IPC handler lifted to shell.qml (single instance broadcasts over `bus`);
+    // the per-bar Launcher is driven from Bar.qml's Connections so it opens on
+    // the focused monitor only.
 }
