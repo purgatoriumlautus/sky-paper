@@ -15,5 +15,11 @@ switch = true
 # NOTE: the greeter is a normal FloatingWindow (xdg-toplevel), NOT a layer
 # surface — cage does not implement wlr-layer-shell. Do not wrap the session in
 # `sh -c`; greetd execs it directly and a wrapper makes it exit (bounce loop).
-command = "cage -s -- env QT_QPA_PLATFORM=wayland QT_WAYLAND_DISABLE_WINDOWDECORATION=1 qs -p /etc/quickshell-greeter"
+#
+# -m last : DUAL-MONITOR. cage defaults to `-m extend`, which spans both outputs
+# into one surface — the lone fullscreen greeter window then centers on the SEAM
+# (shifted) and shows on both screens (duplicated). `last` uses a single output,
+# so the greeter centers correctly on one monitor; the other stays dark. (Single-
+# monitor laniakea never hit this.)
+command = "cage -s -m last -- env QT_QPA_PLATFORM=wayland QT_WAYLAND_DISABLE_WINDOWDECORATION=1 qs -p /etc/quickshell-greeter"
 user = "greeter"

@@ -37,12 +37,11 @@ PanelWindow {
     implicitHeight: Theme.barHeight
     color: Theme.barBg
     WlrLayershell.namespace: "quickshell-bar-" + bar.screenName
-    // OnDemand on the focused bar (so the shared popup's xdg-popup grab routes
-    // Esc/Q to it); None on the others. Two simultaneously-focusable bar
-    // surfaces make Qt mis-track the "topmost grabbing popup" and reparent the
-    // popup → wrong position. Only the focused bar ever hosts the popup, so only
-    // it needs focus.
-    WlrLayershell.keyboardFocus: bar.isFocused ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+    // The bar never needs keyboard focus: the control-center / launcher are now
+    // their own keyboard-focusable layer surfaces (they don't grab through the
+    // bar), and the λ click is a pointer event (unaffected by keyboardFocus).
+    // None keeps the bar out of the keyboard-focus chain entirely.
+    WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
 
     // left — workspaces (this output only). 9px inset matches niri's gap.
     Row {

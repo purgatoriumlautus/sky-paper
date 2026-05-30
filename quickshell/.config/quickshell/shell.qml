@@ -3,13 +3,14 @@ import Quickshell.Io
 
 // Entry point. Sky Paper bar for niri — see Theme.qml / PALETTE.md.
 //
-// One Bar per monitor (Variants over Quickshell.screens), but a SINGLE shared
-// ControlCenter + Launcher live here and re-anchor to whichever bar owns the
-// focused niri output (`focusedBar`). This is deliberate: instantiating the
-// popups per-bar created several grabbing-popup objects across multiple layer
-// surfaces, which Qt/niri can't parent correctly → the xdg_popup fails to map
-// ("not an xdg_popup"). One popup object over one host surface = the working
-// single-bar condition, while the popup still appears on the focused monitor.
+// One Bar per monitor (Variants over Quickshell.screens), plus a SINGLE shared
+// ControlCenter + Launcher that follow the focused output via `barScreen`
+// (= the focused bar's screen). The CC/Launcher are LAYER SURFACES that take
+// keyboard focus themselves — not grabbing PopupWindows. A grabbing popup needs
+// its parent bar to have *received input*, which a compositor-eaten keybind
+// never delivers, so it only opened on a click and the focus-then-open
+// workaround added a visible lag. As layer surfaces they map + focus instantly
+// from a keybind. (See ControlCenter.qml header.)
 //
 // NOTE: the popup ids are ccPopup/launcherPopup (not cc/launcher) so they don't
 // shadow the Bar's `cc`/`launcher` properties in the Variants delegate below
@@ -19,7 +20,7 @@ import Quickshell.Io
 Scope {
     id: root
 
-    // The bar on the focused niri output; the shared popups anchor to it.
+    // The bar on the focused niri output; the shared popups take its screen.
     property var focusedBar: null
 
     IpcHandler {
@@ -57,9 +58,9 @@ Scope {
         }
     }
 
-    // Shared popups — re-anchor to the focused bar (see header).
-    ControlCenter { id: ccPopup; anchorWin: root.focusedBar }
-    Launcher { id: launcherPopup; anchorWin: root.focusedBar }
+    // Shared popups — re-home to the focused bar's screen (see header).
+    ControlCenter { id: ccPopup; barScreen: root.focusedBar ? root.focusedBar.screen : null }
+    Launcher { id: launcherPopup; barScreen: root.focusedBar ? root.focusedBar.screen : null }
 
     LockScreen {}
 }
