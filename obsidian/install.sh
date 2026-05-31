@@ -43,10 +43,12 @@ ln -sfn "$PKG/sky-paper.css" "$SNIP_DIR/sky-paper.css"
 ln -sfn "$PKG/vimrc"         "$VAULT/.obsidian.vimrc"
 ln -sfn "$PKG/hotkeys.json"  "$VAULT/.obsidian/hotkeys.json"
 
-# appearance.json: force light, switch accent, enable our snippet
+# appearance.json: force light, switch accent, enable our snippet.
+# NB: "moonstone" is Obsidian's LIGHT theme; "obsidian" is the DARK one.
+# Sky Paper only paints .theme-light, so light mode is mandatory here.
 tmp=$(mktemp)
 jq '
-  .theme = "obsidian"
+  .theme = "moonstone"
   | .cssTheme = ""
   | .accentColor = "#4A6F8E"
   | .enabledCssSnippets = (((.enabledCssSnippets // []) + ["sky-paper"]) | unique)

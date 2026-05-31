@@ -33,6 +33,7 @@ end
 # -----------------
 set -gx EDITOR nvim
 set -gx LIBVIRT_DEFAULT_URI 'qemu:///system'
+set -gx DISPLAY ':0'
 
 # -----------------
 # PATH

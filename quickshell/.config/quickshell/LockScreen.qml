@@ -296,6 +296,14 @@ Scope {
         running: false
     }
 
+    // Force English (US) on lock so the password is never typed in ru/ua.
+    // Index 0 = English (US) in niri's "us,ru,ua" layout list.
+    Process {
+        id: engLayoutProc
+        command: ["niri", "msg", "action", "switch-layout", "0"]
+        running: false
+    }
+
     IpcHandler {
         target: "lock"
 
@@ -309,6 +317,7 @@ Scope {
             scope.awake = true
             scope.clearCounter += 1
             idleTimer.restart()
+            engLayoutProc.running = true   // password field always English
             sessionLock.locked = true
         }
 

@@ -2,7 +2,7 @@
 
 System manifest for Claude. Static snapshot, manually maintained.
 
-**Last verified: 2026-05-30** — Bash-verified true-up of the whole doc (`pacman -Qe`,
+**Last verified: 2026-05-31** — Bash-verified true-up of the whole doc (`pacman -Qe`,
 `pacman -Qm`, `systemctl`, `lsblk`, `ip`, `wpctl`, live config reads). Corrected hardware,
 storage, network, and service state; documented the new keyboard-remap subsystem
 (keyd + hid_apple), the pentest/VM/media package additions, the swaybg wallpaper, and the
@@ -11,6 +11,9 @@ new repo modules. Also removed this pass: the offensive-security stack
 Authoritative package list: `~/celestia/packages.txt` (itself slightly stale — see Known
 Issues). Future work lives in `~/celestia/todos.md`.
 
+> 2026-05-31 update: added X11-app support under niri via **xwayland-satellite** (niri does
+> not spawn Xwayland itself) — needed to run Renoise and other X11-only apps. See niri below.
+
 ## Philosophy
 
 **Performance-driven minimalism.** Every choice optimizes for:
@@ -18,8 +21,9 @@ Issues). Future work lives in `~/celestia/todos.md`.
 2. **Minimal footprint** — fewest packages possible
 3. **Unix philosophy** — one tool, one job, done well
 
-The "Sky Paper" rice (niri + Quickshell) is the current aesthetic — lightweight, zero
-animation/rounding/blur. The Chicago95 cursor and icon theme are retained as a deliberate
+The "Sky Paper" rice (niri + Quickshell) is the current aesthetic — lightweight, with
+smooth/clean animation (palette-matched), **squared — no rounded corners**, no blur, in the
+Terminess font aesthetic. The Chicago95 cursor and icon theme are retained as a deliberate
 retro accent; GTK widget theme is stock Adwaita (light).
 
 > Note: the package set has grown well past "bare minimum" — a pentest toolkit
@@ -114,7 +118,7 @@ No wifi or bluetooth hardware. The IP is DHCP-assigned, so don't hardcode it.
 ### Running (user)
 
 pipewire, pipewire-pulse, wireplumber (audio); niri (compositor); mako (notifications via
-xdg portal); xdg-desktop-portal{,-gtk}; remmina-applet (autostart).
+xdg portal); xdg-desktop-portal{,-gtk,-wlr}; remmina-applet (autostart).
 
 ### Enabled but not running
 
@@ -124,11 +128,6 @@ xdg portal); xdg-desktop-portal{,-gtk}; remmina-applet (autostart).
 | libvirtd sockets | ro/admin + virtlockd/virtlogd sockets |
 | rt-audio-setup | Real-time audio prep (oneshot, RemainAfterExit) |
 | nftables | Firewall (loaded at boot, runs in kernel) |
-
-> **Orphaned unit:** a user `mpd.service` is still *active (running)* (PID from boot) even
-> though the `mpd` binary and package were removed. The unit file is gone (`not-found`) but
-> the process persists from before removal. Needs `systemctl --user stop mpd` (and confirm
-> nothing re-spawns it). Tracked in todos.
 
 > Sky Paper migration removed (don't re-suggest): the hyprland stack, waybar, tofi, ly,
 > zsh, mpd/mpc/rmpc, upower, chicago95-gtk-theme. Roles moved: night-light hyprsunset →
@@ -200,7 +199,7 @@ Config: `/etc/sysctl.d/99-hardening.conf` (repo: `~/celestia/sysctl/`)
 
 ## Installed Packages
 
-> Authoritative list: `~/celestia/packages.txt`. 111 explicit packages (`pacman -Qe`),
+> Authoritative list: `~/celestia/packages.txt`. 114 explicit packages (`pacman -Qe`),
 > 6 foreign (`pacman -Qm`). The role map below is curated, not exhaustive.
 
 ### Compositor / DE (Sky Paper)
@@ -208,7 +207,8 @@ Config: `/etc/sysctl.d/99-hardening.conf` (repo: `~/celestia/sysctl/`)
 niri (scrollable Wayland WM), quickshell + qt6-declarative (bar/control-center/launcher/
 greeter), cage (greeter host), greetd, mako (notifications), swayidle (idle→suspend),
 swaybg (wallpaper), wlsunset (night light — **installed, not currently running**),
-xdg-desktop-portal, xorg-xwayland
+xdg-desktop-portal (+ -gtk, + -wlr for screencast on niri), xorg-xwayland,
+xwayland-satellite (spawns Xwayland for X11 apps — niri won't on its own)
 
 ### Input
 
@@ -225,7 +225,7 @@ thunar, tumbler, ffmpegthumbnailer, yazi, 7zip, zip, unzip
 ### Media / Audio
 
 pipewire (+alsa/jack/pulse), wireplumber, alsa-utils, pavucontrol, playerctl (media keys),
-mpv, nomacs (image viewer)
+mpv, nomacs (image viewer), obs-studio (screen recording/streaming)
 
 ### Desktop Applications
 
@@ -299,6 +299,7 @@ keyd, hid_apple, nftables, sysctl, sshd, grub theme) live outside `$HOME`, so th
 ├── zathura/      → ~/.config/zathura/
 ├── xfce4/        → ~/.config/xfce4/ (Thunar settings)
 ├── fontconfig/   → ~/.config/fontconfig/
+├── mpv/         → ~/.config/mpv/ (mpv.conf + built-in osc, palette-themed)
 │
 │   # manual (install.sh), system-level / outside $HOME:
 ├── quickshell-greeter/ → /etc/quickshell-greeter/ + /etc/greetd/
@@ -326,8 +327,14 @@ keyd, hid_apple, nftables, sysctl, sshd, grub theme) live outside `$HOME`, so th
 - **Config:** `~/.config/niri/config.kdl` (symlink from `~/celestia/niri`)
 - Scrollable-tiling Wayland WM. Per-output workspaces, columns scroll horizontally.
 - Mod key: SUPER. Vim-style HJKL navigation.
-- **Spawn-at-startup:** `qs` (Quickshell), `swaybg -i ~/Pictures/wallpapers/clouds.png -m fill`,
-  `swayidle -w`, `mako`. Fallback workspace background `#F0EBE0` if swaybg isn't running.
+- **Spawn-at-startup:** `qs` (Quickshell), `xwayland-satellite :0`, `swaybg -i
+  ~/Pictures/wallpapers/clouds.png -m fill`, `swayidle -w`, `mako`. Fallback workspace
+  background `#F0EBE0` if swaybg isn't running.
+- **X11 apps (Xwayland):** niri is pure Wayland and does **not** start Xwayland itself, so
+  X11-only apps (Renoise) need `xwayland-satellite`, spawned at startup pinned to display
+  `:0`. niri's `environment { }` block exports `DISPLAY ":0"` so spawned apps find it. The
+  display number must match between the spawn arg and `DISPLAY` or X11 apps fail with
+  "Failed to open the X Display". (fish also exports `DISPLAY :0`, now redundant.)
 - Media keys (`XF86Audio*`) spawn `playerctl`; volume keys use `wpctl`.
 - `Mod+1..9` run `~/.config/niri/scripts/sync-ws N` (per-output workspace sync).
 - Cursor: `Chicago95_Standard_Cursors` (XCURSOR_THEME/SIZE exported for spawned apps).
@@ -373,9 +380,11 @@ keyd, hid_apple, nftables, sysctl, sshd, grub theme) live outside `$HOME`, so th
 
 ## Aesthetic
 
-Sky Paper: niri + Quickshell, lightweight and flat. Zero animations, zero rounding, zero
-blur, shadows off. Chicago95 cursor + icon theme retained as a retro accent; GTK widget
-theme is Adwaita (light). Wallpaper: `clouds.png`. Palette reference: `~/celestia/PALETTE.md`.
+Sky Paper: niri + Quickshell, lightweight and flat. **Smooth, clean animation**
+(palette-matched, easing toward beautiful/symmetric); **squared — no rounded corners**
+anywhere; no blur. Terminess font aesthetic throughout. Chicago95 cursor + icon theme
+retained as a retro accent; GTK widget theme is Adwaita (light). Wallpaper: `clouds.png`.
+Palette reference: `~/celestia/PALETTE.md`.
 
 | Element | Value |
 |---------|-------|
@@ -389,11 +398,6 @@ theme is Adwaita (light). Wallpaper: `clouds.png`. Palette reference: `~/celesti
 > Active future work and ideas live in `~/celestia/todos.md`. This list is only the
 > system-state caveats a reader of *this* doc needs.
 
-- [ ] **Orphaned `mpd.service`** (user) still running though mpd was removed — stop it and
-      confirm nothing re-spawns it.
-- [ ] `packages.txt` is slightly stale vs live `pacman -Qe` — regenerate.
-- [ ] `CONTEXT.md` / `CLAUDE.md` / `todos.md` and the `xfce4/` migration are untracked in
-      git — commit them.
 - [ ] **wlsunset** installed but not running/configured — wire up night light if wanted.
 - [ ] `bun` installed at `~/.bun` but not on PATH — decide keep-and-export vs remove.
 - [ ] Swap partition (sdb2, 4G) exists but not active.
