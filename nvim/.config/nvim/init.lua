@@ -33,13 +33,13 @@ if vim.g.vscode then dofile(vim.fn.stdpath('config') .. '/vscode.lua') return en
 --   5+            increment by 5
 --
 -- SURROUND (nvim-surround)
---   (visual) S)   wrap the SELECTION in ()  ← select text, press S, type )"]} etc.
+--   (visual) )    select text, press the delimiter → wraps it: )"]} ' ` all work
+--   (visual) (    opening char wraps WITH spaces: ( sel )   vs  ) → (sel)
 --   (visual) St   wrap selection in an HTML tag (prompts for tag name)
 --   ysiw)         wrap word in ()
 --   yss)          wrap entire line in ()
 --   cs)]          change () to []
 --   ds)           delete surrounding ()
---   note: closing char ) = no spaces, opening char ( = ( with spaces )
 --
 -- MACROS
 --   qa            record into register a
@@ -633,6 +633,18 @@ require('lazy').setup({
     event = 'VeryLazy',
     config = function()
       require('nvim-surround').setup({})
+
+      -- In visual mode, press the delimiter itself to wrap the selection — no
+      -- need to press S first. Select text, hit ) " ' ] } etc. → bam, surrounded.
+      -- Closing char is tight: )"]} → (sel) "sel" [sel] {sel}
+      -- Opening char keeps spaces: ([{  → ( sel ) [ sel ] { sel }
+      -- We bind to <Plug>(nvim-surround-visual); its getchar() then consumes the
+      -- trailing delimiter raw, so text objects (vi(, va", ci[…) are untouched.
+      -- < and > are left alone on purpose — they're visual indent in/out.
+      for _, ch in ipairs({ '(', ')', '[', ']', '{', '}', '"', "'", '`' }) do
+        vim.keymap.set('x', ch, '<Plug>(nvim-surround-visual)' .. ch,
+          { remap = true, desc = 'Surround selection with ' .. ch })
+      end
     end,
   },
 
