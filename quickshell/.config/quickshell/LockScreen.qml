@@ -227,6 +227,7 @@ Scope {
                 }
 
                 Keys.onPressed: function (event) {
+                    if (scope.handlePowerKey(event)) return
                     if (!scope.awake) {
                         scope.wake()
                         event.accepted = true
@@ -309,6 +310,17 @@ Scope {
 
     function reveal() { scope.revealed = true; idleTimer.restart() }
 
+    // Power keys, live in every state (asleep / clock / revealed):
+    //   F1 → suspend, F2 → power off, F5 → reboot.
+    // The locked session is still the active session, so polkit's allow_active
+    // grants suspend/poweroff/reboot without a password.
+    function handlePowerKey(event) {
+        if (event.key === Qt.Key_F1)      { suspendProc.running  = true; event.accepted = true; return true }
+        else if (event.key === Qt.Key_F2) { poweroffProc.running = true; event.accepted = true; return true }
+        else if (event.key === Qt.Key_F5) { rebootProc.running   = true; event.accepted = true; return true }
+        return false
+    }
+
     function hideBox() {
         scope.revealed = false
         scope.pendingPassword = ""
@@ -342,6 +354,21 @@ Scope {
         running: false
     }
 
+    // Force niri's keyboard layout to English (index 0 of `us,ru`) on lock so
+    // the password is always typed in Latin — a stray `ru` layout would feed
+    // Cyrillic into PAM and never match. niri layout state is global, so this
+    // persists after unlock (intentional: re-lock stays English too).
+    Process {
+        id: usLayoutProc
+        command: ["niri", "msg", "action", "switch-layout", "0"]
+        running: false
+    }
+
+    // Power keys (F1/F2/F5) — see scope.handlePowerKey().
+    Process { id: suspendProc;  command: ["systemctl", "suspend"];  running: false }
+    Process { id: poweroffProc; command: ["systemctl", "poweroff"]; running: false }
+    Process { id: rebootProc;   command: ["systemctl", "reboot"];   running: false }
+
     IpcHandler {
         target: "lock"
 
@@ -355,6 +382,7 @@ Scope {
             scope.awake = true
             scope.clearCounter += 1
             idleTimer.restart()
+            usLayoutProc.running = true   // password input → always English
             sessionLock.locked = true
         }
 

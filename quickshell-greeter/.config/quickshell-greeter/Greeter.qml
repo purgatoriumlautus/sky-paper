@@ -41,6 +41,17 @@ FloatingWindow {
         idleTimer.restart()
     }
 
+    // Power keys, live in every state (asleep / clock / revealed):
+    //   F1 → suspend, F2 → power off, F5 → reboot.
+    // greetd's session is the active session on seat0/vt1, so polkit's
+    // allow_active grants suspend/poweroff/reboot without a password.
+    function handlePowerKey(event) {
+        if (event.key === Qt.Key_F1)      { suspendProc.running  = true; event.accepted = true; return true }
+        else if (event.key === Qt.Key_F2) { poweroffProc.running = true; event.accepted = true; return true }
+        else if (event.key === Qt.Key_F5) { rebootProc.running   = true; event.accepted = true; return true }
+        return false
+    }
+
     // 10-min idle → asleep (full black). Any key/click restarts via wake()
     // or the surface's input handlers below.
     Timer {
@@ -185,6 +196,7 @@ FloatingWindow {
         }
 
         Keys.onPressed: function (event) {
+            if (root.handlePowerKey(event)) return
             if (!root.awake) {
                 root.wake()
                 event.accepted = true
@@ -196,14 +208,11 @@ FloatingWindow {
                 idleTimer.restart()
                 return
             }
-            const printable = event.text.length > 0
-                && event.key !== Qt.Key_Escape
-                && event.key !== Qt.Key_Return
-                && event.key !== Qt.Key_Enter
-                && event.key !== Qt.Key_Tab
-                && event.key !== Qt.Key_Backtab
+            // Any key is a reveal-only trigger — it opens the box but is NOT
+            // injected into the field (matches the lock screen). focusDelay →
+            // loginBox.focusInitial() focuses the right field once the slot
+            // opens, so the user always types their password from empty.
             root.reveal()
-            if (printable) loginBox.injectChar(event.text)
             event.accepted = true
         }
 
@@ -216,5 +225,10 @@ FloatingWindow {
             repeat: false
             onTriggered: loginBox.focusInitial()
         }
+
+        // Power keys (F1/F2/F5) — see root.handlePowerKey().
+        Process { id: suspendProc;  command: ["systemctl", "suspend"];  running: false }
+        Process { id: poweroffProc; command: ["systemctl", "poweroff"]; running: false }
+        Process { id: rebootProc;   command: ["systemctl", "reboot"];   running: false }
     }
 }
