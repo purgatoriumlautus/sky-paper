@@ -33,10 +33,13 @@ if vim.g.vscode then dofile(vim.fn.stdpath('config') .. '/vscode.lua') return en
 --   5+            increment by 5
 --
 -- SURROUND (nvim-surround)
+--   (visual) S)   wrap the SELECTION in ()  ← select text, press S, type )"]} etc.
+--   (visual) St   wrap selection in an HTML tag (prompts for tag name)
 --   ysiw)         wrap word in ()
 --   yss)          wrap entire line in ()
 --   cs)]          change () to []
 --   ds)           delete surrounding ()
+--   note: closing char ) = no spaces, opening char ( = ( with spaces )
 --
 -- MACROS
 --   qa            record into register a
