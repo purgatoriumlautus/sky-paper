@@ -60,20 +60,25 @@ if vim.g.vscode then dofile(vim.fn.stdpath('config') .. '/vscode.lua') return en
 --   "ap           paste from register a
 --   :reg          view all registers
 --
--- CUSTOM KEYBINDS
---   \n            toggle file tree
---   \e            toggle focus tree/file
---   \ff / \fg     find files / grep project
---   \fb / \fr     buffers / recent files
---   \gd / \gq     open / close diff view
---   \gh / \gH     file history (current / repo)
---   \hp / \hr / \hb   preview / reset / blame hunk
---   ]c / [c       next / prev git hunk
---   ]d / [d       next / prev diagnostic
---   K             hover docs
---   \rn / \ca     rename / code action
---   \t            toggle terminal
---   \?            show all keymaps
+-- CUSTOM KEYBINDS  (<leader> = F19 = tap CapsLock; \ also works)
+--   grouped by prefix so which-key (\?) shows them as menus:
+--   WINDOWS \w*   \wv / \ws     split vertical / horizontal
+--                 \wh \wj \wk \wl   focus left/down/up/right
+--                 \wq           close window
+--   FIND    \f*   \ff \fg       find files / grep project
+--                 \fb \fr \fh   buffers / recent / help
+--   GIT     \g*   \gp \gr \gb   preview / reset / blame hunk
+--                 \gd \gq       open / close diff view
+--                 \gh \gH       file history (current / repo)
+--                 ]c / [c       next / prev hunk
+--   LSP     \l*   \lr \la       rename / code action
+--                 gd gr K       definition / references / hover (conventions)
+--                 ]d / [d       next / prev diagnostic
+--   TREE    \n \e        toggle tree / toggle focus tree<->file
+--   TERMINAL \t          open / focus toggle
+--   CLOSE   \q           dismiss panel: tree, else terminal (never code window)
+--   TABS    \1..\9 \0    go to tab N / last tab
+--   \?            show all keymaps (which-key)
 
 -- ===================
 -- Mason bin path (for LSP servers)
@@ -175,6 +180,16 @@ for i = 1, 9 do
   vim.keymap.set('n', '<leader>' .. i, i .. 'gt', { desc = 'Go to tab ' .. i })
 end
 vim.keymap.set('n', '<leader>0', ':tablast<CR>', { desc = 'Go to last tab' })
+
+-- Window management (group <leader>w*; which-key shows it on CapsLock w).
+-- These wrap the vanilla Ctrl+w commands so they live on <leader> like everything else.
+vim.keymap.set('n', '<leader>wv', '<C-w>v', { desc = 'Window: split vertical' })
+vim.keymap.set('n', '<leader>ws', '<C-w>s', { desc = 'Window: split horizontal' })
+vim.keymap.set('n', '<leader>wh', '<C-w>h', { desc = 'Window: focus left' })
+vim.keymap.set('n', '<leader>wj', '<C-w>j', { desc = 'Window: focus down' })
+vim.keymap.set('n', '<leader>wk', '<C-w>k', { desc = 'Window: focus up' })
+vim.keymap.set('n', '<leader>wl', '<C-w>l', { desc = 'Window: focus right' })
+vim.keymap.set('n', '<leader>wq', '<C-w>q', { desc = 'Window: close' })
 
 -- Disable arrow keys in normal mode (use hjkl)
 vim.keymap.set('n', '<Up>', '<Nop>')
@@ -394,10 +409,10 @@ require('lazy').setup({
           vim.keymap.set('n', ']c', gitsigns.next_hunk, opts)
           vim.keymap.set('n', '[c', gitsigns.prev_hunk, opts)
 
-          -- Actions
-          vim.keymap.set('n', '<leader>hp', gitsigns.preview_hunk, opts)
-          vim.keymap.set('n', '<leader>hr', gitsigns.reset_hunk, opts)
-          vim.keymap.set('n', '<leader>hb', gitsigns.blame_line, opts)
+          -- Actions (git group: <leader>g*)
+          vim.keymap.set('n', '<leader>gp', gitsigns.preview_hunk, { buffer = bufnr, desc = 'Git: preview hunk' })
+          vim.keymap.set('n', '<leader>gr', gitsigns.reset_hunk, { buffer = bufnr, desc = 'Git: reset hunk' })
+          vim.keymap.set('n', '<leader>gb', gitsigns.blame_line, { buffer = bufnr, desc = 'Git: blame line' })
         end,
       })
     end,
@@ -513,8 +528,8 @@ require('lazy').setup({
           vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
           vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
           vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
-          vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts)
-          vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, opts)
+          vim.keymap.set('n', '<leader>lr', vim.lsp.buf.rename, { buffer = args.buf, desc = 'LSP: rename symbol' })
+          vim.keymap.set('n', '<leader>la', vim.lsp.buf.code_action, { buffer = args.buf, desc = 'LSP: code action' })
           vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
           vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
 
@@ -578,7 +593,8 @@ require('lazy').setup({
   -- Dropdown terminal:
   --   CapsLock t    open the terminal, or toggle focus between it and the
   --                 editor if it's already showing (never hides it)
-  --   CapsLock q    close it (kills the shell)
+  --   CapsLock q    universal "dismiss panel" (smart_close, defined below):
+  --                 closes tree/terminal but never the code window
   {
     'akinsho/toggleterm.nvim',
     version = '*',
@@ -615,13 +631,30 @@ require('lazy').setup({
         if t then t:open() else vim.cmd('ToggleTerm') end  -- not visible here -> open
       end
 
+      -- <leader>q : universal "dismiss a panel". The code window is never
+      -- closed by it. Focus wins first; otherwise tree has priority, then term.
+      --   1. cursor inside the terminal   -> kill the terminal
+      --   2. cursor inside nvim-tree      -> close the tree
+      --   3. (cursor in a normal window)
+      --        tree open anywhere         -> close the tree
+      --        terminal open anywhere     -> kill the terminal
+      --        nothing open               -> do nothing (window stays)
+      local function smart_close()
+        local tree = require('nvim-tree.api').tree
+        if vim.bo.buftype == 'terminal' then kill(); return end   -- 1
+        if vim.bo.filetype == 'NvimTree' then tree.close(); return end  -- 2
+        if tree.is_visible() then tree.close(); return end        -- 3a
+        local t = require('toggleterm.terminal').get_all(true)[1]
+        if t and t.bufnr and vim.api.nvim_buf_is_valid(t.bufnr) then kill() end  -- 3b
+      end
+
       -- Normal mode (from the editor).
       vim.keymap.set('n', '<leader>t', smart_toggle, { desc = 'Terminal: open / focus toggle' })
-      vim.keymap.set('n', '<leader>q', kill, { desc = 'Terminal: close (kill)' })
+      vim.keymap.set('n', '<leader>q', smart_close, { desc = 'Close panel (tree/terminal, never code window)' })
       -- Terminal mode (from inside the terminal): <leader> isn't bound there
       -- and CapsLock is F19, so match CapsLock+t / CapsLock+q directly.
       vim.keymap.set('t', '<F19>t', smart_toggle, { desc = 'Terminal: open / focus toggle' })
-      vim.keymap.set('t', '<F19>q', kill, { desc = 'Terminal: close (kill)' })
+      vim.keymap.set('t', '<F19>q', smart_close, { desc = 'Close panel (terminal)' })
     end,
   },
 
