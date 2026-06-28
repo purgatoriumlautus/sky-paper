@@ -39,6 +39,7 @@ set -gx DISPLAY ':0'
 # PATH
 # -----------------
 fish_add_path -g $HOME/.local/bin
+fish_add_path -g $HOME/go/bin
 
 # -----------------
 # Aliases

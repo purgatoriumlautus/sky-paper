@@ -502,6 +502,9 @@ require('lazy').setup({
     'saghen/blink.pairs',
     version = '*',
     dependencies = { 'saghen/blink.download' },
+    -- v0.6+ needs the native lib fetched explicitly; download() grabs a
+    -- prebuilt binary (no Rust toolchain needed), pwait blocks up to 60s.
+    build = function() require('blink.pairs').download():pwait(60000) end,
     opts = {
       mappings = { enabled = true },
       highlights = { enabled = true },
@@ -543,7 +546,7 @@ require('lazy').setup({
 
       -- mason-lspconfig auto-setup
       require('mason-lspconfig').setup({
-        ensure_installed = { 'clangd', 'pyright', 'bashls', 'yamlls', 'dockerls', 'docker_compose_language_service','lua_ls','gopls'},
+        ensure_installed = { 'clangd', 'pyright', 'bashls', 'yamlls', 'dockerls', 'docker_compose_language_service', 'lua_ls', 'gopls', 'sqls' },
         handlers = {
           -- Default handler for all servers
           function(server_name)
