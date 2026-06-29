@@ -1,0 +1,44 @@
+#!/usr/bin/env fish
+# pd-bt — launch Pure Data on the JACK (PipeWire) backend and route its
+# output to the *current default sink* (so it follows your Bluetooth
+# headphones automatically instead of the laptop speakers).
+#
+# Why: Pd's ALSA backend only sees raw kernel sound cards, never the
+# PipeWire Bluetooth sink. JACK on PipeWire sees every sink, but PipeWire
+# auto-wires new JACK clients to the built-in card — this fixes that.
+#
+# Any extra args are passed straight through to pd (e.g. `pd-bt patch.pd`).
+
+set -l node "Pure Data"
+
+# Launch Pd forced onto the JACK backend, in the background.
+pw-jack pd -jack $argv &
+
+# Wait (up to ~10s) for Pd's JACK output ports to register.
+set -l tries 0
+while not pw-link -o 2>/dev/null | grep -q "$node:output_1"
+    sleep 0.2
+    set tries (math $tries + 1)
+    if test $tries -ge 50
+        echo "pd-bt: Pd's JACK ports never appeared — is pd running on JACK?" >&2
+        exit 1
+    end
+end
+
+# Tear down whatever PipeWire auto-connected Pd's outputs to (by link id),
+# scoped to Pd's own ports so we don't touch any other app's routing.
+for port in "$node:output_1" "$node:output_2"
+    for id in (pw-link -I -l "$port" 2>/dev/null | string match -r '^\s*(\d+)\s+\|->' | string replace -rf '^\s*(\d+).*' '$1')
+        pw-link -d $id 2>/dev/null
+    end
+end
+
+# Resolve the current default sink and wire Pd to it.
+set -l sink (pactl get-default-sink)
+if test -z "$sink"
+    echo "pd-bt: no default sink found; leaving Pd unrouted" >&2
+    exit 0
+end
+
+pw-link "$node:output_1" "$sink:playback_FL"
+pw-link "$node:output_2" "$sink:playback_FR"
