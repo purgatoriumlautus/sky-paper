@@ -305,6 +305,10 @@ spawn-at-startup "qs"
 spawn-at-startup "swaybg" "-i" "/home/aru/Pictures/wallpapers/clouds.png" "-m" "fill"
 spawn-at-startup "swayidle" "-w"
 spawn-at-startup "mako"
+spawn-at-startup "xwayland-satellite" ":0"
+environment {
+    DISPLAY ":0"
+}
 
 // To run a shell command (with variables, pipes, etc.), use spawn-sh-at-startup:
 // spawn-sh-at-startup "qs -c ~/source/qs/MyAwesomeShell"

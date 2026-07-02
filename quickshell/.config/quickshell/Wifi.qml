@@ -7,10 +7,9 @@ import Quickshell.Io
 Item {
     id: root
     height: Theme.barHeight
-    // wider than a single-char cell: parallelograms span 4 chars, so we add
-    // half a cell of breathing room so the gap to Battery matches the
-    // language/λ spacing.
-    width: Theme.cellSize + 16
+    // hug the 4 dots + uniform side padding, so the gap to Battery matches
+    // every other right-cluster gap (2*cellPad).
+    width: dots.implicitWidth + 2 * Theme.cellPad
 
     property var anchorWin
 
@@ -123,8 +122,13 @@ Item {
         }
     }
 
-    // 4 inclined parallelograms; filled = lit, hollow = ghost slot (constant width)
+    // 4 dots; lit = solid ●, unlit = hollow ○. Both are bitmap-native in
+    // Terminess — unlike the old ▰/▱ parallelograms, which Terminess lacks: a
+    // Noto fallback drew them, and the 2026-06 fontconfig/noto-fonts update
+    // made that fallback render oversized & misaligned (too wide, overlapping
+    // the battery).
     Row {
+        id: dots
         spacing: 0
         anchors.centerIn: parent
 
@@ -132,8 +136,9 @@ Item {
             model: 4
             delegate: Text {
                 required property int index
-                text: index < root.bars ? "▰" : "▱"
-                color: index < root.bars ? Theme.fg : Theme.borderDim
+                readonly property bool lit: index < root.bars
+                text: lit ? "●" : "○"
+                color: lit ? Theme.fg : Theme.borderDim
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontSize
                 font.hintingPreference: Font.PreferFullHinting

@@ -7,7 +7,8 @@ import Quickshell.Io
 Item {
     id: root
     height: Theme.barHeight
-    width: Theme.cellSize
+    // hug the % text + uniform side padding → even gaps to wifi & language
+    width: pct.implicitWidth + 2 * Theme.cellPad
 
     // anchor window for the tooltip popup (the bar)
     property var anchorWin
@@ -62,6 +63,7 @@ Item {
     }
 
     Text {
+        id: pct
         anchors.centerIn: parent
         renderType: Text.NativeRendering
         font.hintingPreference: Font.PreferFullHinting

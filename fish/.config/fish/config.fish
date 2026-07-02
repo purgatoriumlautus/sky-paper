@@ -33,6 +33,8 @@ end
 # -----------------
 set -gx EDITOR nvim
 set -gx LIBVIRT_DEFAULT_URI 'qemu:///system'
+set -gx DOCKER_BUILDKIT 1
+set -gx COMPOSE_DOCKER_CLI_BUILD 1
 
 # -----------------
 # PATH

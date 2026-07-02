@@ -56,7 +56,8 @@ PanelWindow {
         Rectangle {
             id: ccBox
             height: Theme.barHeight
-            width: Theme.cellSize
+            // hug the λ glyph + uniform side padding → even gaps in the cluster
+            width: ccIcon.implicitWidth + 2 * Theme.cellPad
             radius: 0
             color: cc.visible ? "#FFFFFF" : "transparent"
             anchors.verticalCenter: parent.verticalCenter
