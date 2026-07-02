@@ -8,7 +8,8 @@ import Quickshell.Io
 Item {
     id: root
     height: Theme.barHeight
-    width: Theme.cellSize   // fixed square — same as #workspaces & λ
+    // hug the label + uniform side padding → even gaps in the right cluster
+    width: label.implicitWidth + 2 * Theme.cellPad
 
     Rectangle {
         id: box
