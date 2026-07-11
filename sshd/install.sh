@@ -5,7 +5,7 @@
 # outside $HOME — not stow-able. Same reasoning as keyd/install.sh.
 #
 # What it does:
-#   - Drops 99-hardening.conf into /etc/ssh/sshd_config.d/.
+#   - Drops 00-hardening.conf into /etc/ssh/sshd_config.d/.
 #   - Verifies the main sshd_config includes that directory.
 #   - sshd -t syntax check, then reload (existing sessions survive).
 #
@@ -26,8 +26,11 @@ fi
 
 # 2. Install the drop-in
 install -d -m 755 /etc/ssh/sshd_config.d
-install -m 644 "$SRC/etc/ssh/sshd_config.d/99-hardening.conf" \
-    /etc/ssh/sshd_config.d/99-hardening.conf
+install -m 644 "$SRC/etc/ssh/sshd_config.d/00-hardening.conf" \
+    /etc/ssh/sshd_config.d/00-hardening.conf
+
+# Remove the old name of this drop-in, if a previous install left it behind
+rm -f /etc/ssh/sshd_config.d/99-hardening.conf
 
 # 3. Validate + reload
 if ! sshd -t; then
@@ -37,4 +40,4 @@ fi
 systemctl reload sshd
 
 echo "Installed. Verify effective config: sshd -T | grep -iE 'passwordauth|permitroot|x11forward'"
-echo "Rollback: rm /etc/ssh/sshd_config.d/99-hardening.conf && systemctl reload sshd"
+echo "Rollback: rm /etc/ssh/sshd_config.d/00-hardening.conf && systemctl reload sshd"

@@ -70,7 +70,7 @@ echo "  $SNIP_DIR/sky-paper.css     →  $PKG/sky-paper.css"
 echo "  $VAULT/.obsidian.vimrc      →  $PKG/vimrc"
 echo "  $VAULT/.obsidian/hotkeys.json →  $PKG/hotkeys.json"
 echo
-echo "Patched appearance.json: theme=obsidian (light), accentColor=#4A6F8E,"
+echo "Patched appearance.json: theme=moonstone (light), accentColor=#4A6F8E,"
 echo "  enabledCssSnippets += sky-paper"
 echo "Patched community-plugins.json: + obsidian-vimrc-support"
 echo
