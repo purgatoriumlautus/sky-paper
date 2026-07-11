@@ -6,8 +6,12 @@
 #     `ct state invalid drop`, not after.
 #   - `pkttype host` excludes broadcast/multicast, so mDNS/SSDP fall through
 #     to policy drop silently rather than getting reject'd (no reflection risk).
-#   - `forward policy drop` is correct for a non-router; Docker/libvirt
-#     re-add their own forward allows in separate chains.
+#   - `forward policy drop`: correct here because this laptop doesn't route
+#     and runs no containers/VMs. If Docker/libvirt ever land on this machine,
+#     their iptables-nft accept rules would NOT save them - verdicts across
+#     tables are ANDed, so a drop in this inet table ALSO drops their
+#     forwarded packets. Revisit the policy then (celestia runs
+#     `forward policy accept` for exactly this reason).
 #   - virbr0 allow is commented: uncomment when libvirt VMs need host
 #     services (dnsmasq DNS, etc.). Off by default = smaller attack surface.
 
