@@ -1,0 +1,4 @@
+# laniakea explicit packages (names only) — 2026-07-11
+# regenerate: pacman -Qqe > (this file, below the header)
+# drift check: diff <(grep -v '^#\|^$' packages.txt | sort) <(pacman -Qqe | sort)
+# NOT YET GENERATED — run the regenerate command on the laptop itself; this mirror cannot know the laptop's packages.
