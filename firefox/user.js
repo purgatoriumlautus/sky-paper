@@ -1,3 +1,5 @@
+// Retro chrome theme reference: https://github.com/matthewmx86/RetroThemesFirefox
+
 // Force window.open(...) calls with feature parameters into a new tab instead
 // of a popup window.
 //

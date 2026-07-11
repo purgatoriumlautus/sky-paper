@@ -1,115 +1,119 @@
-# celestia explicit packages — 2026-05-31
-7zip 26.01-1
-alsa-utils 1.2.15.2-2
-amd-ucode 20260519-1
-base 3-3
-base-devel 1-2
-bat 0.26.1-2
-btop 1.4.7-1
-cage 0.3.0-1
-chicago95-icon-theme-git 3.0.1.r114.g6b6ef76-1
-cliphist 1:0.7.0-2
-cmake 4.3.3-1
-cpio 2.15-3
-debugedit 5.3-1
-devtools 1:1.5.0-1
-dnscrypt-proxy 2.1.15-1
-dnsmasq 2.92.rel2-2
-docker 1:29.5.1-1
-efibootmgr 18-4
-eza 0.23.4-3
-fastfetch 2.63.1-1
-fd 10.4.2-2
-ffmpegthumbnailer 2.3.0-1
-firefox 151.0.2-1
-fish 4.7.1-1
-freerdp 2:3.26.0-1
-fzf 0.72.0-1
-git 2.54.0-1
-go 2:1.26.3-1
-greetd 0.10.3-2
-grim 1.5.0-2
-grub 2:2.14-1
-iptables 1:1.8.13-1
-jq 1.8.1-3
-keyd 2.6.0-5
-kitty 0.46.2-1
-libreoffice-fresh 26.2.3-3
-libvirt 1:12.3.0-1
-linux 7.0.10.arch1-1
-linux-firmware 20260519-1
-lsof 4.99.6-1
-mako 1.11.0-1
-man-db 2.13.1-1
-mpv 1:0.41.0-3
-nano 9.0-1
-ncdu 2.9.2-1
-neovim 0.12.2-1
-networkmanager 1.56.1-1
-niri 26.04-1
-nomacs 1:3.22.1-1
-noto-fonts 1:2026.05.01-1
-noto-fonts-cjk 20240730-1
-noto-fonts-emoji 1:2.051-1
-npm 11.14.1-1
-obs-studio 32.1.2-4
-obsidian 1.12.7-2
-openvpn 2.7.4-1
-otf-unifont 17.0.04-1
-pacman-contrib 1.13.1-1
-pavucontrol 1:6.2-1
-pipewire 1:1.6.6-1
-pipewire-alsa 1:1.6.6-1
-pipewire-jack 1:1.6.6-1
-pipewire-pulse 1:1.6.6-1
-playerctl 2.4.1-5
-plocate 1.1.24-1
-python-pip 26.1.1-1
-python-pyotp 2.9.0-4
-qemu-full 11.0.1-1
-qemu-guest-agent 11.0.1-1
-qt6-declarative 6.11.1-2
-quickshell 0.3.0-1
-remmina 1:1.4.43-2
-resvg 0.47.0-2
-satty 0.20.1-2
-slurp 1.5.0-2
-spice 0.16.0-2
-spice-gtk 0.42-5
-stow 2.4.1-1
-sudo 1.9.17.p2-2
-swaybg 1.2.2-1
-swayidle 1.9.0-1
-swtpm 0.10.1-2
-telegram-desktop 6.8.2-3
-terminus-font 4.49.1-8
-thunar 4.20.8-3
-tldr 3.4.4-1
-tmux 3.6_b-2
-tree 2.3.2-1
-tree-sitter-cli 0.26.9-1
-ttf-dejavu 2.37+18+g9b5d1b2f-8
-ttf-nerd-fonts-symbols 3.4.0-1
-ttf-nerd-fonts-symbols-mono 3.4.0-1
-ttf-terminus-nerd 3.4.0-2
-tumbler 4.20.1-1
-unzip 6.0-23
-virt-manager 5.1.0-3
-virt-viewer 11.0-4
-virtio-win 0.1.285.1-2
-whois 5.6.6-1
-wireplumber 0.5.14-1
-wl-clipboard 1:2.3.0-1
-wlsunset 0.4.0-1
-xcursor-chicago95-git 3.0.1.r114.g6b6ef76-1
-xdg-desktop-portal 1.20.4-1
-xdg-desktop-portal-wlr 0.8.2-1
-xorg-xauth 1.1.5-1
-xorg-xwayland 24.1.11-2
-xwayland-satellite 0.8.1-1
-yay 12.5.7-1
-yazi 26.5.6-3
-zathura 2026.05.20-1
-zathura-pdf-mupdf 2026.05.10-3
-zip 3.0-13
-zoxide 0.9.9-2
+# celestia explicit packages (names only) — 2026-07-11
+# regenerate: pacman -Qqe > (this file, below the header)
+# drift check: diff <(grep -v '^#\|^$' packages.txt | sort) <(pacman -Qqe | sort)
+
+7zip
+alsa-utils
+amd-ucode
+base
+base-devel
+bat
+btop
+cage
+chicago95-icon-theme-git
+cliphist
+cmake
+cpio
+debugedit
+devtools
+dnscrypt-proxy
+dnsmasq
+docker
+efibootmgr
+eza
+fastfetch
+fd
+ffmpegthumbnailer
+firefox
+fish
+freerdp
+fzf
+git
+go
+greetd
+grim
+grub
+iptables
+jq
+keyd
+kitty
+libreoffice-fresh
+libvirt
+linux
+linux-firmware
+lsof
+mako
+man-db
+mpv
+nano
+ncdu
+neovim
+networkmanager
+niri
+nomacs
+noto-fonts
+noto-fonts-cjk
+noto-fonts-emoji
+npm
+obs-studio
+obsidian
+openvpn
+otf-unifont
+pacman-contrib
+pavucontrol
+pipewire
+pipewire-alsa
+pipewire-jack
+pipewire-pulse
+playerctl
+plocate
+postgresql
+python-pip
+python-pyotp
+qemu-full
+qemu-guest-agent
+qt6-declarative
+quickshell
+remmina
+resvg
+satty
+slurp
+spice
+spice-gtk
+stow
+sudo
+swaybg
+swayidle
+swtpm
+tealdeer
+telegram-desktop
+terminus-font
+thunar
+tmux
+tree
+tree-sitter-cli
+ttf-dejavu
+ttf-nerd-fonts-symbols
+ttf-nerd-fonts-symbols-mono
+ttf-terminus-nerd
+tumbler
+unzip
+virt-manager
+virt-viewer
+virtio-win
+whois
+wireplumber
+wl-clipboard
+wlsunset
+xcursor-chicago95-git
+xdg-desktop-portal
+xdg-desktop-portal-wlr
+xorg-xauth
+xorg-xwayland
+xwayland-satellite
+yay
+yazi
+zathura
+zathura-pdf-mupdf
+zip
+zoxide
