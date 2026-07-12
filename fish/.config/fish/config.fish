@@ -71,35 +71,35 @@ set -g fish_key_bindings fish_vi_key_bindings
 set -g fish_escape_delay_ms 10
 
 # -----------------
-# Prompt — Sky Paper minimal
+# Prompt — Flexoki Dark minimal
 #   user@hostname /full/path (branch)
 #   λ
 # -----------------
 set -g __fish_git_prompt_showupstream none
-set -g __fish_git_prompt_color_branch 4A6F8E
-set -g __fish_git_prompt_color_branch_dirty 4A6F8E
+set -g __fish_git_prompt_color_branch 8B7EC8
+set -g __fish_git_prompt_color_branch_dirty 8B7EC8
 
 function fish_right_prompt
-    set_color 7A716A
+    set_color 878580
     date '+%H:%M'
     set_color normal
 end
 
 function fish_prompt
-    set_color 1F1812
+    set_color CECDC3
     echo -n $USER
-    set_color 7A716A
+    set_color 878580
     echo -n '@'
-    set_color 4A6F8E
+    set_color 8B7EC8
     echo -n $hostname
     set_color normal
     echo -n ' '
-    set_color 1F1812
+    set_color CECDC3
     echo -n (string replace -- $HOME '~' $PWD)
     printf '%s' (fish_git_prompt)
     set_color normal
     echo
-    set_color 4A6F8E
+    set_color 8B7EC8
     echo -n 'λ '
     set_color normal
 end

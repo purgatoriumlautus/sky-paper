@@ -52,14 +52,14 @@ PanelWindow {
         Language {}
 
         // λ control-center toggle. Same fixed box as a workspace/language
-        // cell: blue at rest, white box + dark glyph when selected (open).
+        // cell: purple at rest, accent box + dark glyph when selected (open).
         Rectangle {
             id: ccBox
             height: Theme.barHeight
             // hug the λ glyph + uniform side padding → even gaps in the cluster
             width: ccIcon.implicitWidth + 2 * Theme.cellPad
             radius: 0
-            color: cc.visible ? "#FFFFFF" : "transparent"
+            color: cc.visible ? Theme.accentSoft : "transparent"
             anchors.verticalCenter: parent.verticalCenter
 
             Text {
@@ -69,7 +69,7 @@ PanelWindow {
                 renderType: Text.NativeRendering
                 font.hintingPreference: Font.PreferFullHinting
                 text: "λ"
-                color: cc.visible ? Theme.fg : Theme.accentText   // blue at rest
+                color: cc.visible ? Theme.bg : Theme.accentText   // purple at rest
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontSize
             }

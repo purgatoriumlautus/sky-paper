@@ -16,6 +16,11 @@ Item {
     readonly property var rows: [{ control: true }].concat(root.devs)
     readonly property int visRows: Math.min(rows.length, 6)
 
+    // purple focus fill only while collapsed — expanded, the list's own
+    // selection bar takes over (purple backdrop would swallow it), and all
+    // text on the fill flips to Theme.bg (dark-on-accent rule).
+    readonly property bool hl: cc && cc.focusedRow === root.rowIndex && !expanded
+
     width: cc ? cc.width : 0
     height: expanded ? 30 + visRows * 26 + 8 : 32
     // animate the expand/collapse so the list slides instead of popping;
@@ -25,7 +30,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: (cc && cc.focusedRow === root.rowIndex) ? Theme.accentSoft : "transparent"
+        color: root.hl ? Theme.accentSoft : "transparent"
     }
 
     CcText {
@@ -33,6 +38,7 @@ Item {
         anchors.left: parent.left; anchors.leftMargin: 12
         y: root.expanded ? 8 : Math.round((parent.height - height) / 2)
         text: "BT"
+        color: root.hl ? Theme.bg : Theme.fg
     }
     CcText {
         id: btStatus
@@ -45,6 +51,7 @@ Item {
             : (Radio.airplaneOn ? "—"
                : (BtCtl.activeDevice ? BtCtl.activeDevice : (BtCtl.powered ? "on" : "off")))
         color: root.expanded ? Theme.muted
+             : root.hl       ? Theme.bg
              : ((!Radio.airplaneOn && BtCtl.activeDevice) ? Theme.accentText : Theme.muted)
         elide: Text.ElideRight
         width: 150
@@ -121,7 +128,7 @@ Item {
                     anchors.fill: parent
                     color: BtCtl.powered
                         ? (devItem.sel ? Theme.bg : Theme.accentText)
-                        : (devItem.sel ? Theme.accentSoft : Theme.bgAlt)
+                        : (devItem.sel ? Theme.bg : Theme.bgAlt)
                 }
                 Rectangle {
                     width: 8; height: 8
@@ -129,7 +136,7 @@ Item {
                     x: BtCtl.powered ? parent.width - width - 2 : 2
                     color: BtCtl.powered
                         ? (devItem.sel ? Theme.accentText : Theme.bg)
-                        : (devItem.sel ? Theme.bg : Theme.muted)
+                        : Theme.muted
                     Behavior on x { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
                 }
             }
@@ -146,7 +153,7 @@ Item {
                         ? (devItem.sel ? Theme.bg : Theme.accentText)
                         : "transparent"
                     border.width: devItem.modelData.connected ? 0 : 1
-                    border.color: devItem.sel ? Theme.accentSoft : Theme.borderDim
+                    border.color: devItem.sel ? Theme.bg : Theme.borderDim
                 }
             }
             CcText {

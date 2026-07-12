@@ -67,7 +67,7 @@ FloatingWindow {
         anchors.fill: parent
         focus: true
 
-        // Wallpaper. Installed path; dotfiles preview symlinks it to clouds.png.
+        // Wallpaper. Installed path; install.sh copies mntvagaflexoki.png here.
         Image {
             anchors.fill: parent
             source: "file:///etc/quickshell-greeter/wallpaper.png"
@@ -126,7 +126,7 @@ FloatingWindow {
         // Battery readout, top-right. greeter user can read sysfs (BAT0/uevent
         // is world-readable — same source the main shell's Battery.qml uses, no
         // upower dep). Declared before the blackout so it hides under it when
-        // asleep. Plain "90%" cream text; "+" prefix while charging (Terminus-
+        // asleep. Plain "90%" fg text; "+" prefix while charging (Terminus-
         // safe glyphs only — no Nerd battery icon).
         Row {
             id: battery

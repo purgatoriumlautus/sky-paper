@@ -1,8 +1,9 @@
 # laniakea
 
-**Sky Paper** — a warm, painterly light rice: [niri](https://github.com/YaLTeR/niri)
-+ Quickshell on Arch, on a ThinkPad X280. Cream base, two sky accents, bitmap
-fonts, no dark mode.
+**Flexoki Dark** — a warm ink-and-paper dark rice: [niri](https://github.com/YaLTeR/niri)
++ Quickshell on Arch, on a ThinkPad X280. Warm near-black base
+([Flexoki](https://stephango.com/flexoki) adopted as-is), purple UI accent,
+bitmap fonts, no light mode — full color breakdown in [PALETTE.md](PALETTE.md).
 
 ![home](docs/screenshots/home.png)
 

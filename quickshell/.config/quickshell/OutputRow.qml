@@ -14,6 +14,11 @@ Item {
     readonly property var sinks: AudioCtl.sinks || []
     readonly property int visRows: Math.min(sinks.length, 6)
 
+    // purple focus fill only while collapsed — expanded, the list's own
+    // selection bar takes over (purple backdrop would swallow it), and all
+    // text on the fill flips to Theme.bg (dark-on-accent rule).
+    readonly property bool hl: cc && cc.focusedRow === root.rowIndex && !expanded
+
     width: cc ? cc.width : 0
     height: expanded ? 30 + visRows * 26 + 8 : 32
     // animate the expand/collapse so the list slides instead of popping;
@@ -23,7 +28,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: (cc && cc.focusedRow === root.rowIndex) ? Theme.accentSoft : "transparent"
+        color: root.hl ? Theme.accentSoft : "transparent"
     }
 
     CcText {
@@ -31,6 +36,7 @@ Item {
         anchors.left: parent.left; anchors.leftMargin: 12
         y: root.expanded ? 8 : Math.round((parent.height - height) / 2)
         text: "Output"
+        color: root.hl ? Theme.bg : Theme.fg
     }
     CcText {
         anchors.right: parent.right; anchors.rightMargin: 12
@@ -39,6 +45,7 @@ Item {
             ? (root.sinks.length ? root.sinks.length + " outputs" : "none")
             : AudioCtl.label(AudioCtl.currentSink)
         color: root.expanded ? Theme.muted
+             : root.hl       ? Theme.bg
              : (AudioCtl.currentSink ? Theme.accentText : Theme.muted)
         elide: Text.ElideRight
         width: 150
@@ -83,7 +90,7 @@ Item {
                         ? (sinkItem.sel ? Theme.bg : Theme.accentText)
                         : "transparent"
                     border.width: sinkItem.isDefault ? 0 : 1
-                    border.color: sinkItem.sel ? Theme.accentSoft : Theme.borderDim
+                    border.color: sinkItem.sel ? Theme.bg : Theme.borderDim
                 }
             }
             CcText {

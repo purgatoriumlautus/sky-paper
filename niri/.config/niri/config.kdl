@@ -178,7 +178,7 @@ layout {
         // - CSS-like notation: "rgb(255, 127, 0)", rgba(), hsl() and a few others.
 
         // Color of the ring on the active monitor.
-        active-color "#A8C0D5"
+        active-color "#8B7EC8"
 
         // Color of the ring on inactive monitors.
         //
@@ -209,11 +209,11 @@ layout {
         // off
 
         width 1
-        active-color "#A8C0D5"
+        active-color "#8B7EC8"
         inactive-color "transparent"
 
         // Color of the border around windows that request your attention.
-        urgent-color "#1F1812"
+        urgent-color "#D14D41"
 
         // Gradients can use a few different interpolation color spaces.
         // For example, this is a pastel rainbow gradient via in="oklch longer hue".
@@ -256,11 +256,11 @@ layout {
         // Offset moves the shadow relative to the window.
         offset x=0 y=6
 
-        // Sky Paper: warm muted shadow at ~25% alpha
-        color "#1F181240"
+        // Flexoki Dark: pure black shadow at ~40% alpha
+        color "#00000066"
     }
 
-    // Tab indicator (Mod+W tabbed columns) — Sky Paper
+    // Tab indicator (Mod+W tabbed columns) — Flexoki Dark
     tab-indicator {
         place-within-column
         position "top"
@@ -269,18 +269,18 @@ layout {
         gaps-between-tabs 4
         corner-radius 0
         length total-proportion=1.0
-        active-color "#A8C0D5"
-        inactive-color "#C5BFB5"
-        urgent-color "#1F1812"
+        active-color "#8B7EC8"
+        inactive-color "#403E3C"
+        urgent-color "#D14D41"
     }
 
-    // Insert hint during interactive window move — Sky Paper soft sky, 50% alpha
+    // Insert hint during interactive window move — Flexoki Dark accent, 50% alpha
     insert-hint {
-        color "#A8C0D580"
+        color "#8B7EC880"
     }
 
     // Fallback workspace background if swaybg is not running
-    background-color "#F0EBE0"
+    background-color "#100F0F"
 
     // Struts shrink the area occupied by windows, similarly to layer-shell panels.
     // You can think of them as a kind of outer gaps. They are set in logical pixels.
@@ -302,7 +302,7 @@ layout {
 
 // quickshell (qs) provides the bar + control-center + lock + launcher.
 spawn-at-startup "qs"
-spawn-at-startup "swaybg" "-i" "/home/aru/Pictures/wallpapers/clouds.png" "-m" "fill"
+spawn-at-startup "swaybg" "-i" "/home/aru/Pictures/wallpapers/mntvagaflexoki.png" "-m" "fill"
 spawn-at-startup "swayidle" "-w"
 spawn-at-startup "mako"
 spawn-at-startup "xwayland-satellite" ":0"
@@ -408,21 +408,21 @@ window-rule {
     // block-out-from "screencast"
 }
 
-// Sky Paper — soft rounded corners for all windows (Ghibli vibe).
+// Flexoki Dark — square corners for all windows.
 window-rule {
     geometry-corner-radius 0
     clip-to-geometry true
 }
 
-// Overview (Mod+O) — Sky Paper backdrop + soft workspace shadow.
+// Overview (Mod+O) — Flexoki Dark backdrop + soft workspace shadow.
 overview {
-    backdrop-color "#E4DED0"
+    backdrop-color "#1C1B1A"
 
     workspace-shadow {
         softness 30
         spread 4
         offset x=0 y=8
-        color "#1F181233"
+        color "#00000059"
     }
 }
 

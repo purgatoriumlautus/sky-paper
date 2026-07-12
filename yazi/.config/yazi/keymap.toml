@@ -1,6 +1,6 @@
 #:schema https://yazi-rs.github.io/schemas/keymap.json
 
-# Sky Paper — keymap overrides only. `prepend_keymap` wins over stock binds.
+# Flexoki Dark — keymap overrides only. `prepend_keymap` wins over stock binds.
 # Stock keymap otherwise inherited verbatim — see CHEATSHEET.txt.
 
 [mgr]

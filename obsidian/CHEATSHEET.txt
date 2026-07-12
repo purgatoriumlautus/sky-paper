@@ -57,18 +57,18 @@ NOT MIRRORED  — no Obsidian analog, runs unbound:
   <leader>t / q            terminal toggle
 
 -------------------------------------------------------------------------
-CSS SNIPPET (Sky Paper)
+THEME (Flexoki)
 -------------------------------------------------------------------------
-  sky-paper.css            ~/Documents/Obsidian/.../snippets/sky-paper.css
-  toggle in Settings → Appearance → CSS snippets
-  Forced light: appearance.json sets theme="obsidian"; dark disabled.
-  Built on Obsidian's DEFAULT theme (cssTheme=""). Minimal was tried
-  first but hides the inactive-tab title element entirely without the
-  Style Settings plugin to toggle it — couldn't paint what wasn't there.
-  Accent overridden to #4A6F8E (deep sky).
-  --file-line-width: 900px.
-  Code-block colors mirror nvim's Sky Paper roles in both reading-mode
-  (Prism) and live-preview (CodeMirror 6).
+  flexoki/{theme.css,manifest.json}
+                           → ~/Documents/Obsidian/.../.obsidian/themes/Flexoki/
+  Official theme, vendored from github.com/kepano/flexoki-obsidian
+  (Flexoki's author Steph Ango is Obsidian's CEO). Replaces the old
+  custom Sky Paper snippet. It only remaps the default theme's color
+  variables — light and dark both painted; we run dark
+  (appearance.json theme="obsidian", the DARK base).
+  Accent overridden to #8B7EC8 (Flexoki purple-400, see PALETTE.md).
+  If the theme isn't active after install, select it once:
+  Settings → Appearance → Themes → Flexoki.
 
 FONT
   Already set in app.json — Terminess Nerd Font for interface/text/mono.
@@ -80,10 +80,12 @@ DEPLOY
 -------------------------------------------------------------------------
   ./obsidian/install.sh
     - pacman: obsidian jq
-    - links sky-paper.css → vault snippets dir
+    - links flexoki/theme.css + manifest.json → vault themes/Flexoki/
+    - removes the old sky-paper.css snippet link if present
     - links vimrc → vault root .obsidian.vimrc
     - links hotkeys.json → vault .obsidian/hotkeys.json
-    - patches appearance.json (theme=obsidian, accent #4A6F8E, snippet on)
+    - patches appearance.json (theme=obsidian dark, cssTheme=Flexoki,
+      accent #8B7EC8, sky-paper snippet off)
     - patches community-plugins.json (adds vimrc-support entry)
 
   One manual step after running:
@@ -93,7 +95,8 @@ DEPLOY
   Obsidian must NOT be running when install.sh executes — it overwrites
   appearance.json / community-plugins.json on shutdown.
 
-  Revert: remove the three symlinks, edit the JSONs by hand.
+  Revert: remove the four symlinks (theme.css, manifest.json, vimrc,
+  hotkeys.json), edit the JSONs by hand.
 
   ⚠  Editing hotkeys via Obsidian's UI rewrites hotkeys.json. Since the
   file is symlinked into the dotfiles repo, those edits land in the repo

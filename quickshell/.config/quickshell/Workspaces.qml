@@ -1,7 +1,7 @@
 import QtQuick
 import Quickshell
 
-// 1:1 with waybar #workspaces. Active = white box full bar height.
+// 1:1 with waybar #workspaces. Active = accent box full bar height.
 // Active state comes from NiriIpc.activeWs (reactive int — no delegate
 // rebuild on switch).
 Row {
@@ -17,8 +17,8 @@ Row {
             height: Theme.barHeight
             width: Theme.cellSize   // fixed square — same as language & λ
             radius: 0
-            color: modelData.urgent ? "#E61F1812"
-                 : isActive          ? "#FFFFFF"
+            color: modelData.urgent ? Qt.alpha(Theme.warn, 0.9)
+                 : isActive          ? Theme.accentSoft
                  : "transparent"
 
             Text {
@@ -31,7 +31,7 @@ Row {
                 font.pixelSize: Theme.fontSize
                 text: modelData.idx
                 color: modelData.urgent ? Theme.bg
-                     : parent.isActive  ? Theme.fg
+                     : parent.isActive  ? Theme.bg
                      : modelData.empty   ? Theme.borderDim
                      : Theme.muted
             }

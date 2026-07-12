@@ -23,7 +23,7 @@ Verified: 2026-07-11 (from repo files; live laptop state not re-checked — this
 - No daemon a script can replace.
 - CLI-first, keyboard-driven (hjkl everywhere); GUI only where a terminal genuinely can't do it.
 - One resident Qt process (quickshell) is the whole desktop chrome: bar, control center, locker, launcher; greeter is the same stack.
-- Sky Paper invariants: squared corners, no blur, Terminess Nerd Font Mono (Unifont for bitmap-crisp bar/CJK/italic), all colors from `PALETTE.md` — never invent hex values.
+- Flexoki Dark invariants: squared corners (never rounded), no blur, Terminess Nerd Font Mono (Unifont for bitmap-crisp bar/CJK/italic); GTK widgets stock Adwaita dark + Flexoki named-color overrides. Palette source of truth: `PALETTE.md` — never invent hex values.
 - No decorative Unicode glyphs in QML — bitmap fonts render them unevenly; pixel primitives (Rectangles) instead.
 - Do not iterate palette or fonts without explicit direction from Ars.
 - Root-owned `/etc` configs are never symlinked: module `install.sh` (backup, validate, reload) is the source of truth.
@@ -33,7 +33,7 @@ Verified: 2026-07-11 (from repo files; live laptop state not re-checked — this
 
 ## Stack map
 
-Verified: 2026-07-11 (from repo files; live laptop state not re-checked — this copy is edited on the PC)
+Verified: 2026-07-12 (from repo files; live laptop state not re-checked — this copy is edited on the PC)
 
 | Module | What | Deploy | Lands |
 |---|---|---|---|
@@ -43,24 +43,26 @@ Verified: 2026-07-11 (from repo files; live laptop state not re-checked — this
 | firefox/ | `user.js` hardening/theme prefs | install.sh | live `*.default-release` profile (random dir name — not stow-able) |
 | fish/ | shell config (login shell) | stow | `~/.config/fish` |
 | fontconfig/ | Terminus alias; Terminess AA-off on native px sizes only | stow | `~/.config/fontconfig` |
-| gtk/ | GTK3 theme/settings | stow + apply.sh, icons-install.sh | `~/.config/gtk-*` |
+| gtk/ | GTK3/4 theme/settings | stow + apply.sh, icons-install.sh | `~/.config/gtk-*` |
 | hid_apple/ | external kbd F1-F12 fix (fnmode=2) | install.sh | `/etc/modprobe.d` |
 | keyd/ | CapsLock→F19 = nvim leader; Shift+Caps = real CapsLock | install.sh | `/etc/keyd` |
-| kitty/ | terminal (Terminess 12pt, Sky Paper) | stow | `~/.config/kitty` |
+| kitty/ | terminal (Terminess 12pt) | stow | `~/.config/kitty` |
 | mako/ | notifications (Quiet/DND wired to CC) | stow | `~/.config/mako` |
+| mpv/ | player OSD in Flexoki | stow | `~/.config/mpv` |
 | nftables/ | firewall ruleset (see Security) | install.sh | `/etc/nftables.conf` + `/etc/nftables.d/` |
 | niri/ | Wayland compositor config | stow | `~/.config/niri` |
-| nvim/ | editor (Sky Paper lualine, CapsLock leader) | stow | `~/.config/nvim` |
-| obsidian/ | Sky Paper snippet, vimrc, hotkeys | install.sh | per-vault `.obsidian/` (not XDG) |
+| nvim/ | editor (flexoki_dark lualine, CapsLock leader) | stow | `~/.config/nvim` |
+| obsidian/ | official Flexoki theme (vendored), vimrc, hotkeys | install.sh | per-vault `.obsidian/` (not XDG) |
 | quickshell/ | bar + control center + locker + launcher + polkit rules/set-epp | stow (dir symlink; rules/set-epp manual sudo install) | `~/.config/quickshell`; `/etc/polkit-1/rules.d`, `/usr/local/bin` |
 | quickshell-greeter/ | greetd greeter (mirrors lock state-machine) | install.sh | `/etc/quickshell-greeter` + `/etc/greetd/config.toml` |
 | sshd/ | hardening drop-in (see Security) | install.sh | `/etc/ssh/sshd_config.d/00-hardening.conf` |
 | swayidle/ | idle pipeline: 5m dim → 10m lock+screen-off → 30m suspend | stow | `~/.config/swayidle` |
 | sysctl/ | kernel hardening pins (see Security) | install.sh | `/etc/sysctl.d/99-hardening.conf` |
 | tlp/ | battery charge thresholds 85/90 drop-in | install.sh | `/etc/tlp.d/00-aru.conf` |
-| tmux/ | multiplexer (Sky Paper statusline, TPM) | stow | `~/.config/tmux` |
-| wallpapers/ | `clouds.png` (Sky Paper source image) | manual copy | `~/Pictures/wallpapers/` |
-| yazi/ | file manager (Sky Paper theme, Esc→leave) | stow + install.sh (preview deps) | `~/.config/yazi` |
+| tmux/ | multiplexer (Flexoki statusline via 256-idx, TPM) | stow | `~/.config/tmux` |
+| wallpapers/ | Flexoki duotone sources + recipe (`mntvagaflexoki.png` current) | manual copy | `~/Pictures/wallpapers/` |
+| xdg/ | mimeapps.list default apps | stow | `~/.config/mimeapps.list` |
+| yazi/ | file manager (Flexoki theme, Esc→leave) | stow + install.sh (preview deps) | `~/.config/yazi` |
 | zathura/ | PDF/ePub/CBZ viewer (mupdf backend) | stow + install.sh (pkgs, xdg-mime) | `~/.config/zathura` |
 
 ### Packages

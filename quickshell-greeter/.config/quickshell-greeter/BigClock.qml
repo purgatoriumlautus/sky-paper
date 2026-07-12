@@ -16,7 +16,7 @@ Column {
     Text {
         anchors.horizontalCenter: parent.horizontalCenter
         text: Qt.formatDateTime(sys.date, "HH:mm")
-        color: Theme.bg
+        color: Theme.fgMax
         font.family: Theme.fontFamily
         font.pixelSize: 160
         font.hintingPreference: Font.PreferFullHinting

@@ -1,7 +1,7 @@
 #:schema https://yazi-rs.github.io/schemas/yazi.json
 
-# Sky Paper — behavior overrides only; everything else inherits yazi defaults.
-# Theming lives in theme.toml; code-preview syntax in sky-paper.tmTheme.
+# Flexoki Dark — behavior overrides only; everything else inherits yazi defaults.
+# Theming lives in theme.toml; code-preview syntax in flexoki-dark.tmTheme.
 
 [mgr]
 # Show file size as the right-hand line annotation (default is "none").

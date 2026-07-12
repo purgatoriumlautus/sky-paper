@@ -1,129 +1,130 @@
 #:schema https://yazi-rs.github.io/schemas/theme.json
-# Sky Paper — overrides theme-light.toml preset. Palette: PALETTE.md.
-# bg #F0EBE0 / bg-alt #E4DED0 / border #C5BFB5 / muted #7A716A / fg #1F1812
-# accent-soft #A8C0D5 (sky fill) / accent-text #4A6F8E (deep sky) / bright #5C84A4
-# No red/green in the palette: state colors use sky/dark/muted only.
+# Flexoki Dark — overrides theme-dark.toml preset. Palette: PALETTE.md.
+# bg #100F0F / bg-alt #1C1B1A / border #403E3C / faint #575653 / muted #878580 / fg #CECDC3
+# accent #8B7EC8 (purple: fill + text) / accent-bright #A699D0 / dirs #4385BE
+# Text on the purple accent is always dark #100F0F (light fg on it slips to 2.2:1).
+# Full accent set exists now: red #D14D41 = error, green #879A39 = copied/ok.
 
 [mgr]
-cwd = { fg = "#4A6F8E" }
+cwd = { fg = "#4385BE" }
 
 # Find
-find_keyword  = { fg = "#4A6F8E", bold = true, italic = true, underline = true }
-find_position = { fg = "#7A716A", bg = "reset", bold = true, italic = true }
+find_keyword  = { fg = "#8B7EC8", bold = true, italic = true, underline = true }
+find_position = { fg = "#878580", bg = "reset", bold = true, italic = true }
 
 # Symlink
-symlink_target = { fg = "#7A716A", italic = true }
+symlink_target = { fg = "#878580", italic = true }
 
 # Marker (thin left bars — fg=bg makes a solid block)
-marker_copied   = { fg = "#4A6F8E", bg = "#4A6F8E" }
-marker_cut      = { fg = "#1F1812", bg = "#1F1812" }
-marker_marked   = { fg = "#5C84A4", bg = "#5C84A4" }
-marker_selected = { fg = "#A8C0D5", bg = "#A8C0D5" }
+marker_copied   = { fg = "#879A39", bg = "#879A39" }
+marker_cut      = { fg = "#CECDC3", bg = "#CECDC3" }
+marker_marked   = { fg = "#A699D0", bg = "#A699D0" }
+marker_selected = { fg = "#8B7EC8", bg = "#8B7EC8" }
 
 # Count badges
-count_copied   = { fg = "#F0EBE0", bg = "#4A6F8E" }
-count_cut      = { fg = "#F0EBE0", bg = "#1F1812" }
-count_selected = { fg = "#1F1812", bg = "#A8C0D5" }
+count_copied   = { fg = "#100F0F", bg = "#879A39" }
+count_cut      = { fg = "#100F0F", bg = "#CECDC3" }
+count_selected = { fg = "#100F0F", bg = "#8B7EC8" }
 
 # Border
-border_style = { fg = "#C5BFB5" }
+border_style = { fg = "#403E3C" }
 
 # Code preview syntax (Task 3)
-syntect_theme = "~/.config/yazi/sky-paper.tmTheme"
+syntect_theme = "~/.config/yazi/flexoki-dark.tmTheme"
 
 [tabs]
-active   = { fg = "#1F1812", bg = "#A8C0D5", bold = true }
-inactive = { fg = "#7A716A", bg = "#E4DED0" }
+active   = { fg = "#100F0F", bg = "#8B7EC8", bold = true }
+inactive = { fg = "#878580", bg = "#1C1B1A" }
 
 [mode]
-normal_main = { fg = "#1F1812", bg = "#A8C0D5", bold = true }
-normal_alt  = { fg = "#4A6F8E", bg = "#E4DED0" }
-select_main = { fg = "#F0EBE0", bg = "#4A6F8E", bold = true }
-select_alt  = { fg = "#4A6F8E", bg = "#E4DED0" }
-unset_main  = { fg = "#F0EBE0", bg = "#7A716A", bold = true }
-unset_alt   = { fg = "#7A716A", bg = "#E4DED0" }
+normal_main = { fg = "#100F0F", bg = "#8B7EC8", bold = true }
+normal_alt  = { fg = "#8B7EC8", bg = "#1C1B1A" }
+select_main = { fg = "#100F0F", bg = "#8B7EC8", bold = true }
+select_alt  = { fg = "#8B7EC8", bg = "#1C1B1A" }
+unset_main  = { fg = "#100F0F", bg = "#878580", bold = true }
+unset_alt   = { fg = "#878580", bg = "#1C1B1A" }
 
 [status]
-# Permissions (no red/green/yellow — sky + muted + dark)
-perm_sep   = { fg = "#7A716A" }
-perm_type  = { fg = "#4A6F8E" }
-perm_read  = { fg = "#7A716A" }
-perm_write = { fg = "#1F1812" }
-perm_exec  = { fg = "#4A6F8E" }
+# Permissions (kept monochrome: purple + muted + fg)
+perm_sep   = { fg = "#878580" }
+perm_type  = { fg = "#8B7EC8" }
+perm_read  = { fg = "#878580" }
+perm_write = { fg = "#CECDC3" }
+perm_exec  = { fg = "#8B7EC8" }
 # Progress
-progress_label  = { fg = "#1F1812", bold = true }
-progress_normal = { fg = "#A8C0D5", bg = "#E4DED0" }
-progress_error  = { fg = "#1F1812", bg = "#C5BFB5" }
+progress_label  = { fg = "#CECDC3", bold = true }
+progress_normal = { fg = "#8B7EC8", bg = "#1C1B1A" }
+progress_error  = { fg = "#D14D41", bg = "#1C1B1A" }
 
 [which]
-mask            = { bg = "#E4DED0" }
-cand            = { fg = "#4A6F8E" }
-rest            = { fg = "#7A716A" }
-desc            = { fg = "#1F1812" }
-separator_style = { fg = "#C5BFB5" }
+mask            = { bg = "#1C1B1A" }
+cand            = { fg = "#8B7EC8" }
+rest            = { fg = "#878580" }
+desc            = { fg = "#CECDC3" }
+separator_style = { fg = "#403E3C" }
 
 [confirm]
-border  = { fg = "#C5BFB5" }
-title   = { fg = "#4A6F8E" }
-btn_yes = { fg = "#1F1812", bg = "#A8C0D5", bold = true }
-btn_no  = { fg = "#7A716A" }
+border  = { fg = "#403E3C" }
+title   = { fg = "#8B7EC8" }
+btn_yes = { fg = "#100F0F", bg = "#8B7EC8", bold = true }
+btn_no  = { fg = "#878580" }
 
 [spot]
-border   = { fg = "#C5BFB5" }
-title    = { fg = "#4A6F8E" }
-tbl_col  = { fg = "#4A6F8E" }
-tbl_cell = { fg = "#1F1812", bg = "#A8C0D5" }
+border   = { fg = "#403E3C" }
+title    = { fg = "#8B7EC8" }
+tbl_col  = { fg = "#8B7EC8" }
+tbl_cell = { fg = "#100F0F", bg = "#8B7EC8" }
 
 [notify]
-title_info  = { fg = "#4A6F8E" }
-title_warn  = { fg = "#7A716A" }
-title_error = { fg = "#1F1812" }
+title_info  = { fg = "#8B7EC8" }
+title_warn  = { fg = "#D0A215" }
+title_error = { fg = "#D14D41" }
 
 [pick]
-border   = { fg = "#C5BFB5" }
-active   = { fg = "#4A6F8E", bold = true }
-inactive = { fg = "#7A716A" }
+border   = { fg = "#403E3C" }
+active   = { fg = "#8B7EC8", bold = true }
+inactive = { fg = "#878580" }
 
 [input]
-border   = { fg = "#A8C0D5" }
-value    = { fg = "#1F1812" }
-selected = { bg = "#C5BFB5" }
+border   = { fg = "#8B7EC8" }
+value    = { fg = "#CECDC3" }
+selected = { fg = "#100F0F", bg = "#8B7EC8" }
 
 [cmp]
-border   = { fg = "#C5BFB5" }
-active   = { fg = "#1F1812", bg = "#A8C0D5" }
-inactive = { fg = "#7A716A" }
+border   = { fg = "#403E3C" }
+active   = { fg = "#100F0F", bg = "#8B7EC8" }
+inactive = { fg = "#878580" }
 
 [tasks]
-border  = { fg = "#C5BFB5" }
-hovered = { fg = "#4A6F8E", bold = true }
+border  = { fg = "#403E3C" }
+hovered = { fg = "#8B7EC8", bold = true }
 
 [help]
-on      = { fg = "#4A6F8E" }
-run     = { fg = "#1F1812" }
-hovered = { fg = "#1F1812", bg = "#A8C0D5", bold = true }
-footer  = { fg = "#7A716A", bg = "#E4DED0" }
+on      = { fg = "#8B7EC8" }
+run     = { fg = "#CECDC3" }
+hovered = { fg = "#100F0F", bg = "#8B7EC8", bold = true }
+footer  = { fg = "#878580", bg = "#1C1B1A" }
 
 [filetype]
 rules = [
 	# Image
-	{ mime = "image/*", fg = "#7A716A" },
+	{ mime = "image/*", fg = "#878580" },
 	# Media
-	{ mime = "{audio,video}/*", fg = "#7A716A" },
+	{ mime = "{audio,video}/*", fg = "#878580" },
 	# Archive
-	{ mime = "application/{zip,rar,7z*,tar,gzip,xz,zstd,bzip*,lzma,compress,archive,cpio,arj,xar,ms-cab*}", fg = "#7A716A" },
+	{ mime = "application/{zip,rar,7z*,tar,gzip,xz,zstd,bzip*,lzma,compress,archive,cpio,arj,xar,ms-cab*}", fg = "#878580" },
 	# Document
-	{ mime = "application/{pdf,doc,rtf}", fg = "#4A6F8E" },
+	{ mime = "application/{pdf,doc,rtf}", fg = "#8B7EC8" },
 	# Virtual file system
-	{ mime = "vfs/{absent,stale}", fg = "#C5BFB5" },
-	# Special file (no red in palette — orphan uses bold dark fg)
-	{ url = "*", is = "orphan", fg = "#1F1812", bold = true },
-	{ url = "*", is = "exec",   fg = "#1F1812", bold = true },
+	{ mime = "vfs/{absent,stale}", fg = "#575653" },
+	# Special file (orphan = broken link, real red now; exec stays bold fg)
+	{ url = "*", is = "orphan", fg = "#D14D41", bold = true },
+	{ url = "*", is = "exec",   fg = "#CECDC3", bold = true },
 	# Dummy file
-	{ url = "*", is = "dummy",  fg = "#C5BFB5" },
-	{ url = "*/", is = "dummy", fg = "#C5BFB5" },
-	# Fallback: directories deep sky, files inherit global fg
-	{ url = "*/", fg = "#4A6F8E" },
+	{ url = "*", is = "dummy",  fg = "#575653" },
+	{ url = "*/", is = "dummy", fg = "#575653" },
+	# Fallback: directories blue, files inherit global fg
+	{ url = "*/", fg = "#4385BE" },
 ]
 
 # Icons — upstream glyph table, all fg stripped so each glyph

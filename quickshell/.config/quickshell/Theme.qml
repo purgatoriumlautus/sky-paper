@@ -3,25 +3,30 @@ pragma Singleton
 import QtQuick
 import Quickshell
 
-// Sky Paper — single source of truth for the whole shell.
+// Flexoki Dark — single source of truth for the whole shell.
 // Edit here, everything re-themes. Mirrors ~/dotfiles/PALETTE.md.
+// Purple pulls both accent roles (fill AND readable text, 5.4:1), so
+// accentSoft/accentText collapse to the same value. Text ON the purple
+// accent is always dark (Theme.bg) — light fg on it drops to 2.2:1.
 Singleton {
-    readonly property color bg:         "#F0EBE0"
-    readonly property color bgAlt:      "#E4DED0"
-    readonly property color borderDim:  "#C5BFB5"
-    readonly property color muted:      "#7A716A"
-    readonly property color fg:         "#1F1812"
-    readonly property color accentSoft: "#A8C0D5"
-    readonly property color accentText: "#4A6F8E"
-    readonly property color warn:       "#9C5450"
+    readonly property color bg:         "#100F0F"
+    readonly property color bgAlt:      "#1C1B1A"
+    readonly property color borderDim:  "#403E3C"
+    readonly property color muted:      "#878580"
+    readonly property color fg:         "#CECDC3"
+    readonly property color fgMax:      "#FFFCF0"   // paper — rare peaks (big clocks)
+    readonly property color accentSoft: "#8B7EC8"
+    readonly property color accentText: "#8B7EC8"
+    readonly property color warn:       "#D14D41"
 
-    // bar background = bgAlt @ 0.75 (ARGB BF ≈ 0.749). Same as old waybar.
-    readonly property color barBg:      "#BFE4DED0"
+    // bar background = bgAlt @ 0.75 (ARGB BF ≈ 0.749). Works over the dark
+    // wallpaper; a light wallpaper would gray it out — bump toward E6 then.
+    readonly property color barBg:      "#BF1C1B1A"
 
-    // Lock-screen surfaces. boxFill = cream @ ~0.7 over dim wallpaper.
+    // Lock-screen surfaces. boxFill = bgAlt @ ~0.85 over dim wallpaper.
     // dim = black @ ~0.50. Both mirror the greeter palette.
-    readonly property color boxFill:    "#B3F0EBE0"
-    readonly property color boxBorder:  "#80C5BFB5"
+    readonly property color boxFill:    "#D91C1B1A"
+    readonly property color boxBorder:  "#80403E3C"
     readonly property color dim:        "#80000000"
 
     // pixel size. waybar's Pango 12pt ≈ 16px @96dpi; Qt pt renders smaller,

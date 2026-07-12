@@ -3,7 +3,7 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Services.Greetd
 
-// Kitty-cream translucent rectangle with two bare inputs.
+// Dark translucent rectangle (kitty-bg tone) with two bare inputs.
 //
 // greetd auth is a PAM *conversation*, not a per-keypress thing. We buffer the
 // password and drive the conversation from the authMessage signal:
@@ -123,7 +123,7 @@ Rectangle {
         Field {
             id: userInput
             width: parent.width
-            textColor: Theme.accentText   // login = blue
+            textColor: Theme.accentText   // login = accent purple
             // Enter on username just advances to password (unless it's already
             // filled, then submit straight away).
             onAccepted: {
@@ -136,7 +136,7 @@ Rectangle {
             id: passInput
             width: parent.width
             password: true
-            textColor: Theme.fg            // password = black
+            textColor: Theme.fg            // password = fg
             onAccepted: box.submit()
         }
 

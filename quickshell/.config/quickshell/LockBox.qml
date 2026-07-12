@@ -1,7 +1,7 @@
 import QtQuick
 import Quickshell
 
-// Cream password box for the lock screen. Plain rectangle with one Field +
+// Dark password box for the lock screen. Plain rectangle with one Field +
 // hostname strip + status line. No internal animation — LockScreen drives
 // the reveal by growing a parent slot's height (coordinated push with Clock).
 Rectangle {

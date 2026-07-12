@@ -19,7 +19,7 @@ user_pref("browser.link.open_newwindow", 3);
 // firefox's own bundled GTK chooser.
 //
 // Why: the portal chooser (xdg-desktop-portal-gtk) is a standalone GTK3 process
-// that reads ~/.config/gtk-3.0/gtk.css, so it inherits the Sky Paper / Win95
+// that reads ~/.config/gtk-3.0/gtk.css, so it inherits the Flexoki Dark / Win95
 // theme and can be reloaded independently (restart the portal, not the whole
 // browser). FF's bundled chooser only re-reads the theme on a full FF restart.
 //   0 = never portal, 1 = always portal, 2 = auto (default; non-flatpak → never)

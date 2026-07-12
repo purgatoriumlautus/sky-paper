@@ -30,6 +30,6 @@ README.*
 # --- package-specific: nothing in this pkg goes to $HOME via stow ---
 ^/install\.sh$
 ^/CHEATSHEET\.txt$
-^/sky-paper\.css$
+^/flexoki$
 ^/vimrc$
 ^/hotkeys\.json$

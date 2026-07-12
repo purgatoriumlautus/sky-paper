@@ -1,51 +1,51 @@
-# Sky Paper — see ~/dotfiles/PALETTE.md
-# Two-tone bg (cream + bg-alt) · single accent fill · deep-sky for highlights.
+# Flexoki Dark — see ~/dotfiles/PALETTE.md
+# Two-tone bg (night paper + bg-alt) · purple accent · dark text on the accent.
 
 # ── colors ──────────────────────────────────────────────────────────────
-set default-bg              "#F0EBE0"
-set default-fg              "#1F1812"
+set default-bg              "#100F0F"
+set default-fg              "#CECDC3"
 
-set statusbar-bg            "#E4DED0"
-set statusbar-fg            "#7A716A"
+set statusbar-bg            "#1C1B1A"
+set statusbar-fg            "#878580"
 set statusbar-h-padding     8
 set statusbar-v-padding     2
 
-set inputbar-bg             "#E4DED0"
-set inputbar-fg             "#1F1812"
+set inputbar-bg             "#1C1B1A"
+set inputbar-fg             "#CECDC3"
 
-set notification-bg         "#A8C0D5"
-set notification-fg         "#1F1812"
-set notification-error-bg   "#1F1812"
-set notification-error-fg   "#F0EBE0"
-set notification-warning-bg "#C5BFB5"
-set notification-warning-fg "#1F1812"
+set notification-bg         "#8B7EC8"
+set notification-fg         "#100F0F"
+set notification-error-bg   "#D14D41"
+set notification-error-fg   "#100F0F"
+set notification-warning-bg "#D0A215"
+set notification-warning-fg "#100F0F"
 
-set completion-bg           "#E4DED0"
-set completion-fg           "#1F1812"
-set completion-group-bg     "#C5BFB5"
-set completion-group-fg     "#1F1812"
-set completion-highlight-bg "#A8C0D5"
-set completion-highlight-fg "#1F1812"
+set completion-bg           "#1C1B1A"
+set completion-fg           "#CECDC3"
+set completion-group-bg     "#403E3C"
+set completion-group-fg     "#CECDC3"
+set completion-highlight-bg "#8B7EC8"
+set completion-highlight-fg "#100F0F"
 
-set index-bg                "#F0EBE0"
-set index-fg                "#1F1812"
-set index-active-bg         "#A8C0D5"
-set index-active-fg         "#1F1812"
+set index-bg                "#100F0F"
+set index-fg                "#CECDC3"
+set index-active-bg         "#8B7EC8"
+set index-active-fg         "#100F0F"
 
-# in-page search hits — accent-soft for inactive, deep sky tint for current
-set highlight-color         "#A8C0D5"
-set highlight-active-color  "#4A6F8E"
+# in-page search hits — accent for inactive, bright purple for current
+set highlight-color         "#8B7EC8"
+set highlight-active-color  "#A699D0"
 
-# recolor mode (`Ctrl-r`) — invert-friendly for dark rooms but stay in palette
+# recolor mode (`Ctrl-r`) — dark reading mode that matches the native palette
 set recolor                 "false"
-set recolor-lightcolor      "#F0EBE0"
-set recolor-darkcolor       "#1F1812"
+set recolor-lightcolor      "#100F0F"
+set recolor-darkcolor       "#CECDC3"
 set recolor-keephue         "true"
 
 # page bg behind PDFs (visible at zoom-out / fit-width gaps)
 set render-loading          "true"
-set render-loading-bg       "#E4DED0"
-set render-loading-fg       "#7A716A"
+set render-loading-bg       "#1C1B1A"
+set render-loading-fg       "#878580"
 
 # ── font ────────────────────────────────────────────────────────────────
 # Statusbar/inputbar — match kitty/bar. Terminess at 11 reads crisp at the

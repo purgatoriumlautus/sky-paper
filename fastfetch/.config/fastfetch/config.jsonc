@@ -1,5 +1,5 @@
-// Sky Paper fastfetch — Aphex Twin λ logo, deep-sky accent
-// palette: bg #F0EBE0 fg #1F1812 sky-text #4A6F8E sky-fill #A8C0D5 muted #7A716A
+// Flexoki Dark fastfetch — Aphex Twin λ logo, purple accent
+// palette: bg #100F0F fg #CECDC3 accent #8B7EC8 muted #878580
 {
   "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
 
@@ -7,7 +7,7 @@
   "logo": {
     "source": "~/.config/fastfetch/lambdascii.txt",
     "type": "file",
-    "color": { "1": "38;2;74;111;142" },
+    "color": { "1": "38;2;139;126;200" },
     "padding": { "top": 1, "right": 3 }
   },
 
@@ -15,9 +15,9 @@
     "separator": "  ",
     "key": { "width": 6 },
     "color": {
-      "keys":   "38;2;74;111;142",
-      "title":  "1;38;2;74;111;142",
-      "output": "38;2;31;24;18"
+      "keys":   "38;2;139;126;200",
+      "title":  "1;38;2;139;126;200",
+      "output": "38;2;206;205;195"
     },
     "size":     { "binaryPrefix": "iec" },
     "temp":     { "unit": "C", "ndigits": 0 },
