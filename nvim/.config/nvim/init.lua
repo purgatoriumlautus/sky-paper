@@ -33,6 +33,9 @@ if vim.g.vscode then dofile(vim.fn.stdpath('config') .. '/vscode.lua') return en
 --   5+            increment by 5
 --
 -- SURROUND (nvim-surround)
+--   (visual) )    select text, press the delimiter → wraps it: )"]} ' ` all work
+--   (visual) (    opening char wraps WITH spaces: ( sel )   vs  ) → (sel)
+--   (visual) St   wrap selection in an HTML tag (prompts for tag name)
 --   ysiw)         wrap word in ()
 --   yss)          wrap entire line in ()
 --   cs)]          change () to []
@@ -78,6 +81,9 @@ if vim.g.vscode then dofile(vim.fn.stdpath('config') .. '/vscode.lua') return en
 --   TERMINAL \t          open / focus toggle
 --   CLOSE   \q           dismiss panel: tree, else terminal (never code window)
 --   TABS    \1..\9 \0    go to tab N / last tab
+--   SESSION \s*   \ss \sl \sd   restore (cwd) / restore last / don't save
+--   JUMP    s / S        flash: label-jump / treesitter-select (all windows)
+--   DASH    \d           start screen (:Dash); auto-shows on `nvim` no-args
 --   \?            show all keymaps (which-key)
 
 -- ===================
@@ -103,6 +109,10 @@ vim.opt.wildmode = 'longest,list'
 vim.opt.clipboard = 'unnamedplus'
 vim.opt.scrolloff = 30           -- cursor stays centered (your 'so=30')
 vim.opt.termguicolors = true     -- needed for modern colorschemes
+
+-- What persistence.nvim saves per session (no globals/terminal — avoids
+-- restoring stale toggleterm shells and global-var surprises).
+vim.opt.sessionoptions = 'buffers,curdir,folds,tabpages,winsize,winpos,localoptions'
 
 -- Layout-independent commands: with Russian (JCUKEN) active, normal/visual/
 -- operator-pending mode keys map to their QWERTY positional equivalents,
@@ -274,6 +284,34 @@ require('lazy').setup({
     end
   },
 
+  -- Syntax engine: native treesitter (nvim 0.12 ships the runtime + highlighter).
+  -- nvim-treesitter is on `main` and used ONLY to install/update parsers; the old
+  -- `master` was archived Apr 2026 and won't load on 0.12. Highlighting is nvim-
+  -- native via vim.treesitter.start — THIS is what actually engages the structural
+  -- syntax palette (@keyword/@function/@string…), see PALETTE.md. Without it the
+  -- vague @-groups never apply and you're on legacy regex highlighting.
+  {
+    'nvim-treesitter/nvim-treesitter',
+    branch = 'main',
+    lazy = false,
+    build = ':TSUpdate',
+    config = function()
+      require('nvim-treesitter').install({
+        'c', 'lua', 'vim', 'vimdoc', 'query', 'markdown', 'markdown_inline',
+        'python', 'go', 'gomod', 'bash', 'yaml', 'json', 'toml',
+        'dockerfile', 'sql', 'gitcommit', 'diff',
+      })
+      -- Start the native highlighter for any buffer whose parser is installed.
+      -- pcall: silently no-ops for filetypes without a parser (or before an
+      -- async install finishes on first launch — works on next open).
+      vim.api.nvim_create_autocmd('FileType', {
+        callback = function(args)
+          pcall(vim.treesitter.start, args.buf)
+        end,
+      })
+    end,
+  },
+
   -- File explorer
   {
     'nvim-tree/nvim-tree.lua',
@@ -334,60 +372,44 @@ require('lazy').setup({
     },
   },
 
-  -- Fuzzy finder
+  -- Fuzzy finder (fzf-lua — drives the native fzf binary in a separate process,
+  -- async; snappier than telescope on big trees, and reuses the fzf already in
+  -- $PATH). Same keymaps as before; Enter opens in a new tab like the old setup.
   {
-    'nvim-telescope/telescope.nvim',
-    branch = '0.1.x',
-    dependencies = { 'nvim-lua/plenary.nvim' },
+    'ibhagwan/fzf-lua',
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
     config = function()
-      local actions = require('telescope.actions')
-      require('telescope').setup({
-        defaults = {
-          mappings = {
-            i = {  -- insert mode
-              ['<CR>'] = actions.select_tab,      -- Enter opens in new tab
-              ['<C-v>'] = actions.select_vertical,  -- Ctrl+v vertical split
-              ['<C-h>'] = actions.select_horizontal, -- Ctrl+h horizontal split
-            },
-            n = {  -- normal mode
-              ['<CR>'] = actions.select_tab,
-              ['<C-v>'] = actions.select_vertical,
-              ['<C-h>'] = actions.select_horizontal,
-            },
+      local fzf = require('fzf-lua')
+      fzf.setup({
+        winopts = { border = 'single' },   -- squared corners (Flexoki invariant, no rounded)
+        actions = {
+          files = {
+            ['enter']  = fzf.actions.file_tabedit,   -- Enter → new tab
+            ['ctrl-v'] = fzf.actions.file_vsplit,    -- Ctrl+v → vertical split
+            ['ctrl-h'] = fzf.actions.file_split,     -- Ctrl+h → horizontal split
           },
         },
       })
     end,
     keys = {
       { '<leader>ff', function()
-          require('telescope.builtin').find_files({
-            find_command = { 'fd', '--type', 'f', '--hidden', '--exclude', '.git', '--exclude', '.cache', '.', '/home', '/etc', '/mnt' },
+          require('fzf-lua').files({
+            cmd = 'fd --type f --hidden --exclude .git --exclude .cache . /home /etc /mnt',
+            cwd = '/',   -- results span 3 roots (absolute paths from fd); anchor
+                         -- display at / so they read home/… etc/… mnt/… instead
+                         -- of ../../ relative-to-cwd garbage. Open still resolves right.
           })
         end, desc = 'Find files in /home /etc /mnt' },
-      { '<leader>fg', '<cmd>Telescope live_grep<CR>', desc = 'Grep in project' },
-      { '<leader>fb', '<cmd>Telescope buffers<CR>', desc = 'Open buffers' },
-      { '<leader>fr', '<cmd>Telescope oldfiles<CR>', desc = 'Recent files' },
-      { '<leader>fh', '<cmd>Telescope help_tags<CR>', desc = 'Search help' },
+      { '<leader>fg', '<cmd>FzfLua live_grep<CR>', desc = 'Grep in project' },
+      { '<leader>fb', '<cmd>FzfLua buffers<CR>', desc = 'Open buffers' },
+      { '<leader>fr', '<cmd>FzfLua oldfiles<CR>', desc = 'Recent files' },
+      { '<leader>fh', '<cmd>FzfLua help_tags<CR>', desc = 'Search help' },
     },
   },
 
-  -- Better looking tabs
-  {
-    'akinsho/bufferline.nvim',
-    version = '*',
-    dependencies = { 'nvim-tree/nvim-web-devicons' },
-    config = function()
-      require('bufferline').setup({
-        options = {
-          mode = 'tabs',              -- show tabs, not buffers
-          numbers = 'ordinal',        -- show tab numbers (1, 2, 3...)
-          separator_style = 'thick',  -- slant separators
-          show_buffer_close_icons = false,
-          show_close_icon = false,
-        },
-      })
-    end,
-  },
+  -- (tabs are rendered by a native numbered tabline — see end of file. No
+  -- bufferline plugin: a ~20-line vim.o.tabline does the same numbered tabs
+  -- without devicons/powerline slants, which suits the bitmap-native look.)
 
   -- Git signs in gutter
   {
@@ -436,7 +458,7 @@ require('lazy').setup({
     'nvim-lualine/lualine.nvim',
     dependencies = { 'nvim-tree/nvim-web-devicons' },
     config = function()
-      -- Flexoki Dark — see ~/celestia/PALETTE.md
+      -- Flexoki Dark — see ~/dotfiles/PALETTE.md
       local flexoki_dark = {
         normal = {
           a = { bg = '#8B7EC8', fg = '#100F0F', gui = 'bold' },
@@ -666,7 +688,47 @@ require('lazy').setup({
     event = 'VeryLazy',
     config = function()
       require('nvim-surround').setup({})
+
+      -- In visual mode, press the delimiter itself to wrap the selection — no
+      -- need to press S first. Select text, hit ) " ' ] } etc. → bam, surrounded.
+      -- Closing char is tight: )"]} → (sel) "sel" [sel] {sel}
+      -- Opening char keeps spaces: ([{  → ( sel ) [ sel ] { sel }
+      -- We bind to <Plug>(nvim-surround-visual); its getchar() then consumes the
+      -- trailing delimiter raw, so text objects (vi(, va", ci[…) are untouched.
+      -- < and > are left alone on purpose — they're visual indent in/out.
+      for _, ch in ipairs({ '(', ')', '[', ']', '{', '}', '"', "'", '`' }) do
+        vim.keymap.set('x', ch, '<Plug>(nvim-surround-visual)' .. ch,
+          { remap = true, desc = 'Surround selection with ' .. ch })
+      end
     end,
+  },
+
+  -- Session persistence, keyed per cwd. Restore is MANUAL (\ss) on purpose:
+  -- opening `nvim somefile` shouldn't yank in a whole restored session. Pairs
+  -- with tmux-continuum (that restores the terminal layout; this restores the
+  -- nvim-internal state — open buffers, tabs, window sizes, folds).
+  {
+    'folke/persistence.nvim',
+    event = 'BufReadPre',
+    opts = {},
+    keys = {
+      { '<leader>ss', function() require('persistence').load() end, desc = 'Session: restore (cwd)' },
+      { '<leader>sl', function() require('persistence').load({ last = true }) end, desc = 'Session: restore last' },
+      { '<leader>sd', function() require('persistence').stop() end, desc = "Session: don't save this one" },
+    },
+  },
+
+  -- Label-based motion: `s` jumps to any spot across ALL visible windows, `S`
+  -- selects by treesitter node (needs the parsers above). `S` is left off
+  -- visual mode so nvim-surround's visual `S` still wraps.
+  {
+    'folke/flash.nvim',
+    event = 'VeryLazy',
+    opts = {},
+    keys = {
+      { 's', mode = { 'n', 'x', 'o' }, function() require('flash').jump() end, desc = 'Flash jump' },
+      { 'S', mode = { 'n', 'o' }, function() require('flash').treesitter() end, desc = 'Flash treesitter select' },
+    },
   },
 
   {
@@ -684,3 +746,233 @@ require('lazy').setup({
     },
   },
 })
+
+-- ===================
+-- Tabline (native, numbered — replaces bufferline)
+-- ===================
+-- Renders " N:name " per tab, active tab in Flexoki purple. No icons/powerline
+-- slants — plain text reads clean in the bitmap font and matches the \1..\9
+-- workflow. Highlights are (re)applied on every ColorScheme so vague loading
+-- (or a live reload) can't wipe them.
+local function set_tabline_hl()
+  vim.api.nvim_set_hl(0, 'TabLineSel',  { fg = '#100F0F', bg = '#8B7EC8', bold = true })
+  vim.api.nvim_set_hl(0, 'TabLine',     { fg = '#878580', bg = '#1C1B1A' })
+  vim.api.nvim_set_hl(0, 'TabLineFill', { bg = '#1C1B1A' })
+end
+vim.api.nvim_create_autocmd('ColorScheme', { callback = set_tabline_hl })
+set_tabline_hl()
+
+function _G.flexoki_tabline()
+  local s = ''
+  for i = 1, vim.fn.tabpagenr('$') do
+    local buflist = vim.fn.tabpagebuflist(i)
+    local bufnr = buflist[vim.fn.tabpagewinnr(i)]
+    local name = vim.fn.bufname(bufnr)
+    name = name == '' and '[No Name]' or vim.fn.fnamemodify(name, ':t')
+    local mod = vim.bo[bufnr].modified and ' +' or ''
+    local hl = (i == vim.fn.tabpagenr()) and '%#TabLineSel#' or '%#TabLine#'
+    s = s .. hl .. '%' .. i .. 'T ' .. i .. ':' .. name .. mod .. ' '
+  end
+  return s .. '%#TabLineFill#%T'
+end
+
+vim.o.tabline = '%!v:lua.flexoki_tabline()'
+vim.o.showtabline = 2   -- always show the tabline
+
+-- ===================
+-- Start screen / dashboard (custom, no plugin)
+-- ===================
+-- Shown on `nvim` with no file args. The Braille art lives in dashboard.txt
+-- (bitmap-native in Terminus). Sessions come from persistence.nvim: top 5 by
+-- recency are pickable by number, `s` opens an fzf-lua picker over all of them.
+-- Reopen anytime with \d or :Dash.
+do
+  local ns = vim.api.nvim_create_namespace('dashboard')
+  local art_path = vim.fn.stdpath('config') .. '/dashboard.txt'
+
+  local function dash_hl()
+    vim.api.nvim_set_hl(0, 'DashArt',  { fg = '#8B7EC8' })               -- accent
+    vim.api.nvim_set_hl(0, 'DashHead', { fg = '#575653' })               -- faint
+    vim.api.nvim_set_hl(0, 'DashKey',  { fg = '#8B7EC8', bold = true })  -- accent bold
+    vim.api.nvim_set_hl(0, 'DashText', { fg = '#CECDC3' })               -- fg
+    vim.api.nvim_set_hl(0, 'DashTime', { fg = '#575653' })               -- faint
+    vim.api.nvim_set_hl(0, 'DashSep',  { fg = '#403E3C' })               -- border-dim
+  end
+  vim.api.nvim_create_autocmd('ColorScheme', { callback = dash_hl })
+  dash_hl()
+
+  -- persistence session files -> { {label, file, mtime}, ... } newest first.
+  -- persistence encodes cwd as %-joined path, then `%%`, then the git branch.
+  local function sessions()
+    local ok, p = pcall(require, 'persistence')
+    if not ok then return {} end
+    local out = {}
+    for _, file in ipairs(p.list()) do
+      local base = vim.fn.fnamemodify(file, ':t:r')      -- drop dir + .vim
+      local cwd_enc, branch = base:match('^(.-)%%%%(.*)$')
+      if not cwd_enc then cwd_enc = base end
+      local cwd = cwd_enc:gsub('%%', '/')
+      local label = vim.fn.fnamemodify(cwd, ':h:t') .. '/' .. vim.fn.fnamemodify(cwd, ':t')
+      label = label:gsub('^/', '')
+      if branch and branch ~= '' then label = label .. ' :' .. branch:gsub('%%', '/') end
+      local st = vim.uv.fs_stat(file)
+      out[#out + 1] = { label = label, file = file, mtime = st and st.mtime.sec or 0 }
+    end
+    table.sort(out, function(a, b) return a.mtime > b.mtime end)
+    return out
+  end
+
+  local function ago(sec)
+    local d = os.time() - sec
+    if d < 3600 then return math.max(1, math.floor(d / 60)) .. 'm ago'
+    elseif d < 86400 then return math.floor(d / 3600) .. 'h ago'
+    else return math.floor(d / 86400) .. 'd ago' end
+  end
+
+  local function load_session(file)
+    vim.cmd('silent! source ' .. vim.fn.fnameescape(file))
+  end
+
+  local function pick_session()
+    local ss = sessions()
+    if #ss == 0 then vim.notify('no sessions yet', vim.log.levels.INFO); return end
+    local items, map = {}, {}
+    for _, s in ipairs(ss) do items[#items + 1] = s.label; map[s.label] = s.file end
+    require('fzf-lua').fzf_exec(items, {
+      prompt = 'sessions> ',
+      winopts = { border = 'single' },   -- squared, matches \ff
+      actions = { ['default'] = function(sel)
+        if sel and sel[1] and map[sel[1]] then load_session(map[sel[1]]) end
+      end },
+    })
+  end
+
+  local function open()
+    local width = vim.o.columns
+    local lines, marks = {}, {}   -- marks: { row0, startcol, endcol, group }
+    local first_sess           -- 1-based index into `lines` of first session row
+
+    local function add(str, group)          -- centered whole-line
+      local pad = math.max(0, math.floor((width - vim.fn.strdisplaywidth(str)) / 2))
+      local full = string.rep(' ', pad) .. str
+      lines[#lines + 1] = full
+      if group and str ~= '' then marks[#marks + 1] = { #lines - 1, pad, #full, group } end
+    end
+
+    local function add_session(i, s)
+      local key, lbl, tstr = tostring(i), s.label, ago(s.mtime)
+      if #lbl > 44 then lbl = lbl:sub(1, 44) end
+      local left = key .. '   ' .. lbl
+      local cw = 58
+      local gap = math.max(1, cw - vim.fn.strdisplaywidth(left) - vim.fn.strdisplaywidth(tstr))
+      local str = left .. string.rep(' ', gap) .. tstr
+      local pad = math.max(0, math.floor((width - cw) / 2))
+      lines[#lines + 1] = string.rep(' ', pad) .. str
+      local b = pad
+      marks[#marks + 1] = { #lines - 1, b, b + #key, 'DashKey' }
+      marks[#marks + 1] = { #lines - 1, b + #key + 3, b + #key + 3 + #lbl, 'DashText' }
+      marks[#marks + 1] = { #lines - 1, b + #left + gap, b + #str, 'DashTime' }
+      if not first_sess then first_sess = #lines end
+    end
+
+    local function add_actions(kvs)
+      local parts = {}
+      for _, kv in ipairs(kvs) do parts[#parts + 1] = kv[1] .. '  ' .. kv[2] end
+      local str = table.concat(parts, '     ')
+      local pad = math.max(0, math.floor((width - vim.fn.strdisplaywidth(str)) / 2))
+      lines[#lines + 1] = string.rep(' ', pad) .. str
+      local col = pad
+      for _, kv in ipairs(kvs) do
+        marks[#marks + 1] = { #lines - 1, col, col + #kv[1], 'DashKey' }
+        marks[#marks + 1] = { #lines - 1, col + #kv[1] + 2, col + #(kv[1] .. '  ' .. kv[2]), 'DashText' }
+        col = col + #(kv[1] .. '  ' .. kv[2]) + 5
+      end
+    end
+
+    -- art — dropped when the window is too short to also fit the sessions and
+    -- actions, so the functional part is never pushed off the bottom (16 ≈
+    -- host + 5 sessions + separators + action rows + footer).
+    local art = vim.fn.filereadable(art_path) == 1 and vim.fn.readfile(art_path) or {}
+    if (vim.o.lines - 2) >= #art + 16 then
+      for _, a in ipairs(art) do add(a, 'DashArt') end
+      add('')
+    end
+    add('λ  ' .. vim.uv.os_gethostname(), 'DashArt')
+    add('')
+
+    local ss = sessions()
+    add('──  sessions  ' .. string.rep('─', 18), 'DashSep')
+    if #ss == 0 then
+      add('(no sessions yet — save one with :wq inside a project)', 'DashHead')
+    else
+      for i = 1, math.min(5, #ss) do add_session(i, ss[i]) end
+    end
+    add(string.rep('─', 32), 'DashSep')
+    add_actions({ { 's', 'all sessions (fuzzy)' } })
+    add_actions({ { 'f', 'find file' }, { 'r', 'recent' }, { 'e', 'tree' }, { 'q', 'quit' } })
+    add('')
+    local sok, st = pcall(require('lazy').stats)
+    if sok then add(string.format('%d plugins · %dms', st.count, math.floor(st.startuptime + 0.5)), 'DashHead') end
+
+    -- vertical centering
+    local top = math.max(0, math.floor(((vim.o.lines - 2) - #lines) / 2))
+    local final = {}
+    for _ = 1, top do final[#final + 1] = '' end
+    vim.list_extend(final, lines)
+
+    local buf = vim.api.nvim_create_buf(false, true)
+    vim.api.nvim_buf_set_lines(buf, 0, -1, false, final)
+    vim.bo[buf].modifiable = false
+    vim.bo[buf].bufhidden = 'wipe'
+    vim.bo[buf].filetype = 'dashboard'
+    for _, m in ipairs(marks) do
+      pcall(vim.api.nvim_buf_set_extmark, buf, ns, m[1] + top, m[2], { end_col = m[3], hl_group = m[4] })
+    end
+
+    vim.api.nvim_set_current_buf(buf)
+    local w = vim.api.nvim_get_current_win()
+    for opt, val in pairs({ number = false, relativenumber = false, list = false,
+                            cursorline = false, wrap = false }) do vim.wo[w][opt] = val end
+    vim.wo[w].signcolumn = 'no'
+    vim.wo[w].fillchars = 'eob: '
+    if first_sess then pcall(vim.api.nvim_win_set_cursor, w, { top + first_sess, 0 }) end
+
+    -- Hide the block cursor while the dashboard is up; restore on leave. (Read
+    -- prev AFTER set_current_buf above so a resize re-render, which wipes the
+    -- old dashboard buf and fires its restore first, captures the real value.)
+    local prev_guicursor = vim.o.guicursor
+    -- cursor colour = bg (#100F0F): the block renders bg-on-bg, invisible in the
+    -- terminal; blend=100 hides it in a GUI too.
+    vim.api.nvim_set_hl(0, 'DashCursor', { fg = '#100F0F', bg = '#100F0F', blend = 100 })
+    vim.o.guicursor = 'a:DashCursor'
+    vim.api.nvim_create_autocmd({ 'BufLeave', 'BufWipeout' }, {
+      buffer = buf, once = true,
+      callback = function() vim.o.guicursor = prev_guicursor end,
+    })
+
+    -- buffer-local keys
+    local function map(k, fn) vim.keymap.set('n', k, fn, { buffer = buf, nowait = true, silent = true }) end
+    for i = 1, math.min(5, #ss) do map(tostring(i), function() load_session(ss[i].file) end) end
+    map('s', pick_session)
+    map('f', function() require('fzf-lua').files({
+      cmd = 'fd --type f --hidden --exclude .git --exclude .cache . /home /etc /mnt', cwd = '/' }) end)
+    map('r', function() require('fzf-lua').oldfiles() end)
+    map('e', function() require('nvim-tree.api').tree.toggle() end)
+    map('q', function() vim.cmd('qa') end)
+  end
+
+  vim.api.nvim_create_autocmd('VimEnter', {
+    callback = function()
+      if vim.fn.argc() ~= 0 then return end                       -- opened with a file/dir
+      if vim.api.nvim_buf_line_count(0) > 1 then return end        -- stdin/piped content
+      if (vim.api.nvim_buf_get_lines(0, 0, 1, false)[1] or '') ~= '' then return end
+      if vim.fn.expand('%') ~= '' then return end
+      vim.schedule(open)   -- after startup so lazy.stats() is ready
+    end,
+  })
+  vim.api.nvim_create_user_command('Dash', open, { desc = 'Open the start screen' })
+  vim.keymap.set('n', '<leader>d', open, { desc = 'Dashboard' })
+  vim.api.nvim_create_autocmd('VimResized', {
+    callback = function() if vim.bo.filetype == 'dashboard' then open() end end,
+  })
+end
