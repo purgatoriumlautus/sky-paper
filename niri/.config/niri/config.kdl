@@ -388,14 +388,6 @@ window-rule {
 // the window maps, so spawn-time `open-floating` fires against the placeholder
 // title "Mozilla Firefox" and never re-evaluates.
 
-// Power menu — kitty window with a 2x2 grid TUI. Floating + centered.
-// Size comes from kitty (initial_window_width/height in cells); no fixed
-// override here or it would clip the grid.
-window-rule {
-    match app-id="^power-menu$"
-    open-floating true
-}
-
 // Example: block out two password managers from screen capture.
 // (This example rule is commented out with a "/-" in front.)
 /-window-rule {
