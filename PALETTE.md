@@ -9,8 +9,7 @@ purple. Источник: **flexoki.com** (Steph Ango), значения све�
 (dark Cool Mono → light Cool Paper → light Sky Paper → **Flexoki Dark**).
 Дизайн-решения перехода: `docs/superpowers/specs/2026-07-11-flexoki-dark-transition-design.md`.
 
-**Шрифты:** без изменений — Terminess Nerd Font Mono (UI), Unifont (kitty
-italic/CJK fallback); шрифтовой стек в синке с celestia (см. конфиги).
+**Шрифты:** без изменений — Terminess Nerd Font Mono (UI), Unifont (kitty/bar).
 
 ---
 

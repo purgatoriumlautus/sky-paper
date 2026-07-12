@@ -6,7 +6,8 @@ posture, and its own maintenance rules (§META).
 
 Rules:
 
-- Never commit. Ars reviews and commits everything himself.
+- Never commit unless Ars explicitly asks. Commit messages must never
+  mention Claude/AI — no Co-Authored-By, no "Generated with" trailers.
 - Never modify `/etc` or live system state; repo files only. Deployment
   is Ars running each module's `install.sh`.
 - Respect CONTEXT.md §META: root file whitelist, section line budgets,
