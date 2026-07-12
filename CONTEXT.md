@@ -49,8 +49,9 @@ Stow modules (from `~/dotfiles`, target under `~/.config`):
   /etc/polkit-1/rules.d, /usr/local/bin).
 - swayidle/ — idle pipeline: 5m dim → 10m lock+screen-off → 30m suspend;
   lock before sleep; lid handling.
-- fish/ (login shell), kitty/ (Terminess 12pt), tmux/ (256-idx statusline,
-  TPM), nvim/ (flexoki_dark lualine, F19/CapsLock leader), mako/
+- fish/ (login shell; zoxide `cd`), kitty/ (Terminess 12pt), tmux/ (256-idx
+  statusline, TPM, sesh popup on M-s), nvim/ (native treesitter, flexoki
+  lualine, fzf-lua, session start-screen, F19/CapsLock leader), mako/
   (Quiet/DND wired to CC), xdg/ (mimeapps.list), gtk/ (+ apply.sh,
   icons-install.sh), fontconfig/ (Terminus alias; Terminess AA-off on
   native px only), yazi/, fastfetch/, zathura/, mpv/.
@@ -74,7 +75,8 @@ Authoritative: packages.txt — names only (regenerate: `pacman -Qqe`);
 drift check in §META. Must be generated on the laptop itself. Non-obvious
 keepers: passim (masked, fwupd hard dep), swaylock (manual fallback lock),
 cage (`--asexplicit`, greeter runs on it), smartmontools (battery/disk
-health alongside TLP).
+health alongside TLP), tree-sitter-cli (nvim-treesitter main compiles parsers
+via it), sesh-bin (tmux session popup on M-s).
 
 ## 4. Security posture — deltas from Arch defaults, each with a live check
 Verified: 2026-07-11
