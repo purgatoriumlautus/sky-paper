@@ -1,23 +1,5 @@
+
 [Default Applications]
-application/x-extension-burp=install4j_e92j57-BurpSuiteCommunity.desktop
-image/jpeg=org.nomacs.ImageLounge.desktop
-audio/mpeg=mpv.desktop
-audio/flac=mpv.desktop
-audio/x-flac=mpv.desktop
-audio/ogg=mpv.desktop
-audio/opus=mpv.desktop
-audio/aac=mpv.desktop
-audio/mp4=mpv.desktop
-audio/x-m4a=mpv.desktop
-audio/x-wav=mpv.desktop
-audio/wav=mpv.desktop
-video/mp4=mpv.desktop
-video/x-matroska=mpv.desktop
-video/webm=mpv.desktop
-video/quicktime=mpv.desktop
-video/x-msvideo=mpv.desktop
-video/mpeg=mpv.desktop
-x-scheme-handler/claude-cli=claude-code-url-handler.desktop
 application/pdf=org.pwmt.zathura.desktop
 application/epub+zip=org.pwmt.zathura.desktop
 application/oxps=org.pwmt.zathura.desktop
@@ -25,4 +7,36 @@ application/vnd.ms-xpsdocument=org.pwmt.zathura.desktop
 application/vnd.comicbook+zip=org.pwmt.zathura.desktop
 application/x-cbz=org.pwmt.zathura.desktop
 application/x-cbr=org.pwmt.zathura.desktop
+x-scheme-handler/claude-cli=claude-code-url-handler.desktop
 
+# Folders -> yazi inside kitty
+inode/directory=yazi-kitty.desktop
+
+# Images -> imv
+image/png=imv.desktop
+image/jpeg=imv.desktop
+image/gif=imv.desktop
+image/webp=imv.desktop
+image/bmp=imv.desktop
+image/tiff=imv.desktop
+image/x-portable-pixmap=imv.desktop
+image/svg+xml=imv.desktop
+
+# Video -> mpv
+video/mp4=mpv.desktop
+video/x-matroska=mpv.desktop
+video/webm=mpv.desktop
+video/quicktime=mpv.desktop
+video/x-msvideo=mpv.desktop
+video/mpeg=mpv.desktop
+video/ogg=mpv.desktop
+
+# Audio -> mpv
+audio/wav=mpv.desktop
+audio/x-wav=mpv.desktop
+audio/mpeg=mpv.desktop
+audio/flac=mpv.desktop
+audio/ogg=mpv.desktop
+audio/x-vorbis+ogg=mpv.desktop
+audio/aac=mpv.desktop
+audio/opus=mpv.desktop
