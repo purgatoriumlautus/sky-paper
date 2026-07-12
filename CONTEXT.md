@@ -72,7 +72,8 @@ install.sh modules (root-owned or per-profile targets, not stowable):
 
 Not deployed / manual: wallpapers/ (Flexoki duotone sources +
 `mntvagaflexoki.png` current → ~/Pictures/wallpapers), docs/ (specs,
-screenshots), bin/ (user scripts incl. pd-bt → ~/.local/bin).
+screenshots), bin/ (user scripts incl. pd-bt → ~/.local/bin), telegram/
+(Telegram Desktop theme — imported via the app, not stowed).
 
 ### Packages
 Authoritative: packages.txt — names only (regenerate: `pacman -Qqe`);
