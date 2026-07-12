@@ -1,0 +1,26 @@
+# A package-local ignore REPLACES stow's built-in defaults (it doesn't extend
+# them), so reproduce the defaults here and append our own.
+# Patterns are Perl regexes matched against basename or full path.
+
+# --- stow built-in defaults (2.4.x) ---
+RCS
+.+,v
+CVS
+\.\#.+
+\.cvsignore
+\.svn
+_darcs
+\.hg
+\.git.*
+\.gitignore
+\.bzr.*
+.+\.bak
+.+\.swp
+\.DS_Store
+\._.+
+LICENSE.*
+COPYING.*
+README.*
+
+# --- package-specific: docs live in the repo, not in $HOME ---
+^/README\.md$
