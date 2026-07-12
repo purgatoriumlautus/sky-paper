@@ -135,7 +135,7 @@ bright = 300.
 - font: Unifont 12pt
 
 **niri border:**
-- active `#8B7EC8` (accent fill)
+- active `#CECDC3` (fg ink — белая рамка, не accent fill)
 - inactive `transparent` (как было)
 - urgent `#D14D41` (теперь настоящий red)
 
@@ -170,7 +170,7 @@ bright = 300.
 - анимации без изменений
 
 **niri (full visuals, square — no rounded corners):**
-- border 1px active `#8B7EC8`, inactive transparent, urgent `#D14D41`
+- border 1px active `#CECDC3` (fg ink, белая), inactive transparent, urgent `#D14D41`
 - focus-ring off
 - shadow on, color `#00000066`, softness 15, spread 5, offset y6 (тень на
   тёмном — чистый чёрный, не fg-based)

@@ -209,7 +209,7 @@ layout {
         // off
 
         width 1
-        active-color "#8B7EC8"
+        active-color "#CECDC3"
         inactive-color "transparent"
 
         // Color of the border around windows that request your attention.
@@ -350,7 +350,7 @@ animations {
 
 // Global slight transparency for all windows.
 window-rule {
-    opacity 0.85
+    opacity 0.95
 }
 
 // Work around WezTerm's initial configure bug
