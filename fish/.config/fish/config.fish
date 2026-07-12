@@ -40,6 +40,7 @@ set -gx COMPOSE_DOCKER_CLI_BUILD 1
 # PATH
 # -----------------
 fish_add_path -g $HOME/.local/bin
+fish_add_path -g $HOME/.local/bin/npm
 
 # -----------------
 # Aliases
