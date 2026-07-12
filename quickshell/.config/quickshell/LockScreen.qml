@@ -68,6 +68,11 @@ Scope {
                 id: surfaceRoot
                 anchors.fill: parent
                 focus: true
+                // While true the summoning key is still held: focus stays on the
+                // surface (not the field) so the key — and any autorepeat of it —
+                // can never be typed. Cleared on its KeyRelease, which is when the
+                // field finally gets focus.
+                property bool armed: false
                 // Guarantee the clock surface owns keyboard focus on map, so the
                 // first key reaches Keys.onPressed and reveals the box.
                 Component.onCompleted: forceActiveFocus()
@@ -223,6 +228,7 @@ Scope {
                     onClicked: {
                         if (!scope.awake) { scope.wake(); return }
                         scope.reveal()
+                        focusDelay.restart()   // click has no KeyRelease; focus via timer
                     }
                 }
 
@@ -235,14 +241,22 @@ Scope {
                     }
                     if (!scope.revealed) {
                         // Esc on the clock is a no-op; any other key summons the
-                        // empty box and hands focus to the field. The summoning
-                        // key is NOT injected — the password starts blank.
+                        // empty box. The field is NOT focused yet — that waits for
+                        // this key's release (onReleased) so neither the key nor
+                        // its autorepeat can be injected. Password starts blank.
                         if (event.key === Qt.Key_Escape) {
                             event.accepted = true
                             return
                         }
                         scope.reveal()
-                        box.focusField()
+                        surfaceRoot.armed = true
+                        armBackstop.restart()
+                        event.accepted = true
+                        return
+                    }
+                    // Revealed but summon key still held → swallow its autorepeat
+                    // (field isn't focused until release).
+                    if (surfaceRoot.armed) {
                         event.accepted = true
                         return
                     }
@@ -252,12 +266,44 @@ Scope {
                     }
                 }
 
-                // When the slot finishes opening, make sure the field has focus.
+                // Summon key released → now it's safe to focus the field; nothing
+                // more from that keypress can land in it.
+                Keys.onReleased: function (event) {
+                    if (surfaceRoot.armed && scope.revealed) {
+                        armBackstop.stop()
+                        surfaceRoot.armed = false
+                        box.focusField()
+                        event.accepted = true
+                    }
+                }
+
+                // Lockout safety: if the summon key's release never arrives
+                // (focus stays armed → every key swallowed → box un-typeable),
+                // focus anyway after 800ms. A normal tap releases first and
+                // cancels this.
+                Timer {
+                    id: armBackstop
+                    interval: 800
+                    repeat: false
+                    onTriggered: {
+                        if (surfaceRoot.armed) {
+                            surfaceRoot.armed = false
+                            box.focusField()
+                        }
+                    }
+                }
+
                 Connections {
                     target: scope
                     function onRevealedChanged() {
-                        if (scope.revealed) focusDelay.restart()
-                        else surfaceRoot.forceActiveFocus()
+                        // Collapsing back to the clock: disarm and reclaim focus so
+                        // the next key summons cleanly. (Reveal focuses via release
+                        // or, for clicks, focusDelay.)
+                        if (!scope.revealed) {
+                            armBackstop.stop()
+                            surfaceRoot.armed = false
+                            surfaceRoot.forceActiveFocus()
+                        }
                     }
                 }
 
