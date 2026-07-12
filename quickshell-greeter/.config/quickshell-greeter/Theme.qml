@@ -3,22 +3,23 @@ pragma Singleton
 import QtQuick
 import Quickshell
 
-// Sky Paper — greeter copy. Mirrors ~/celestia/quickshell/.config/quickshell/Theme.qml.
+// Flexoki Dark — greeter copy. Mirrors ~/celestia/quickshell/.config/quickshell/Theme.qml.
 // Separate file because greeter runs as `greeter` user and can't traverse /home/segfault (mode 700).
 // If you re-tone the main palette, update this too.
 Singleton {
-    readonly property color bg:         "#F0EBE0"
-    readonly property color bgAlt:      "#E4DED0"
-    readonly property color borderDim:  "#C5BFB5"
-    readonly property color muted:      "#7A716A"
-    readonly property color fg:         "#1F1812"
-    readonly property color accentSoft: "#A8C0D5"
-    readonly property color accentText: "#4A6F8E"
-    readonly property color warn:       "#9C5450"
+    readonly property color bg:         "#100F0F"
+    readonly property color bgAlt:      "#1C1B1A"
+    readonly property color borderDim:  "#403E3C"
+    readonly property color muted:      "#878580"
+    readonly property color fg:         "#CECDC3"
+    readonly property color fgMax:      "#FFFCF0"   // paper — rare peaks (big clock)
+    readonly property color accentSoft: "#8B7EC8"
+    readonly property color accentText: "#8B7EC8"
+    readonly property color warn:       "#D14D41"
 
-    // kitty bg, was @ 0.5 alpha — bumped to ~0.7 for more presence over dim wallpaper
-    readonly property color boxFill:    "#B3F0EBE0"
-    readonly property color boxBorder:  "#80C5BFB5"
+    // form bg = bgAlt @ 0.85 (ARGB D9) over dim wallpaper — per PALETTE.md
+    readonly property color boxFill:    "#D91C1B1A"
+    readonly property color boxBorder:  "#80403E3C"
     // dim layer over wallpaper — black @ ~0.50 (was 0.25, bumped +25pp)
     readonly property color dim:        "#80000000"
 

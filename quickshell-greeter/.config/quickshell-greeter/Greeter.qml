@@ -56,7 +56,7 @@ FloatingWindow {
         anchors.fill: parent
         focus: true
 
-        // Wallpaper. Installed path; dotfiles preview symlinks it to clouds.png.
+        // Wallpaper. Installed path; install.sh copies mntvagaflexoki.png here.
         Image {
             anchors.fill: parent
             source: "file:///etc/quickshell-greeter/wallpaper.png"

@@ -1,9 +1,9 @@
 #!/bin/sh
-# Sky Paper GTK — dconf bits that can't live as a stowed file.
+# Flexoki Dark GTK — dconf bits that can't live as a stowed file.
 # libadwaita apps and the xdg-desktop-portal read these. Run once after `stow gtk`.
 set -eu
 
-gsettings set org.gnome.desktop.interface color-scheme 'prefer-light'
+gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
 gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita'
 gsettings set org.gnome.desktop.interface font-name 'Terminess Nerd Font Mono 12'
 gsettings set org.gnome.desktop.interface monospace-font-name 'Terminess Nerd Font Mono 12'
@@ -15,4 +15,4 @@ gsettings set org.gnome.desktop.interface icon-theme 'Chicago95'
 gsettings set org.gnome.desktop.interface cursor-theme 'Chicago95_Standard_Cursors'
 gsettings set org.gnome.desktop.interface cursor-size 24
 
-echo "Sky Paper GTK applied. (Restart GTK apps to pick up changes.)"
+echo "Flexoki Dark GTK applied. (Restart GTK apps to pick up changes.)"

@@ -70,14 +70,14 @@ PanelWindow {
 
         Language {}
 
-        // λ control-center toggle. Blue at rest; white box + dark glyph when the
-        // shared CC is open AND anchored to this bar.
+        // λ control-center toggle. Accent at rest; accent box + dark glyph when
+        // the shared CC is open AND anchored to this bar.
         Rectangle {
             id: ccBox
             height: Theme.barHeight
             width: Theme.cellSize
             radius: 0
-            color: (cc && cc.visible && bar.isFocused) ? "#FFFFFF" : "transparent"
+            color: (cc && cc.visible && bar.isFocused) ? Theme.accentSoft : "transparent"
             anchors.verticalCenter: parent.verticalCenter
 
             Text {
@@ -87,7 +87,7 @@ PanelWindow {
                 renderType: Text.NativeRendering
                 font.hintingPreference: Font.PreferFullHinting
                 text: "λ"
-                color: (cc && cc.visible && bar.isFocused) ? Theme.fg : Theme.accentText
+                color: (cc && cc.visible && bar.isFocused) ? Theme.bg : Theme.accentText
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontSize
             }

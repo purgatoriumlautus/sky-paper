@@ -1,44 +1,44 @@
-/* Sky Paper — GTK4 / libadwaita. Overrides named colors. Mirrors ~/celestia/PALETTE.md. */
+/* Flexoki Dark — GTK4 / libadwaita. Overrides named colors. Mirrors ~/celestia/PALETTE.md. */
 
-@define-color window_bg_color   #F0EBE0; /* bg — cream */
-@define-color window_fg_color   #1F1812; /* fg — 15:1 */
-@define-color view_bg_color     #F0EBE0;
-@define-color view_fg_color     #1F1812;
-@define-color popover_bg_color  #F0EBE0;
-@define-color popover_fg_color  #1F1812;
+@define-color window_bg_color   #100F0F; /* bg — flexoki black */
+@define-color window_fg_color   #CECDC3; /* fg — 12:1 */
+@define-color view_bg_color     #100F0F;
+@define-color view_fg_color     #CECDC3;
+@define-color popover_bg_color  #343331;
+@define-color popover_fg_color  #CECDC3;
 
-@define-color headerbar_bg_color #E4DED0; /* bg-alt panels */
-@define-color headerbar_fg_color #1F1812;
-@define-color sidebar_bg_color   #E4DED0;
-@define-color sidebar_fg_color   #1F1812;
-@define-color card_bg_color      #E4DED0;
-@define-color card_fg_color      #1F1812;
-@define-color dialog_bg_color    #F0EBE0;
-@define-color dialog_fg_color    #1F1812;
+@define-color headerbar_bg_color #1C1B1A; /* bg-alt panels */
+@define-color headerbar_fg_color #CECDC3;
+@define-color sidebar_bg_color   #1C1B1A;
+@define-color sidebar_fg_color   #CECDC3;
+@define-color card_bg_color      #1C1B1A;
+@define-color card_fg_color      #CECDC3;
+@define-color dialog_bg_color    #100F0F;
+@define-color dialog_fg_color    #CECDC3;
 
-/* accent: soft sky fill with dark text (= launcher/regreet selection) */
-@define-color accent_bg_color   #A8C0D5;
-@define-color accent_fg_color   #1F1812;
-/* standalone accent (links, switches, focus) needs contrast → deep-sky 5.5:1 */
-@define-color accent_color      #4A6F8E;
+/* accent: purple fill with dark text (= launcher/regreet selection) */
+@define-color accent_bg_color   #8B7EC8;
+@define-color accent_fg_color   #100F0F;
+/* standalone accent (links, switches, focus) — purple reads as text on dark (5.4:1) */
+@define-color accent_color      #8B7EC8;
 
-@define-color destructive_bg_color #9C5450; /* warn */
-@define-color destructive_fg_color #F0EBE0;
-@define-color destructive_color    #9C5450;
+@define-color destructive_bg_color #D14D41; /* red */
+@define-color destructive_fg_color #100F0F;
+@define-color destructive_color    #D14D41;
 
-@define-color warning_color #7A716A;
-@define-color success_color #1F1812;
-@define-color error_color   #9C5450;
+@define-color warning_color #D0A215;
+@define-color success_color #879A39;
+@define-color error_color   #D14D41;
 
-@define-color borders #C5BFB5;
+@define-color borders #403E3C;
 
-/* ── Win95 bevel tones (Sky Paper) ─────────────────────────────────────────
+/* ── Win95 bevel tones (Flexoki Dark) ──────────────────────────────────────
    face = control fill, hi = top-left highlight, sh = bottom-right shadow,
    dk = outer dark edge. Raised = hi/dk borders; sunken = swapped.            */
-@define-color w95_face #E4DED0; /* bg-alt — buttonface */
-@define-color w95_hi   #FFFFFF; /* crisp highlight (top-left) */
-@define-color w95_sh   #C5BFB5; /* border-dim — inner shadow */
-@define-color w95_dk   #7A716A; /* muted — outer dark edge */
+@define-color w95_face #343331; /* ui — buttonface */
+@define-color w95_hi   #6F6E69; /* highlight (top-left) — white glows on dark */
+@define-color w95_sh   #1C1B1A; /* bg-alt — inner shadow */
+@define-color w95_dk   #100F0F; /* black — outer dark edge */
 
 /* square everything to match niri/quickshell */
 * { border-radius: 0; }
@@ -53,7 +53,7 @@ combobox > box > button,
 splitbutton > button {
     background-image: none;
     background-color: @w95_face;
-    color: #1F1812;
+    color: #CECDC3;
     border-style: solid;
     border-width: 2px;
     border-color: @w95_hi @w95_dk @w95_dk @w95_hi; /* top right bottom left */
@@ -62,7 +62,7 @@ splitbutton > button {
     text-shadow: none;
     -gtk-icon-shadow: none;
 }
-button:hover { background-color: shade(@w95_face, 1.04); }
+button:hover { background-color: shade(@w95_face, 1.15); }
 
 /* pressed / active: invert the bevel so it looks pushed in */
 button:active,
@@ -85,8 +85,8 @@ textview,
 textview text,
 spinbutton entry,
 treeview.view {
-    background-color: #F0EBE0;
-    color: #1F1812;
+    background-color: #100F0F;
+    color: #CECDC3;
     border-style: solid;
     border-width: 2px;
     border-color: @w95_dk @w95_hi @w95_hi @w95_dk;
@@ -95,17 +95,17 @@ treeview.view {
 }
 entry:focus-within { box-shadow: inset 1px 1px @w95_sh; }
 
-/* selection = solid sky, dark text (no rounding, no gradient) */
+/* selection = solid purple, dark text (no rounding, no gradient) */
 *:selected,
 row:selected,
 *:selected:focus {
-    background-color: #A8C0D5;
-    color: #1F1812;
+    background-color: #8B7EC8;
+    color: #100F0F;
 }
 
 /* dotted Win95 focus rectangle */
 *:focus-visible {
-    outline: 1px dotted #1F1812;
+    outline: 1px dotted #CECDC3;
     outline-offset: -3px;
     box-shadow: none;
 }
@@ -122,31 +122,31 @@ scrollbar slider {
     margin: 0;
 }
 
-/* square checkboxes / radios: sunken white well, sky check */
+/* square checkboxes / radios: sunken dark well, purple check */
 check, radio {
-    background-color: #F0EBE0;
+    background-color: #100F0F;
     border: 2px solid;
     border-color: @w95_dk @w95_hi @w95_hi @w95_dk;
     box-shadow: inset 1px 1px @w95_sh;
     min-width: 13px;
     min-height: 13px;
 }
-check:checked, radio:checked { color: #1F1812; background-color: #A8C0D5; }
+check:checked, radio:checked { color: #100F0F; background-color: #8B7EC8; }
 
-/* progress: sunken trough, solid sky fill */
+/* progress: sunken trough, solid purple fill */
 progressbar > trough {
-    background-color: #F0EBE0;
+    background-color: #100F0F;
     border: 2px solid;
     border-color: @w95_dk @w95_hi @w95_hi @w95_dk;
 }
 progressbar > trough > progress {
-    background-color: #A8C0D5;
+    background-color: #8B7EC8;
     border: none;
     margin: 1px;
 }
-scale > trough          { background-color: #F0EBE0; border: 1px solid @w95_dk; min-height: 6px; }
+scale > trough          { background-color: #100F0F; border: 1px solid @w95_dk; min-height: 6px; }
 scale > trough > highlight,
-scale > trough > fill   { background-color: #A8C0D5; }
+scale > trough > fill   { background-color: #8B7EC8; }
 /* single clean bevel only — no inset shadow (avoids "box nested in box" at handle size) */
 scale > trough > slider {
     background-color: @w95_face;
@@ -158,13 +158,13 @@ scale > trough > slider {
     margin: -6px 0;
 }
 
-/* notebook / stack switcher tabs: Win95 folder tabs, sky underline (kill blue) */
+/* notebook / stack switcher tabs: Win95 folder tabs, purple underline (kill blue) */
 notebook > header { background-color: @w95_face; border: none; }
 notebook > header > tabs > tab,
 stackswitcher button,
 viewswitcher button {
     background-color: @w95_face;
-    color: #1F1812;
+    color: #CECDC3;
     border: 2px solid;
     border-color: @w95_hi @w95_dk @w95_dk @w95_hi;
     box-shadow: none;
@@ -176,11 +176,11 @@ stackswitcher button:checked,
 viewswitcher button:checked {
     background-color: @w95_face;
     border-color: @w95_dk @w95_hi @w95_hi @w95_dk; /* sunken = selected */
-    box-shadow: inset 0 -3px #A8C0D5, inset 1px 1px @w95_sh;
-    color: #1F1812;
+    box-shadow: inset 0 -3px #8B7EC8, inset 1px 1px @w95_sh;
+    color: #CECDC3;
 }
 
-/* menus / popovers: raised beveled box, flat items, sky hover */
+/* menus / popovers: raised beveled box, flat items, purple hover */
 popover > contents,
 popover > arrow,
 menu, .menu, .context-menu {
@@ -196,6 +196,6 @@ menuitem, .menu menuitem, modelbutton {
     padding: 4px 8px;
 }
 menuitem:hover, modelbutton:hover {
-    background-color: #A8C0D5;
-    color: #1F1812;
+    background-color: #8B7EC8;
+    color: #100F0F;
 }

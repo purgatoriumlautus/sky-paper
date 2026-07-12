@@ -11,23 +11,27 @@ Item {
     property string status: ""
     property bool active: false
 
+    // on the purple focus fill all text flips to Theme.bg (dark-on-accent rule)
+    readonly property bool hl: cc && cc.focusedRow === row.rowIndex
+
     width: cc ? cc.width : 0
     height: 32
 
     Rectangle {
         anchors.fill: parent
-        color: (cc && cc.focusedRow === row.rowIndex) ? Theme.accentSoft : "transparent"
+        color: row.hl ? Theme.accentSoft : "transparent"
     }
     CcText {
         anchors.left: parent.left; anchors.leftMargin: 12
         anchors.verticalCenter: parent.verticalCenter
         text: row.label
+        color: row.hl ? Theme.bg : Theme.fg
     }
     CcText {
         anchors.right: parent.right; anchors.rightMargin: 12
         anchors.verticalCenter: parent.verticalCenter
         text: row.status
-        color: row.active ? Theme.accentText : Theme.muted
+        color: row.hl ? Theme.bg : (row.active ? Theme.accentText : Theme.muted)
         elide: Text.ElideRight
         width: 180
         horizontalAlignment: Text.AlignRight

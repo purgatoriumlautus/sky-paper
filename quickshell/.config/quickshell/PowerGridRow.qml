@@ -50,8 +50,8 @@ Item {
                 property int armPhase: 0
                 readonly property color armBg: armPhase === 0 ? Theme.accentText : Theme.bg
                 readonly property color labelColor:
-                    armed ? (armPhase === 0 ? Theme.barBg : Theme.fg)
-                          : (sel ? Theme.barBg : Theme.fg)
+                    armed ? (armPhase === 0 ? Theme.bg : Theme.fg)
+                          : (sel ? Theme.bg : Theme.fg)
 
                 SequentialAnimation {
                     running: cell.armed

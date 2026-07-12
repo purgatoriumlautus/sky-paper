@@ -1,7 +1,7 @@
 import Quickshell
 import Quickshell.Io
 
-// Entry point. Sky Paper bar for niri — see Theme.qml / PALETTE.md.
+// Entry point. Flexoki Dark bar for niri — see Theme.qml / PALETTE.md.
 //
 // One Bar per monitor (Variants over Quickshell.screens), plus a SINGLE shared
 // ControlCenter + Launcher that follow the focused output via `barScreen`

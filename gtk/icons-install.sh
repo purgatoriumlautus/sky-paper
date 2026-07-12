@@ -1,6 +1,6 @@
 #!/bin/sh
 # Install the Chicago95 retro icon theme + white cursor theme (the Win95 look
-# that pairs with the Sky Paper / Win95-bevel GTK css). Not vendored: Chicago95
+# that pairs with the Flexoki Dark / Win95-bevel GTK css). Not vendored: Chicago95
 # is 30MB / 4000 files, so we fetch upstream — same rationale as firefox/install.sh.
 #
 # What it does:

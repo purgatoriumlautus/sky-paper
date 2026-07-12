@@ -2,8 +2,9 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
-// Layout short name (instant via NiriIpc). Black text. When the layout
-// changes, a white box blinks behind it (same look as an active workspace).
+// Layout short name (instant via NiriIpc). Fg text. When the layout changes,
+// an accent box blinks behind it (same look as an active workspace — the
+// label dips to Theme.bg with it: light fg on the purple fill is unreadable).
 // Click = switch to next layout.
 Item {
     id: root
@@ -18,8 +19,14 @@ Item {
 
         SequentialAnimation {
             id: blink
-            PropertyAction { target: box; property: "color"; value: "#FFFFFF" }
-            ColorAnimation { target: box; property: "color"; to: "transparent"; duration: 280 }
+            ParallelAnimation {
+                PropertyAction { target: box; property: "color"; value: Theme.accentSoft }
+                PropertyAction { target: label; property: "color"; value: Theme.bg }
+            }
+            ParallelAnimation {
+                ColorAnimation { target: box; property: "color"; to: "transparent"; duration: 280 }
+                ColorAnimation { target: label; property: "color"; to: Theme.fg; duration: 280 }
+            }
         }
     }
 

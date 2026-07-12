@@ -21,7 +21,7 @@ if [[ $EUID -ne 0 ]]; then echo "run with sudo" >&2; exit 1; fi
 
 SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 QML_SRC="$SRC/.config/quickshell-greeter"
-WALLPAPER_SRC="${WALLPAPER_SRC:-/home/segfault/Pictures/wallpapers/clouds.png}"
+WALLPAPER_SRC="${WALLPAPER_SRC:-/home/segfault/Pictures/wallpapers/mntvagaflexoki.png}"
 
 # 1. QML -> /etc (world-readable; greeter user reads it here)
 install -d -m 755 /etc/quickshell-greeter

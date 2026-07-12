@@ -13,23 +13,27 @@ Item {
     property int value: 0
     signal seek(real frac)
 
+    // on the purple focus fill all text flips to Theme.bg (dark-on-accent rule)
+    readonly property bool hl: cc && cc.focusedRow === row.rowIndex
+
     width: cc ? cc.width : 0
     height: 40
 
     Rectangle {
         anchors.fill: parent
-        color: (cc && cc.focusedRow === row.rowIndex) ? Theme.accentSoft : "transparent"
+        color: row.hl ? Theme.accentSoft : "transparent"
     }
     CcText {
         anchors.left: parent.left; anchors.leftMargin: 12
         anchors.top: parent.top; anchors.topMargin: 6
         text: row.label + row.suffix
+        color: row.hl ? Theme.bg : Theme.fg
     }
     CcText {
         anchors.right: parent.right; anchors.rightMargin: 12
         anchors.top: parent.top; anchors.topMargin: 6
         text: row.value + "%"
-        color: Theme.muted
+        color: row.hl ? Theme.bg : Theme.muted
     }
     Rectangle {
         anchors.left: parent.left; anchors.leftMargin: 12

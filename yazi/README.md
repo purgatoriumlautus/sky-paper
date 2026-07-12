@@ -1,6 +1,6 @@
-# yazi — Sky Paper
+# yazi — Flexoki Dark
 
-Sky Paper themed yazi (file manager). Stow package.
+Flexoki Dark themed yazi (file manager). Stow package.
 
 ## Deploy
 
@@ -11,10 +11,10 @@ cd ~/celestia && stow yazi      # symlinks ~/.config/yazi → here
 
 ## Files
 
-- `theme.toml` — Sky Paper colors over yazi's `theme-light.toml` preset.
+- `theme.toml` — Flexoki Dark colors over yazi's `theme-dark.toml` preset.
   UI chrome, filetype filename colors, and the `[icon]` glyph table with all
   `fg` stripped so each glyph inherits its filename's palette color.
-- `sky-paper.tmTheme` — code-preview syntax, mirrors the nvim palette roles.
+- `flexoki-dark.tmTheme` — code-preview syntax, mirrors the nvim palette roles.
 - `yazi.toml` — behavior overrides (`linemode = "size"`); rest are defaults.
 
 ## Notes
@@ -27,5 +27,5 @@ cd ~/celestia && stow yazi      # symlinks ~/.config/yazi → here
   run `install.sh`. Without them, yazi shows file info instead of a thumbnail.
 - **Delete:** stock yazi — `d` trashes (recoverable), `D` deletes permanently.
 - **Regenerate the icon table** (if upstream changes): re-run Task 5 of the
-  plan — fetch `theme-light.toml`, `sed -E 's/, fg = "[^"]*"//g'` the
+  plan — fetch `theme-dark.toml`, `sed -E 's/, fg = "[^"]*"//g'` the
   `[icon]`→EOF slice, replace the section in `theme.toml`.

@@ -11,17 +11,21 @@ Item {
     property bool on: false
     signal toggled()
 
+    // on the purple focus fill all text flips to Theme.bg (dark-on-accent rule)
+    readonly property bool hl: cc && cc.focusedRow === row.rowIndex
+
     width: cc ? cc.width : 0
     height: 32
 
     Rectangle {
         anchors.fill: parent
-        color: (cc && cc.focusedRow === row.rowIndex) ? Theme.accentSoft : "transparent"
+        color: row.hl ? Theme.accentSoft : "transparent"
     }
     CcText {
         anchors.left: parent.left; anchors.leftMargin: 12
         anchors.verticalCenter: parent.verticalCenter
         text: row.label
+        color: row.hl ? Theme.bg : Theme.fg
     }
     Item {
         width: 22; height: 12
@@ -29,15 +33,16 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         Rectangle {
             anchors.fill: parent
-            // solid fills both states — borderDim is too close to the cream
-            // bg and focus blue, so any outline disappears.
-            color: row.on ? Theme.accentText : Theme.bgAlt
+            // solid fills both states — any borderDim outline vanishes against
+            // the dark panel and the purple focus fill. On the focus fill the
+            // on-track goes dark (purple-on-purple would disappear).
+            color: row.on ? (row.hl ? Theme.bg : Theme.accentText) : Theme.bgAlt
         }
         Rectangle {
             width: 8; height: 8
             anchors.verticalCenter: parent.verticalCenter
             x: row.on ? parent.width - width - 2 : 2
-            color: row.on ? Theme.bg : Theme.muted
+            color: row.on ? (row.hl ? Theme.accentSoft : Theme.bg) : Theme.muted
             Behavior on x { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
         }
     }

@@ -1,8 +1,9 @@
 # celestia
 
-**Sky Paper** — a warm, painterly light rice: [niri](https://github.com/YaLTeR/niri)
-+ Quickshell on Arch. PC variant (the ThinkPad sibling is `laniakea`). Cream
-base, two sky accents, bitmap fonts, no dark mode — full color breakdown in
+**Flexoki Dark** — a warm ink-and-paper dark rice: [niri](https://github.com/YaLTeR/niri)
++ Quickshell on Arch. PC variant (the ThinkPad sibling is `laniakea`). Warm
+near-black base ([Flexoki](https://stephango.com/flexoki) adopted as-is),
+purple UI accent, bitmap fonts, no light mode — full color breakdown in
 [PALETTE.md](PALETTE.md).
 
 ## Deploy

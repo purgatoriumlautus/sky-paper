@@ -74,7 +74,7 @@ Scope {
 
                 Image {
                     anchors.fill: parent
-                    source: "file:///home/segfault/Pictures/wallpapers/clouds.png"
+                    source: "file:///home/segfault/Pictures/wallpapers/mntvagaflexoki.png"
                     fillMode: Image.PreserveAspectCrop
                     smooth: true
                     cache: true

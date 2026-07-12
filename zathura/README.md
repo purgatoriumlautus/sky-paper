@@ -1,6 +1,6 @@
-# zathura — Sky Paper
+# zathura — Flexoki Dark
 
-Sky Paper themed zathura (PDF / ePub / XPS / CBZ viewer). Stow package.
+Flexoki Dark themed zathura (PDF / ePub / XPS / CBZ viewer). Stow package.
 
 ## Deploy
 
@@ -11,7 +11,7 @@ cd ~/celestia && stow zathura     # symlinks ~/.config/zathura → here
 
 ## Files
 
-- `.config/zathura/zathurarc` — Sky Paper colors (palette via `PALETTE.md`),
+- `.config/zathura/zathurarc` — Flexoki Dark colors (palette via `PALETTE.md`),
   Terminess 11 for statusbar/inputbar, hjkl/J/K/gg/G stock binds kept,
   `adjust-open = width` for sane first paint.
 

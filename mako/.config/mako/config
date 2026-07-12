@@ -1,12 +1,12 @@
-# mako — Sky Paper themed notifications.
-# Cream card on the wallpaper, top-left, two-line layout
+# mako — Flexoki Dark themed notifications.
+# Dark card on the wallpaper, top-left, two-line layout
 # (bold summary + muted body). Aligned 1px right of niri's window border.
 
 font=Terminess Nerd Font Mono 12
-background-color=#F0EBE0E6
-text-color=#1F1812
+background-color=#1C1B1AE6
+text-color=#CECDC3
 border-size=1
-border-color=#C5BFB5
+border-color=#403E3C
 border-radius=0
 padding=14,18
 margin=8,9,8,8
@@ -20,13 +20,14 @@ max-history=50
 layer=overlay
 icons=0
 markup=1
-format=<b>%s</b>\n<span foreground="#7A716A">%b</span>
+format=<b>%s</b>\n<span foreground="#878580">%b</span>
 
 [urgency=low]
 default-timeout=3000
 
 [urgency=high]
 default-timeout=0
+border-color=#D14D41
 
 [mode=do-not-disturb]
 invisible=1

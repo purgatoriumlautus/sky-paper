@@ -142,7 +142,7 @@ PanelWindow {
                 opacity: launcher.anim
                 color: Theme.fg
                 selectionColor: Theme.accentSoft
-                selectedTextColor: Theme.fg
+                selectedTextColor: Theme.bg
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontSize
                 font.hintingPreference: Font.PreferFullHinting
@@ -201,7 +201,7 @@ PanelWindow {
                         anchors.leftMargin: 8
                         anchors.verticalCenter: parent.verticalCenter
                         text: modelData.label
-                        color: Theme.fg
+                        color: index === launcher.sel ? Theme.bg : Theme.fg
                         font.family: Theme.fontFamily
                         font.pixelSize: Theme.fontSize
                         font.hintingPreference: Font.PreferFullHinting

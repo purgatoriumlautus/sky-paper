@@ -40,7 +40,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             color: field.textColor
             selectionColor: Theme.accentSoft
-            selectedTextColor: Theme.fg
+            selectedTextColor: Theme.bg
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontSize
             font.hintingPreference: Font.PreferFullHinting

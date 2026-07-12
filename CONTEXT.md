@@ -14,16 +14,17 @@ Verified: 2026-07-11
   drive, purpose TBD; bun at `~/.bun`, off PATH; wlsunset unwired.
 
 ## 2. Ideology
-Verified: 2026-05-31
+Verified: 2026-07-11
 
 - Performance-driven minimalism: instant feel, minimal footprint, Unix
   one tool, one job.
 - Every package must answer three questions: simpler alternative?
   removable? replaceable by something already present?
-- Sky Paper invariants: squared corners (never rounded), no blur, smooth
+- Flexoki Dark invariants: squared corners (never rounded), no blur, smooth
   palette-matched animation, Terminess font throughout.
 - Chicago95 cursor + icons as a deliberate retro accent; GTK widgets
-  stock Adwaita light. Palette source of truth: PALETTE.md.
+  stock Adwaita dark + Flexoki named-color overrides. Palette source of
+  truth: PALETTE.md.
 - Wayland-only by choice: simpler architecture, isolation by default.
 - Honest scope: beyond the compositor layer this is a working desktop
   (VMs, office, media). Minimalism governs the DE layer, not the app set.
@@ -55,7 +56,7 @@ install.sh modules (root-owned or per-profile targets, not stowable):
 - hid_apple/ → /etc/modprobe.d (fnmode=2; read at module load — script
   pokes live sysfs too); nftables/, sysctl/, sshd/ → their /etc paths
   (see §4); firefox/ (user.js → random-hash profile dir); obsidian/
-  (Sky Paper CSS + vimrc → vault); crossgrub/ (GRUB theme).
+  (official Flexoki theme + vimrc → vault); crossgrub/ (GRUB theme).
 
 Not deployed: wallpapers/ (sources), docs/ (specs, screenshots), bin/
 (user scripts incl. pd-bt — new).

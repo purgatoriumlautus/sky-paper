@@ -9,23 +9,27 @@ Item {
     property var cc
     property int rowIndex: 0
 
+    // on the purple focus fill all text flips to Theme.bg (dark-on-accent rule)
+    readonly property bool hl: cc && cc.focusedRow === row.rowIndex
+
     width: cc ? cc.width : 0
     height: 32
 
     Rectangle {
         anchors.fill: parent
-        color: (cc && cc.focusedRow === row.rowIndex) ? Theme.accentSoft : "transparent"
+        color: row.hl ? Theme.accentSoft : "transparent"
     }
     CcText {
         anchors.left: parent.left; anchors.leftMargin: 12
         anchors.verticalCenter: parent.verticalCenter
         text: "Power"
+        color: row.hl ? Theme.bg : Theme.fg
     }
     CcText {
         anchors.right: parent.right; anchors.rightMargin: 12
         anchors.verticalCenter: parent.verticalCenter
         text: Power.labels[Power.mode]
-        color: Theme.accentText
+        color: row.hl ? Theme.bg : Theme.accentText
         elide: Text.ElideRight
         width: 180
         horizontalAlignment: Text.AlignRight
