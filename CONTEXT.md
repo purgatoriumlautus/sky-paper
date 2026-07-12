@@ -30,7 +30,7 @@ Verified: 2026-07-11
   (VMs, office, media). Minimalism governs the DE layer, not the app set.
 
 ## 3. Stack map
-Verified: 2026-07-11
+Verified: 2026-07-12
 
 Stow modules (from `~/celestia`, target under `~/.config`):
 - niri/ — compositor. Spawns qs, xwayland-satellite, swaybg, swayidle,
@@ -59,7 +59,8 @@ install.sh modules (root-owned or per-profile targets, not stowable):
   (official Flexoki theme + vimrc → vault); crossgrub/ (GRUB theme).
 
 Not deployed: wallpapers/ (sources), docs/ (specs, screenshots), bin/
-(user scripts incl. pd-bt — new).
+(user scripts incl. pd-bt — new), telegram/ (Telegram Desktop theme —
+imported via the app, not stowed).
 
 ### Packages
 Authoritative: packages.txt — names only (regenerate: `pacman -Qqe`);
