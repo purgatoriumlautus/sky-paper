@@ -169,7 +169,7 @@ FloatingWindow {
 
             Text {
                 text: (battery.status === "Charging" ? "+" : "") + battery.capacity + "%"
-                color: battery.status === "Charging" ? Theme.accentSoft : Theme.bg
+                color: battery.status === "Charging" ? Theme.accentText : Theme.fg
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontSize
                 font.hintingPreference: Font.PreferFullHinting
