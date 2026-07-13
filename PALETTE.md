@@ -207,5 +207,8 @@ darkcolor `#CECDC3` (тёмный режим читалки = наш родно�
 **obsidian:** официальная тема Flexoki из каталога (автор палитры = CEO
 Obsidian); кастомный css уходит, vimrc остаётся
 
-**fish/fastfetch/yazi:** роли из Base/Accents; директории `#4385BE` (blue),
+**fish/fastfetch:** роли из Base/Accents; директории `#4385BE` (blue),
 selection везде bg `#8B7EC8` fg `#100F0F`
+
+**yazi:** как выше, но директории и cwd — `#8B7EC8` (accent, не blue):
+purple-forward по просьбе. selection bg `#8B7EC8` fg `#100F0F`
