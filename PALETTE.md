@@ -9,7 +9,8 @@ purple. Источник: **flexoki.com** (Steph Ango), значения све�
 (dark Cool Mono → light Cool Paper → light Sky Paper → **Flexoki Dark**).
 Дизайн-решения перехода: `docs/superpowers/specs/2026-07-11-flexoki-dark-transition-design.md`.
 
-**Шрифты:** без изменений — Terminess Nerd Font Mono (UI), Unifont (kitty/bar).
+**Шрифты:** Terminess Nerd Font Mono (UI/kitty), Unifont (CJK/символы),
+Terminus Italic (kitty курсив — кастомный, собран в `terminus-italic/`).
 
 ---
 
@@ -132,7 +133,8 @@ bright = 300.
 - active border `#8B7EC8`, inactive `#403E3C`, bell `#CECDC3`
 - active tab bg `#8B7EC8` fg `#100F0F`
 - inactive tab bg `#1C1B1A` fg `#878580`
-- font: Unifont 12pt
+- font: Terminess Nerd Font Mono 12pt; курсив Terminus Italic (кастом);
+  Unifont для CJK/символов (symbol_map)
 
 **niri border:**
 - active `#CECDC3` (fg ink — белая рамка, не accent fill)

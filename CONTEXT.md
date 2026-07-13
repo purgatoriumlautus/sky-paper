@@ -25,9 +25,10 @@ Verified: 2026-07-11
 - One resident Qt process (quickshell) is the whole desktop chrome: bar,
   control center, locker, launcher; greeter is the same stack.
 - Flexoki Dark invariants: squared corners (never rounded), no blur,
-  Terminess Nerd Font Mono (Unifont for bitmap-crisp bar/CJK/italic); GTK
-  widgets stock Adwaita dark + Flexoki named-color overrides. Palette
-  source of truth: PALETTE.md — never invent hex values.
+  Terminess Nerd Font Mono (Unifont for bitmap-crisp bar/CJK); kitty italic
+  = the custom Terminus Italic (`terminus-italic/`); GTK widgets stock
+  Adwaita dark + Flexoki named-color overrides. Palette source of truth:
+  PALETTE.md — never invent hex values.
 - No decorative Unicode glyphs in QML — bitmap fonts render them unevenly;
   pixel primitives (Rectangles) instead. Don't iterate palette or fonts
   without explicit direction from Ars.
@@ -65,6 +66,9 @@ install.sh modules (root-owned or per-profile targets, not stowable):
   → random-hash *.default-release profile); obsidian/ (official Flexoki
   theme + vimrc/hotkeys → per-vault .obsidian/); crossgrub/ (GRUB theme +
   Terminess .pf2 fonts); tlp/ → /etc/tlp.d/00-aru.conf (thresholds 85/90).
+- terminus-italic/ → ~/.local/share/fonts (custom Terminus Italic for kitty;
+  install.sh ships prebuilt TTFs, build.sh regenerates via fontforge).
+
 
 Not deployed / manual: wallpapers/ (Flexoki duotone sources +
 `mntvagaflexoki.png` current → ~/Pictures/wallpapers), docs/ (specs,
@@ -76,7 +80,8 @@ drift check in §META. Must be generated on the laptop itself. Non-obvious
 keepers: passim (masked, fwupd hard dep), swaylock (manual fallback lock),
 cage (`--asexplicit`, greeter runs on it), smartmontools (battery/disk
 health alongside TLP), tree-sitter-cli (nvim-treesitter main compiles parsers
-via it), sesh-bin (tmux session popup on M-s).
+via it), sesh-bin (tmux session popup on M-s), fontforge (build dep for
+terminus-italic — deploy needs only the prebuilt TTFs).
 
 ## 4. Security posture — deltas from Arch defaults, each with a live check
 Verified: 2026-07-11
