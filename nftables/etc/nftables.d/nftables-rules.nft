@@ -1,0 +1,38 @@
+#!/usr/bin/nft -f
+
+destroy table inet filter
+
+  table inet filter {
+      chain input {
+          type filter hook input priority filter; policy drop;
+
+          # DHCP must come before invalid-drop
+          udp sport 67 udp dport 68 accept comment "dhcpv4 client"
+          udp sport 547 udp dport 546 accept comment "dhcpv6 client"
+
+          ct state invalid drop comment "drop invalid"
+          ct state { established, related } accept comment "tracked"
+          iif "lo" accept comment "loopback"
+          # iif "virbr0" accept comment "libvirt bridge"	# uncomment if want the bridge to access the net
+          iifname "docker0" accept comment "docker bridge"
+
+          meta l4proto { icmp, ipv6-icmp } accept comment "icmp"
+
+          # tcp dport 22 accept comment "sshd"   # uncomment if you actually need inbound ssh
+
+          meta pkttype host limit rate 5/second burst 5 packets counter reject with icmpx admin-prohibited
+          counter comment "fell through to policy drop"
+      }
+
+      chain forward {
+          type filter hook forward priority filter; policy drop;
+          iifname "docker0" accept comment "accept forwarding to docker"
+          ct state {established, related} accept comment "tracked"
+      }
+
+      chain output {
+          type filter hook output priority filter; policy accept;
+      }
+  }
+
+
