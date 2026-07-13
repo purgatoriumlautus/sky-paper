@@ -21,7 +21,8 @@ Verified: 2026-07-11
 - Every package must answer three questions: simpler alternative?
   removable? replaceable by something already present?
 - Flexoki Dark invariants: squared corners (never rounded), no blur, smooth
-  palette-matched animation, Terminess font throughout.
+  palette-matched animation, Terminess font throughout (kitty italic = the
+  custom Terminus Italic, `terminus-italic/`).
 - Chicago95 cursor + icons as a deliberate retro accent; GTK widgets
   stock Adwaita dark + Flexoki named-color overrides. Palette source of
   truth: PALETTE.md.
@@ -56,7 +57,9 @@ install.sh modules (root-owned or per-profile targets, not stowable):
 - hid_apple/ → /etc/modprobe.d (fnmode=2; read at module load — script
   pokes live sysfs too); nftables/, sysctl/, sshd/ → their /etc paths
   (see §4); firefox/ (user.js → random-hash profile dir); obsidian/
-  (official Flexoki theme + vimrc → vault); crossgrub/ (GRUB theme).
+  (official Flexoki theme + vimrc → vault); crossgrub/ (GRUB theme);
+  terminus-italic/ → ~/.local/share/fonts (custom Terminus Italic for kitty;
+  install.sh ships prebuilt TTFs, build.sh regenerates via fontforge).
 
 Not deployed: wallpapers/ (sources), docs/ (specs, screenshots), bin/
 (user scripts incl. pd-bt — new), telegram/ (Telegram Desktop theme —
@@ -67,7 +70,8 @@ Authoritative: packages.txt — names only (regenerate: `pacman -Qqe`);
 drift check in §META. Non-obvious keepers: xwayland-satellite (X11 apps
 under niri), dnsmasq (libvirt dep), iptables (Docker dep), terminus-font
 vs ttf-terminus-nerd (de-dup pending), postgresql + tealdeer (newly
-legitimized; three-questions review pending).
+legitimized; three-questions review pending), fontforge (build dep for
+terminus-italic — deploy needs only the prebuilt TTFs).
 
 ## 4. Security posture — deltas from Arch defaults, each with a live check
 Verified: 2026-07-11

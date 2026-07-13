@@ -26,6 +26,7 @@ fd
 ffmpegthumbnailer
 firefox
 fish
+fontforge
 freerdp
 fzf
 git
@@ -99,6 +100,7 @@ ttf-nerd-fonts-symbols-mono
 ttf-terminus-nerd
 tumbler
 unzip
+usbutils
 virt-manager
 virt-viewer
 virtio-win
