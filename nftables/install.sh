@@ -37,7 +37,6 @@ fi
 
 # 4. Enable + load
 systemctl enable --now nftables
-systemctl reload nftables
 
 echo "Installed. Live ruleset: nft list ruleset"
-echo "Rollback: cp /etc/nftables.conf.bak /etc/nftables.conf && systemctl reload nftables"
+echo "Rollback: cp /etc/nftables.conf.bak /etc/nftables.conf && systemctl restart nftables"

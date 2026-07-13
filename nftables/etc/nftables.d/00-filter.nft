@@ -12,6 +12,8 @@
 #   - virbr0 allow is commented: uncomment when libvirt VMs need host
 #     services (dnsmasq DNS, etc.). Off by default = smaller attack surface.
 
+destroy table inet filter
+
 table inet filter {
   chain input {
     type filter hook input priority filter; policy drop;
@@ -24,19 +26,22 @@ table inet filter {
     ct state { established, related } accept comment "tracked"
     iif "lo" accept comment "loopback"
     # iif "virbr0" accept comment "libvirt bridge"   # uncomment if VMs need host access
+    
+    # comment to disable docker bridge
+    iifname "docker0" accept comment "docker bridge"   
 
     meta l4proto { icmp, ipv6-icmp } accept comment "icmp"
 
     # tcp dport 22 accept comment "sshd"             # uncomment for inbound ssh
 
-    meta pkttype host limit rate 5/second burst 5 packets counter \
-      reject with icmpx admin-prohibited
+    meta pkttype host limit rate 5/second burst 5 packets counter reject with icmpx admin-prohibited
     counter comment "fell through to policy drop"
   }
 
   chain forward {
     type filter hook forward priority filter; policy accept;
-    # Docker manages its own forward rules via iptables-nft.
+    iifname "docker0" accept comment "accept forwarding to docker"
+    ct state { established, related } accept comment "accept tracked traffic"
   }
 
   chain output {
