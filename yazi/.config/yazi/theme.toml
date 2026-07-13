@@ -1,12 +1,12 @@
 #:schema https://yazi-rs.github.io/schemas/theme.json
 # Flexoki Dark — overrides theme-dark.toml preset. Palette: PALETTE.md.
 # bg #100F0F / bg-alt #1C1B1A / border #403E3C / faint #575653 / muted #878580 / fg #CECDC3
-# accent #8B7EC8 (purple: fill + text) / accent-bright #A699D0 / dirs #4385BE
+# accent #8B7EC8 (purple: fill + text) / accent-bright #A699D0 / dirs #8B7EC8 (accent)
 # Text on the purple accent is always dark #100F0F (light fg on it slips to 2.2:1).
 # Full accent set exists now: red #D14D41 = error, green #879A39 = copied/ok.
 
 [mgr]
-cwd = { fg = "#4385BE" }
+cwd = { fg = "#8B7EC8" }
 
 # Find
 find_keyword  = { fg = "#8B7EC8", bold = true, italic = true, underline = true }
@@ -123,8 +123,8 @@ rules = [
 	# Dummy file
 	{ url = "*", is = "dummy",  fg = "#575653" },
 	{ url = "*/", is = "dummy", fg = "#575653" },
-	# Fallback: directories blue, files inherit global fg
-	{ url = "*/", fg = "#4385BE" },
+	# Fallback: directories accent purple, files inherit global fg
+	{ url = "*/", fg = "#8B7EC8" },
 ]
 
 # Icons — upstream glyph table, all fg stripped so each glyph

@@ -214,5 +214,8 @@ selection, галочки; текст на пурпуре только тёмн�
 сплошной `#100F0F` (вшитый тайл). Импорт через приложение, не stow —
 `telegram/` module, детали в его README.
 
-**fish/fastfetch/yazi:** роли из Base/Accents; директории `#4385BE` (blue),
+**fish/fastfetch:** роли из Base/Accents; директории `#4385BE` (blue),
 selection везде bg `#8B7EC8` fg `#100F0F`
+
+**yazi:** как выше, но директории и cwd — `#8B7EC8` (accent, не blue):
+purple-forward по просьбе. selection bg `#8B7EC8` fg `#100F0F`
