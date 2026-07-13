@@ -160,6 +160,44 @@ Scope {
 
                 // (battery readout removed — celestia is a desktop, no BAT0)
 
+                // Top-right corner cluster — mirrors the bar's [language] [λ]
+                // (Bar.qml), which is hidden beneath the lock surface while
+                // locked. Same cells, same 9px inset, same top strip → lands in
+                // the exact bar pixels. Painted BEFORE `blackout` so it vanishes
+                // with everything else when the screen sleeps. The reveal
+                // MouseArea sits above it, so the language cell shows + blinks on
+                // change but isn't click-to-switch here (no accidental flips).
+                Row {
+                    anchors.top: parent.top
+                    anchors.right: parent.right
+                    anchors.rightMargin: 9
+                    spacing: 0
+
+                    Language {}
+
+                    // Decorative λ. The bar's glyph toggles the control-center,
+                    // but that layer lives below the lock surface — dead here — so
+                    // this is a stripped, inert copy: accent glyph, no MouseArea,
+                    // no cc/host wiring. Pure visual symmetry with the desktop.
+                    Rectangle {
+                        height: Theme.barHeight
+                        width: Theme.cellSize
+                        radius: 0
+                        color: "transparent"
+
+                        Text {
+                            x: Math.round((parent.width - width) / 2)
+                            y: Math.round((parent.height - height) / 2)
+                            renderType: Text.NativeRendering
+                            font.hintingPreference: Font.PreferFullHinting
+                            text: "λ"
+                            color: Theme.accentText
+                            font.family: Theme.fontFamily
+                            font.pixelSize: Theme.fontSize
+                        }
+                    }
+                }
+
                 // Asleep blackout. Sits above wallpaper, dim, and clock —
                 // when scope.awake is false, the screen is fully black; the
                 // first key/click fades it out (350ms) to reveal the dim
@@ -194,11 +232,19 @@ Scope {
                         return
                     }
                     if (!scope.revealed) {
-                        // Esc on the clock is a no-op; any other key summons the
-                        // empty box. The field is NOT focused yet — that waits for
-                        // this key's release (onReleased) so neither the key nor
-                        // its autorepeat can be injected. Password starts blank.
-                        if (event.key === Qt.Key_Escape) {
+                        // Summon the empty box only on a key that produces TEXT
+                        // (event.text non-empty). The field is NOT focused yet —
+                        // that waits for this key's release (onReleased) so neither
+                        // the key nor its autorepeat can be injected. Password blank.
+                        //
+                        // The text gate is what keeps the layout toggle from popping
+                        // the box: it's Alt+Shift (niri xkb grp:alt_shift_toggle), and
+                        // niri delivers the switch as bare modifiers / an ISO_Next_Group
+                        // keysym — none of which carry text. Enumerating Qt.Key_* was
+                        // fragile (the toggle keysym isn't Alt/Shift); "does it type a
+                        // character" is the real question, and a password key always does.
+                        // Esc carries a text byte, so it needs its own no-op check.
+                        if (event.key === Qt.Key_Escape || event.text.length === 0) {
                             event.accepted = true
                             return
                         }
