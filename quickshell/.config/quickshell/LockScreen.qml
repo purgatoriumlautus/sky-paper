@@ -158,17 +158,23 @@ Scope {
                     }
                 }
 
-                // Battery readout, top-right. Mirrors the greeter's: reads the
-                // world-readable BAT0/uevent via cat (no upower dep), cream text
-                // with a "+" prefix while charging (Terminus-safe glyphs only).
-                // Declared before the blackout so it hides under it when asleep.
+                // Top-right cluster — mirrors the bar's [battery][language][λ]
+                // (Bar.qml), hidden beneath the lock surface while locked. Same
+                // 9px right inset + top strip → lands in the bar pixels. Declared
+                // before `blackout` so it hides under it when asleep. The reveal
+                // MouseArea sits above, so the language cell shows + blinks on a
+                // layout change but isn't click-to-switch here (no accidental flip).
                 Row {
-                    id: battery
+                    id: topCluster
                     anchors.top: parent.top
                     anchors.right: parent.right
-                    anchors.margins: 24
-                    spacing: 8
+                    anchors.rightMargin: 9      // matches the bar's right cluster
+                    height: Theme.barHeight
+                    spacing: 0
 
+                    // Battery readout, mirrors the greeter's: reads the
+                    // world-readable BAT0/uevent via cat (no upower dep), cream
+                    // text with a "+" prefix while charging (Terminus-safe glyphs).
                     property int    capacity: 0
                     property string status: ""
 
@@ -183,8 +189,8 @@ Scope {
                                     if (idx < 0) continue
                                     const k = lines[i].substring(0, idx)
                                     const v = lines[i].substring(idx + 1)
-                                    if (k === "POWER_SUPPLY_CAPACITY")    battery.capacity = parseInt(v)
-                                    else if (k === "POWER_SUPPLY_STATUS") battery.status   = v
+                                    if (k === "POWER_SUPPLY_CAPACITY")    topCluster.capacity = parseInt(v)
+                                    else if (k === "POWER_SUPPLY_STATUS") topCluster.status   = v
                                 }
                             }
                         }
@@ -197,12 +203,45 @@ Scope {
                     }
 
                     Text {
-                        text: (battery.status === "Charging" ? "+" : "") + battery.capacity + "%"
-                        color: battery.status === "Charging" ? Theme.accentSoft : Theme.bg
+                        anchors.verticalCenter: parent.verticalCenter
+                        rightPadding: Theme.cellPad * 2
+                        text: (topCluster.status === "Charging" ? "+" : "") + topCluster.capacity + "%"
+                        color: topCluster.status === "Charging" ? Theme.accentText : Theme.fg
                         font.family: Theme.fontFamily
                         font.pixelSize: Theme.fontSize
                         font.hintingPreference: Font.PreferFullHinting
                         renderType: Text.NativeRendering
+                    }
+
+                    // NiriIpc-driven layout indicator (blinks on change). Reused
+                    // from the bar; its click-to-switch is masked by the reveal
+                    // MouseArea above. laniakea pins the layout to English on lock
+                    // (usLayoutProc), so this normally reads EN — a live check that
+                    // the pin held before the password goes to PAM.
+                    Language {}
+
+                    // Decorative λ. The bar's glyph toggles the control-center,
+                    // but that layer lives below the lock surface — dead here — so
+                    // this is a stripped, inert copy: accent glyph, no MouseArea,
+                    // no cc/host wiring. Pure visual symmetry with the desktop.
+                    Rectangle {
+                        height: Theme.barHeight
+                        width: lambdaIcon.implicitWidth + 2 * Theme.cellPad
+                        radius: 0
+                        color: "transparent"
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        Text {
+                            id: lambdaIcon
+                            x: Math.round((parent.width - width) / 2)
+                            y: Math.round((parent.height - height) / 2)
+                            renderType: Text.NativeRendering
+                            font.hintingPreference: Font.PreferFullHinting
+                            text: "λ"
+                            color: Theme.accentText
+                            font.family: Theme.fontFamily
+                            font.pixelSize: Theme.fontSize
+                        }
                     }
                 }
 
@@ -240,11 +279,17 @@ Scope {
                         return
                     }
                     if (!scope.revealed) {
-                        // Esc on the clock is a no-op; any other key summons the
-                        // empty box. The field is NOT focused yet — that waits for
-                        // this key's release (onReleased) so neither the key nor
-                        // its autorepeat can be injected. Password starts blank.
-                        if (event.key === Qt.Key_Escape) {
+                        // Summon the empty box only on a key that produces TEXT
+                        // (event.text non-empty). The field is NOT focused yet —
+                        // that waits for this key's release (onReleased) so neither
+                        // the key nor its autorepeat can be injected. Password blank.
+                        //
+                        // The text gate keeps a bare modifier (Alt+Shift layout
+                        // toggle, ISO_Next_Group, lone Ctrl/Super) from popping the
+                        // box — none of those carry text. "Does it type a character"
+                        // is the real question, and a password key always does. Esc
+                        // carries a text byte, so it needs its own no-op check.
+                        if (event.key === Qt.Key_Escape || event.text.length === 0) {
                             event.accepted = true
                             return
                         }
