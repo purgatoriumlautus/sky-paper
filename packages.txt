@@ -77,6 +77,7 @@ quickshell
 remmina
 resvg
 satty
+sesh-bin
 slurp
 spice
 spice-gtk
