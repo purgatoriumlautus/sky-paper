@@ -931,10 +931,17 @@ do
 
     vim.api.nvim_set_current_buf(buf)
     local w = vim.api.nvim_get_current_win()
+    -- Window-local dashboard look. Capture prev so we can restore on leave:
+    -- opening a file in THIS window would otherwise inherit nonumber, which
+    -- then leaks into saved sessions via 'localoptions'. Read prev here (after
+    -- set_current_buf above) so a resize re-render's restore has already run.
+    local prev_wo = {}
     for opt, val in pairs({ number = false, relativenumber = false, list = false,
-                            cursorline = false, wrap = false }) do vim.wo[w][opt] = val end
-    vim.wo[w].signcolumn = 'no'
-    vim.wo[w].fillchars = 'eob: '
+                            cursorline = false, wrap = false,
+                            signcolumn = 'no', fillchars = 'eob: ' }) do
+      prev_wo[opt] = vim.wo[w][opt]
+      vim.wo[w][opt] = val
+    end
     if first_sess then pcall(vim.api.nvim_win_set_cursor, w, { top + first_sess, 0 }) end
 
     -- Hide the block cursor while the dashboard is up; restore on leave. (Read
@@ -947,7 +954,12 @@ do
     vim.o.guicursor = 'a:DashCursor'
     vim.api.nvim_create_autocmd({ 'BufLeave', 'BufWipeout' }, {
       buffer = buf, once = true,
-      callback = function() vim.o.guicursor = prev_guicursor end,
+      callback = function()
+        vim.o.guicursor = prev_guicursor
+        if vim.api.nvim_win_is_valid(w) then
+          for opt, val in pairs(prev_wo) do vim.wo[w][opt] = val end
+        end
+      end,
     })
 
     -- buffer-local keys
