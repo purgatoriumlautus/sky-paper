@@ -21,5 +21,11 @@ switch = true
 # (shifted) and shows on both screens (duplicated). `last` uses a single output,
 # so the greeter centers correctly on one monitor; the other stays dark. (Single-
 # monitor laniakea never hit this.)
-command = "cage -s -m last -- env QT_QPA_PLATFORM=wayland QT_WAYLAND_DISABLE_WINDOWDECORATION=1 qs -p /etc/quickshell-greeter"
+#
+# XKB_DEFAULT_LAYOUT=us forces the password field to English regardless of the
+# system locale1 keymap (niri's session runs "us,ru,ua" — the greeter must not
+# inherit a Cyrillic layout or PAM never matches). It's set on the OUTER `env`
+# (before cage) so cage's wlroots keyboard builds its keymap from it —
+# libxkbcommon reads XKB_DEFAULT_* from cage's own environment, not qs's.
+command = "env XKB_DEFAULT_LAYOUT=us cage -s -m last -- env QT_QPA_PLATFORM=wayland QT_WAYLAND_DISABLE_WINDOWDECORATION=1 qs -p /etc/quickshell-greeter"
 user = "greeter"

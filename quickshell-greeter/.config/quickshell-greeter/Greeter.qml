@@ -37,8 +37,21 @@ FloatingWindow {
     function reveal() {
         if (revealed) return
         revealed = true
-        focusDelay.restart()
         idleTimer.restart()
+        // Focus is NOT taken here — a key-reveal focuses on the summon key's
+        // release (onReleased), a click-reveal via focusDelay. This keeps the
+        // summoning key (and its autorepeat) out of the field.
+    }
+
+    // Power keys, live in every state (asleep / clock / revealed):
+    //   F2 → power off, F5 → reboot. No suspend key — this desktop deliberately
+    //   never suspends (see swayidle), same as the user-shell LockScreen.
+    // greetd's session is the active session on seat0/vt1, so polkit's
+    // allow_active grants poweroff/reboot without a password.
+    function handlePowerKey(event) {
+        if (event.key === Qt.Key_F2)      { poweroffProc.running = true; event.accepted = true; return true }
+        else if (event.key === Qt.Key_F5) { rebootProc.running   = true; event.accepted = true; return true }
+        return false
     }
 
     // 10-min idle → asleep (full black). Any key/click restarts via wake()
@@ -55,6 +68,9 @@ FloatingWindow {
         id: surface
         anchors.fill: parent
         focus: true
+        // True while the summoning key is held: focus stays here (not the field)
+        // so the key and its autorepeat can't be typed. Cleared on its release.
+        property bool armed: false
 
         // Wallpaper. Installed path; install.sh copies mntvagaflexoki.png here.
         Image {
@@ -134,40 +150,70 @@ FloatingWindow {
             onClicked: {
                 if (!root.awake) { root.wake(); return }
                 root.reveal()
+                focusDelay.restart()   // click has no KeyRelease; focus via timer
             }
         }
 
         Keys.onPressed: function (event) {
+            if (root.handlePowerKey(event)) return
             if (!root.awake) {
                 root.wake()
                 event.accepted = true
                 return
             }
             if (root.revealed) {
-                // Forwarded by LoginBox's own keymap; just bump idle so the
-                // user typing doesn't dim under them.
+                // Summon key still held → swallow its autorepeat (field not
+                // focused until release).
+                if (surface.armed) { event.accepted = true; return }
+                // Field owns focus now; just bump idle so typing doesn't dim.
                 idleTimer.restart()
                 return
             }
-            const printable = event.text.length > 0
-                && event.key !== Qt.Key_Escape
-                && event.key !== Qt.Key_Return
-                && event.key !== Qt.Key_Enter
-                && event.key !== Qt.Key_Tab
-                && event.key !== Qt.Key_Backtab
+            // First key reveals the box but is NOT injected — the field is
+            // focused only on this key's release (onReleased), so neither it nor
+            // its autorepeat lands in the field. Password always starts empty.
             root.reveal()
-            if (printable) loginBox.injectChar(event.text)
+            surface.armed = true
+            armBackstop.restart()
             event.accepted = true
         }
 
-        // Reach back into the LoginBox once the slot has begun opening so the
-        // field has focus even if the reveal was a click (no keystroke to
-        // forward).
+        // Summon key released → safe to focus the field now.
+        Keys.onReleased: function (event) {
+            if (surface.armed && root.revealed) {
+                armBackstop.stop()
+                surface.armed = false
+                loginBox.focusInitial()
+                event.accepted = true
+            }
+        }
+
+        // Lockout safety: if the summon key's release never arrives, focus the
+        // field anyway after 800ms so login can't get stuck. A normal tap
+        // releases first and cancels this.
+        Timer {
+            id: armBackstop
+            interval: 800
+            repeat: false
+            onTriggered: {
+                if (surface.armed) {
+                    surface.armed = false
+                    loginBox.focusInitial()
+                }
+            }
+        }
+
+        // Focus path for a CLICK reveal (no keystroke to release). Focuses the
+        // right field once the slot has begun opening.
         Timer {
             id: focusDelay
             interval: 30
             repeat: false
             onTriggered: loginBox.focusInitial()
         }
+
+        // Power keys (F2/F5) — see root.handlePowerKey().
+        Process { id: poweroffProc; command: ["systemctl", "poweroff"]; running: false }
+        Process { id: rebootProc;   command: ["systemctl", "reboot"];   running: false }
     }
 }

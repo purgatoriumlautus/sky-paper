@@ -36,8 +36,8 @@ Rectangle {
     property string statusText: ""
     property color  statusColor: Theme.muted
     // Set during onCompleted from the persisted last-user file. Drives
-    // focusInitial() / injectChar() so the first keystroke after Greeter
-    // reveals lands in the right field.
+    // focusInitial() so the field focused after Greeter reveals is the
+    // right one (password when the user is remembered, else username).
     property bool   rememberedUser: false
 
     // Begin (or restart) the PAM conversation. Idempotent-ish: only kicks off
@@ -63,20 +63,6 @@ Rectangle {
     function focusInitial() {
         if (rememberedUser) passInput.forceActiveFocus()
         else                userInput.forceActiveFocus()
-    }
-
-    // Called by Greeter when the reveal was triggered by a printable
-    // keystroke — seed the field with that character.
-    function injectChar(c) {
-        if (rememberedUser) {
-            passInput.text = c
-            passInput.cursorPosition = passInput.text.length
-            passInput.forceActiveFocus()
-        } else {
-            userInput.text = c
-            userInput.cursorPosition = userInput.text.length
-            userInput.forceActiveFocus()
-        }
     }
 
     // Preview-mode escape hatch. In production (greetd active) Esc is a no-op
@@ -108,7 +94,7 @@ Rectangle {
 
     // No initial focus or appearAnim — Greeter drives both via the collapsing
     // slot (clock-first reveal). We only stash the remembered user here so
-    // focusInitial() / injectChar() know which field to target.
+    // focusInitial() knows which field to target.
     Component.onCompleted: {
         const remembered = lastUserFile.text().trim()
         if (remembered.length > 0) {
