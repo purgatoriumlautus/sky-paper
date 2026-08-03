@@ -160,6 +160,33 @@ vim.api.nvim_create_autocmd('QuitPre', {
   end,
 })
 
+-- Format Go on save (gopls: gofmt + organize imports).
+-- gopls is already the Go LSP (see mason-lspconfig ensure_installed). On :w we
+-- run its source.organizeImports code action (goimports — add missing / drop
+-- unused imports) then its formatter (gofmt-equivalent). buf_request_sync +
+-- format are synchronous so the write picks up the reformatted buffer. No extra
+-- formatter or plugin — gopls does both jobs.
+vim.api.nvim_create_autocmd('BufWritePre', {
+  pattern = '*.go',
+  callback = function(args)
+    local client = vim.lsp.get_clients({ bufnr = args.buf, name = 'gopls' })[1]
+    if not client then return end
+    -- goimports: pull edits from the organizeImports code action and apply them.
+    local params = vim.lsp.util.make_range_params(0, client.offset_encoding)
+    params.context = { only = { 'source.organizeImports' }, diagnostics = {} }
+    local res = vim.lsp.buf_request_sync(args.buf, 'textDocument/codeAction', params, 1000)
+    for _, r in pairs(res or {}) do
+      for _, action in pairs(r.result or {}) do
+        if action.edit then
+          vim.lsp.util.apply_workspace_edit(action.edit, client.offset_encoding)
+        end
+      end
+    end
+    -- gofmt
+    vim.lsp.buf.format({ bufnr = args.buf, timeout_ms = 1000 })
+  end,
+})
+
 -- Clear search highlight with Esc
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>', { desc = 'Clear search highlight' })
 
