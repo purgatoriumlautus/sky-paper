@@ -1,4 +1,4 @@
-# celestia explicit packages (names only) — 2026-07-11
+# celestia explicit packages (names only) — 2026-08-03
 # regenerate: pacman -Qqe > (this file, below the header)
 # drift check: diff <(grep -v '^#\|^$' packages.txt | sort) <(pacman -Qqe | sort)
 
@@ -58,6 +58,7 @@ noto-fonts-emoji
 npm
 obs-studio
 obsidian
+ocenaudio-bin
 openvpn
 otf-unifont
 pacman-contrib
@@ -71,6 +72,7 @@ plocate
 postgresql
 python-pip
 python-pyotp
+qbittorrent
 qemu-full
 qemu-guest-agent
 qt6-declarative

@@ -103,13 +103,15 @@ as half-screen siblings — shared app_id, late title). Deploy: firefox/install.
 faillock: active via /etc/pam.d/system-auth. Verify: `faillock`
 
 ## 5. Machine deltas — vs laniakea (ThinkPad X280 repo)
-Verified: 2026-07-11 (celestia side; laniakea facts as of 2026-05-31)
+Verified: 2026-08-03 (both sides, diffed against origin/laniakea)
 
 - Docker + libvirt here → ip_forward=1 and nftables forward-accept;
   laniakea has neither (ip_forward commented out, forward drop).
 - No battery/tlp modules here (desktop); laniakea carries them.
-- Greeter: laniakea's is AHEAD (any-key-reveal, power keys, battery
-  widget); sync direction laniakea → celestia.
+- Greeter: synced from laniakea (reveal on summon-key RELEASE, F2/F5 power
+  keys, XKB_DEFAULT_LAYOUT=us). Not taken: battery widget, F1 suspend.
+- Shell/niri: celestia is AHEAD (multi-monitor bars, layer-surface popups,
+  sync-ws); sync direction celestia → laniakea.
 - PC-only: hid_apple, dual-monitor niri config, xwayland-satellite.
 
 ## §META — maintenance rules
