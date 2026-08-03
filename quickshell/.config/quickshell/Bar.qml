@@ -104,9 +104,22 @@ PanelWindow {
     // without closing the CC. Note: ControlCenter.onVisibleChanged
     // synchronously resets focusedRow to 0 and powerVisible to false on
     // open, so we set both AFTER openCc().
+    // Keep-awake. CC "Auto-suspend" off → hold a Wayland idle inhibitor on the
+    // bar surface, which is always mapped. niri then stops reporting idle and
+    // swayidle's whole timeline pauses (dim, lock+screen-off, suspend), so the
+    // screen stays on. Lid close is unaffected and always suspends — see
+    // SuspendInhibit.qml for why the two earlier mechanisms were wrong.
+    IdleInhibitor {
+        window: bar
+        enabled: !SuspendInhibit.enabled
+    }
+
     IpcHandler {
         target: "controlcenter"
         function toggle(): void { cc.toggleCc(); }
+        // keepAwake: inverse of the row label — true = stay awake, screen on.
+        function keepAwake(on: bool): void { SuspendInhibit.enabled = !on; }
+        function keepAwakeState(): string { return SuspendInhibit.enabled ? "off" : "on"; }
         function open(): void { cc.openCc(); }
         function close(): void { cc.closeCc(); }
         function togglePower(): void {

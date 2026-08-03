@@ -79,6 +79,8 @@ PopupWindow {
         WifiCtl.refreshActive();
         BtCtl.refreshActive();
         Notifications.refresh();
+        // No SuspendInhibit probe: its state is in-process (an IdleInhibitor
+        // held by Bar.qml), not external state that can drift.
     }
     onVisibleChanged: if (visible) {
         refresh();
@@ -403,7 +405,8 @@ PopupWindow {
                 onToggled: NightLight.toggle()
             }
 
-            // 4 — Auto-suspend (off = block systemctl suspend + lid suspend)
+            // 4 — Auto-suspend (off = skip swayidle's 30m suspend only;
+            //      lid close and explicit Sleep are never gated)
             CcToggleRow {
                 cc: cc; rowIndex: 4; label: "Auto-suspend"
                 on: SuspendInhibit.enabled

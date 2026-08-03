@@ -16,6 +16,9 @@ timeout 300 'brightnessctl --save && brightnessctl set 50%-' resume 'brightnessc
 timeout 600 'qs ipc call lock lock; niri msg action power-off-monitors' resume 'niri msg action power-on-monitors'
 
 # 30m — suspend. No resume hook: logind/swayidle re-init on wake.
+# Nothing is gated here: the CC "Auto-suspend" toggle works by holding a
+# Wayland idle inhibitor (Bar.qml), so when it's off this whole file's timeline
+# never advances and every step above is paused too.
 timeout 1800 'systemctl suspend'
 
 # Lock BEFORE any suspend (idle, lid, manual) so wake shows the lock

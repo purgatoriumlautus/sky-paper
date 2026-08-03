@@ -32,9 +32,18 @@ Plus always-on hooks:
   would leave a window where the screen is dark but unlocked (a mouse nudge
   shows the desktop). Lock paints first so there's no bare-desktop frame.
 - **Auto-suspend is toggleable** from the Quickshell control center
-  ("Auto-suspend" row). Off → a `systemd-inhibit --mode=block --what=sleep`
-  process blocks the 30m suspend *and* lid-close suspend; dim and
-  lock+screen-off still work. Session-scoped, resets to on each login.
+  ("Auto-suspend" row). Off → `Bar.qml` holds a Wayland idle inhibitor
+  (`IdleInhibitor`, zwp_idle_inhibit) on the bar surface, niri stops reporting
+  idle, and **this entire timeline pauses** — no dim, no lock, no screen-off,
+  no suspend. Same mechanism fullscreen video already uses. State lives only in
+  the qs process, so a crash fails safe (pipeline resumes).
+- **Lid close is never inhibited.** zwp_idle_inhibit only suppresses idle
+  notifications to swayidle; logind's `HandleLidSwitch` is untouched, so
+  shutting the lid always sleeps. This matters: the toggle used to be a
+  `systemd-inhibit --mode=block --what=sleep` process, which blocked *every*
+  logind sleep path — with auto-suspend off, closing the lid did nothing and
+  the machine stayed awake in a closed bag (suspected cause of the previous
+  battery's death). See `power/README.md`.
 - **Video**: mpv / fullscreen browser video hold a wayland idle-inhibitor,
   so the timeline pauses. Small windowed browser video may not — known
   limitation, use fullscreen.
