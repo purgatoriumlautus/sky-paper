@@ -1,15 +1,15 @@
 # CONTEXT.md — laniakea · system manifest (maintenance rules: §META)
 
 ## 1. Machine identity
-Verified: 2026-07-11
+Verified: 2026-07-31
 
 - Hostname `laniakea`, user `aru`, repo `~/dotfiles` (branch `laniakea`).
   ThinkPad X280 laptop; companion to celestia (PC, branch `celestia`).
 - Intel 8th-gen (i5/i7 — exact model unknown), iGPU UHD 620, intel_pstate
   active. RAM 16 GB, NVMe 238 GB.
 - Display eDP-1: 1920x1080, 12.5", scale=1 in niri.
-- Battery BAT0 (01AV471); TLP charge thresholds 85/90. Power knob is EPP —
-  the X280 exposes no `/sys/firmware/acpi/platform_profile`.
+- Battery BAT0 (01AV470 Cellonic, 44.46 Wh, 2026-07); TLP 85/90; EPP knob,
+  no platform_profile; lid→suspend-then-hibernate, S3 pinned (`power/`).
 - Wifi + Bluetooth present. Arch Linux; login shell fish; boot flow
   greetd + cage + quickshell-greeter on VT1.
 
@@ -40,7 +40,7 @@ Verified: 2026-07-11
   deployed copies. Trim before adding; this file obeys its budgets (§META).
 
 ## 3. Stack map
-Verified: 2026-07-12
+Verified: 2026-07-31
 
 Stow modules (from `~/dotfiles`, target under `~/.config`):
 - niri/ — Wayland compositor. Spawns qs, swaybg, swayidle, mako.
@@ -66,6 +66,9 @@ install.sh modules (root-owned or per-profile targets, not stowable):
   → random-hash *.default-release profile); obsidian/ (official Flexoki
   theme + vimrc/hotkeys → per-vault .obsidian/); crossgrub/ (GRUB theme +
   Terminess .pf2 fonts); tlp/ → /etc/tlp.d/00-aru.conf (thresholds 85/90).
+- power/ → /etc/systemd/{logind,sleep}.conf.d (lid→`sleep`, 30m
+  suspend-then-hibernate, `MemorySleepMode=deep`; install gated on hibernate
+  being viable). tlp/ owns charging, power/ owns sleep depth.
 - terminus-italic/ → ~/.local/share/fonts (custom Terminus Italic for kitty;
   install.sh ships prebuilt TTFs, build.sh regenerates via fontforge).
 
@@ -117,15 +120,15 @@ polkit (quickshell/): scoped rules (user `aru` + exact program):
 Verify: `ls /etc/polkit-1/rules.d/ && pkexec /usr/local/bin/set-epp balance_performance`
 
 ## 5. Machine deltas — vs celestia (PC repo)
-Verified: 2026-07-11
+Verified: 2026-07-31
 
 - Battery + tlp/ here (charge thresholds 85/90; EPP power knob, no
   platform_profile); celestia is a desktop with neither.
 - quickshell battery extras: Battery widget, EPP cycler (debounced
-  pkexec), Auto-suspend inhibit toggle — no celestia counterpart.
+  pkexec), Auto-suspend idle-inhibit toggle — no celestia counterpart.
 - Wifi + Bluetooth here: WifiCtl/BtCtl singletons + CC rows, rfkill
   airplane toggle; celestia has no wifi/BT hardware.
-- swayidle idle/suspend pipeline is laptop-specific (dim + lid + suspend);
+- swayidle idle/suspend pipeline + power/ lid policy are laptop-only;
   celestia has one idle step (lock + monitors off), no dim/auto-suspend.
 - nftables forward DROP + ip_forward commented here; celestia runs forward
   ACCEPT + ip_forward=1 (Docker).

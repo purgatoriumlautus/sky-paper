@@ -1,0 +1,22 @@
+# OPTIONAL — not installed by install.sh. Copy to /etc/udev/rules.d/ by hand.
+#
+# Stops the USB controller waking the machine from S3. Default on the X280 is
+# XHC wake-enabled (`grep XHC /proc/acpi/wakeup`), so a jostled dongle in a
+# bag can resume the laptop.
+#
+# Not installed by default because the cost is real: an external keyboard
+# (the Galaxy80, see hid_apple/) can no longer wake the laptop — you'd wake
+# via lid or power button only.
+#
+# Why it's survivable without this rule: with HandleLidSwitch=sleep in place,
+# a stray USB wake self-corrects — the machine resumes, logind re-checks the
+# still-closed lid, and re-suspends within seconds. The dangerous version of
+# this was the old block-mode sleep inhibitor, which disabled exactly that
+# self-correction. That is fixed in SuspendInhibit.qml.
+#
+# Install:  install -m 644 99-no-usb-wake.rules /etc/udev/rules.d/
+#           udevadm control --reload && udevadm trigger -s pci
+# Verify:   grep XHC /proc/acpi/wakeup   # → *disabled
+# Rollback: rm /etc/udev/rules.d/99-no-usb-wake.rules  (reboot to re-enable)
+
+ACTION=="add", SUBSYSTEM=="pci", DRIVER=="xhci_hcd", ATTR{power/wakeup}="disabled"
