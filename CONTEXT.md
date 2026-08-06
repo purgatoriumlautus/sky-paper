@@ -5,13 +5,12 @@ Verified: 2026-07-11
 
 - Hostname `laniakea`, user `aru`, repo `~/dotfiles` (branch `laniakea`).
   ThinkPad X280 laptop; companion to celestia (PC, branch `celestia`).
-- Intel 8th-gen (i5/i7 — exact model unknown), iGPU UHD 620, intel_pstate
+- Intel Core i5-8350U, 1,7 - 3,6 GHz, 4 Cores, 6MB Cache, Intel vPro, iGPU UHD 620, intel_pstate
   active. RAM 16 GB, NVMe 238 GB.
 - Display eDP-1: 1920x1080, 12.5", scale=1 in niri.
 - Battery BAT0 (01AV471); TLP charge thresholds 85/90. Power knob is EPP —
   the X280 exposes no `/sys/firmware/acpi/platform_profile`.
-- Wifi + Bluetooth present. Arch Linux; login shell fish; boot flow
-  greetd + cage + quickshell-greeter on VT1.
+- Wifi + Bluetooth present. Arch Linux; login shell fish; boot flow greetd + cage + quickshell-greeter on VT1.
 
 ## 2. Ideology
 Verified: 2026-07-11
@@ -72,7 +71,7 @@ install.sh modules (root-owned or per-profile targets, not stowable):
 
 Not deployed / manual: wallpapers/ (Flexoki duotone sources +
 `mntvagaflexoki.png` current → ~/Pictures/wallpapers), docs/ (specs,
-screenshots), bin/ (user scripts incl. pd-bt → ~/.local/bin), telegram/
+screenshots), telegram/
 (Telegram Desktop theme — imported via the app, not stowed).
 
 ### Packages
