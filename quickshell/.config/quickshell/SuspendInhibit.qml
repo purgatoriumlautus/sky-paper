@@ -5,7 +5,7 @@ import Quickshell.Io
 
 // User-controlled inhibit on systemd "sleep". When `enabled` is false,
 // `systemd-inhibit --mode=block --what=sleep` is running and `systemctl
-// suspend` (from swayidle's 30m timer or lid close) is a no-op.
+// suspend` (from swayidle's 30m timer; no lid on this desktop) is a no-op.
 // Lock + screen-off keep working — they don't go through logind sleep.
 // Session-scoped (not persisted): every login starts with enabled=true.
 //

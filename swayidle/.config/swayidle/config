@@ -1,8 +1,9 @@
 # swayidle — celestia idle pipeline.
 # Spawned by niri (`spawn-at-startup "swayidle" "-w"`).
 #
-# Desktop: no dim (no backlight) and no auto-suspend (deliberate). Only a
-# single idle step — lock + screens off — plus lock-on-sleep hooks.
+# Desktop: no dim (no backlight — deliberate). Flow: 10m lock+screen-off →
+# 30m suspend, plus lock-on-sleep hooks.
+# CC "Auto-suspend" toggle blocks the 30m step via systemd-inhibit.
 #
 # NOTE: swayidle has no `\` line continuation — each directive must be
 # on one physical line (verified: backslash → wordexp syntax error).
@@ -11,8 +12,11 @@
 # Resume turns the monitor back on; the lock stays — user sees the lock.
 timeout 600 'qs ipc call lock lock; niri msg action power-off-monitors' resume 'niri msg action power-on-monitors'
 
-# Lock BEFORE any (manual) suspend so wake shows the lock screen with no
-# flash of the desktop.
+# 30m — suspend. No resume hook: logind/swayidle re-init on wake.
+timeout 1800 'systemctl suspend'
+
+# Lock BEFORE any suspend (idle or manual) so wake shows the lock screen
+# with no flash of the desktop.
 before-sleep 'qs ipc call lock lock'
 
 # `loginctl lock-session` → Quickshell lock (via `qs ipc`).

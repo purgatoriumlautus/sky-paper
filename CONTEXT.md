@@ -39,8 +39,8 @@ Stow modules (from `~/celestia`, target under `~/.config`):
   must match the exported `DISPLAY :0` or X11 apps fail to open a display.
 - quickshell/ — bar per monitor + ControlCenter/Launcher/LockScreen;
   IPC: `qs ipc call lock|launcher|controlcenter ...`.
-- swayidle/ — one idle step: 10 min → lock + monitors off; lock before
-  sleep. Desktop: no dim, no auto-suspend (deliberate).
+- swayidle/ — 10 min → lock + monitors off, 30 min → suspend (CC
+  "Auto-suspend" toggle blocks it); lock before sleep. No dim (no backlight).
 - fish/ (login shell), kitty/ (auto-attaches tmux `main`), tmux/, nvim/
   (leader = F19 from keyd), mako/, xdg/ (mimeapps.list →
   ~/.config/mimeapps.list — new), gtk/, fontconfig/, yazi/, fastfetch/,
