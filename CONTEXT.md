@@ -63,6 +63,9 @@ install.sh modules (root-owned or per-profile targets, not stowable):
 - restic/ → /etc/systemd/system. Weekly `/` snapshot, forget 8w+12m, via
   restic's own sftp backend (ssh alias in /root/.ssh/config, not rclone).
   /root/.restic-pass untracked — lose it and the repo is unrecoverable.
+- udev/ → /etc/udev/rules.d. hidraw access for the Keychron (VID 3434)
+  via TAG+="uaccess", so VIA/QMK config tools reach it without root.
+  Rule file only — no install.sh, deployed by hand.
 - rclone/ → /etc/systemd/system. Same Storage Box, own creds (rclone.conf,
   untracked): ~/archive mount + ~/cloud bisync every 15 min. System units
   with User=segfault, so `%h` is /root — all home paths hardcoded.
