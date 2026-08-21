@@ -31,7 +31,7 @@ Verified: 2026-07-11
   (VMs, office, media). Minimalism governs the DE layer, not the app set.
 
 ## 3. Stack map
-Verified: 2026-07-12
+Verified: 2026-08-21
 
 Stow modules (from `~/celestia`, target under `~/.config`):
 - niri/ — compositor. Spawns qs, xwayland-satellite, swaybg, swayidle,
@@ -60,6 +60,12 @@ install.sh modules (root-owned or per-profile targets, not stowable):
   (official Flexoki theme + vimrc → vault); crossgrub/ (GRUB theme);
   terminus-italic/ → ~/.local/share/fonts (custom Terminus Italic for kitty;
   install.sh ships prebuilt TTFs, build.sh regenerates via fontforge).
+- restic/ → /etc/systemd/system. Weekly `/` snapshot, forget 8w+12m, via
+  restic's own sftp backend (ssh alias in /root/.ssh/config, not rclone).
+  /root/.restic-pass untracked — lose it and the repo is unrecoverable.
+- rclone/ → /etc/systemd/system. Same Storage Box, own creds (rclone.conf,
+  untracked): ~/archive mount + ~/cloud bisync every 15 min. System units
+  with User=segfault, so `%h` is /root — all home paths hardcoded.
 
 Not deployed: wallpapers/ (sources), docs/ (specs, screenshots), bin/
 (user scripts incl. pd-bt — new), telegram/ (Telegram Desktop theme —

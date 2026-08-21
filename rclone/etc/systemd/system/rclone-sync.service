@@ -1,0 +1,11 @@
+[Unit]
+Description=rclone bisync ~/cloud
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=segfault
+Group=segfault
+Type=oneshot
+Environment=HOME=/home/segfault
+ExecStart=/usr/bin/rclone bisync /home/segfault/cloud storagebox:sync --check-access --fast-list -v

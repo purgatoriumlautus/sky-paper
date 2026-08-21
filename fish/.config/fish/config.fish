@@ -63,6 +63,9 @@ alias gco='git checkout'
 alias gb='git branch'
 alias glog='git log --oneline --graph'
 
+# cloud storage
+alias sync='rclone bisync ~/cloud storagebox:sync --check-access --fast-list'                                                                                                  
+
 # -----------------
 # Vi mode
 # -----------------
