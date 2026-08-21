@@ -1,4 +1,4 @@
-# celestia explicit packages (names only) — 2026-08-03
+# celestia explicit packages (names only) — 2026-08-21
 # regenerate: pacman -Qqe > (this file, below the header)
 # drift check: diff <(grep -v '^#\|^$' packages.txt | sort) <(pacman -Qqe | sort)
 
@@ -11,6 +11,7 @@ bat
 btop
 cage
 chicago95-icon-theme-git
+chromium
 cliphist
 cmake
 cpio
@@ -34,6 +35,7 @@ go
 greetd
 grim
 grub
+imv
 iptables
 jq
 keyd
@@ -51,7 +53,6 @@ ncdu
 neovim
 networkmanager
 niri
-nomacs
 noto-fonts
 noto-fonts-cjk
 noto-fonts-emoji
