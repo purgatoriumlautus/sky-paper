@@ -576,6 +576,7 @@ require('lazy').setup({
       -- Keybinds on LSP attach
       vim.api.nvim_create_autocmd('LspAttach', {
         callback = function(args)
+          local client = vim.lsp.get_client_by_id(args.data.client_id)
           local opts = { buffer = args.buf }
           vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
           vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
@@ -585,11 +586,15 @@ require('lazy').setup({
           vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
           vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
 
-          -- Built-in signature help (replaces lsp_signature.nvim)
-          vim.api.nvim_create_autocmd('CursorHoldI', {
-            buffer = args.buf,
-            callback = vim.lsp.buf.signature_help,
-          })
+          -- Built-in signature help (replaces lsp_signature.nvim).
+          -- Guarded: not every server advertises signatureHelpProvider
+          -- (yamlls, dockerls, bashls don't), and LspAttach fires per client.
+          if client and client:supports_method('textDocument/signatureHelp') then
+            vim.api.nvim_create_autocmd('CursorHoldI', {
+              buffer = args.buf,
+              callback = vim.lsp.buf.signature_help,
+            })
+          end
         end,
       })
 
