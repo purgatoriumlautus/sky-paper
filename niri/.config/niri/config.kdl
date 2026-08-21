@@ -13,7 +13,7 @@ input {
             // For more information, see xkeyboard-config(7).
 
             // For example:
-            layout "us,ru,ua"
+            layout "us,ru"
             options "grp:alt_shift_toggle"
 
             // If this section is empty, niri will fetch xkb settings
