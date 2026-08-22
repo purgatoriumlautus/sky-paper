@@ -40,7 +40,7 @@ Verified: 2026-07-11
   deployed copies. Trim before adding; this file obeys its budgets (§META).
 
 ## 3. Stack map
-Verified: 2026-07-31
+Verified: 2026-08-22
 
 Stow modules (from `~/dotfiles`, target under `~/.config`):
 - niri/ — Wayland compositor. Spawns qs, swaybg, swayidle, mako.
@@ -50,9 +50,11 @@ Stow modules (from `~/dotfiles`, target under `~/.config`):
   /etc/polkit-1/rules.d, /usr/local/bin).
 - swayidle/ — idle pipeline: 5m dim → 10m lock+screen-off → 30m suspend;
   lock before sleep; lid handling.
-- fish/ (login shell; zoxide `cd`), kitty/ (Terminess 12pt), tmux/ (256-idx
-  statusline, TPM, sesh popup on M-s), nvim/ (native treesitter, flexoki
-  lualine, fzf-lua, session start-screen, F19/CapsLock leader), mako/
+- fish/ (login shell; default/emacs binds not vi; zoxide `cd`), kitty/
+  (Terminess 12pt; super+c/v copy-paste), tmux/ (256-idx statusline, TPM,
+  sesh popup on M-Space; Alt tier forwarded into nvim via is_vim), nvim/
+  (native treesitter, flexoki lualine, fzf-lua, session start-screen,
+  Space leader), mako/
   (Quiet/DND wired to CC), xdg/ (mimeapps.list), gtk/ (+ apply.sh,
   icons-install.sh), fontconfig/ (Terminus alias; Terminess AA-off on
   native px only), yazi/, fastfetch/, zathura/, mpv/.
@@ -60,8 +62,11 @@ Stow modules (from `~/dotfiles`, target under `~/.config`):
 install.sh modules (root-owned or per-profile targets, not stowable):
 - quickshell-greeter/ → /etc/quickshell-greeter + /etc/greetd/config.toml
   (mirrors the lock state-machine).
-- keyd/ → /etc/keyd (CapsLock tap→F19 = nvim leader; Shift+CapsLock→real
-  CapsLock); hid_apple/ → /etc/modprobe.d (external kbd F1-F12, fnmode=2).
+- keyd/ → /etc/keyd (CapsLock tap→Ctrl; Shift+CapsLock→real CapsLock;
+  corner Ctrl→Menu, which xkb turns into the layout switch — grp:menu_toggle
+  in niri/); hid_apple/ → /etc/modprobe.d (external kbd F1-F12, fnmode=2).
+- udev/ → /etc/udev/rules.d — hidraw uaccess for the Keychron (VID 3434) so
+  VIA/QMK tools reach it without root. Rule file only, deployed by hand.
 - nftables/, sysctl/, sshd/ → their /etc paths (see §4); firefox/ (user.js
   → random-hash *.default-release profile); obsidian/ (official Flexoki
   theme + vimrc/hotkeys → per-vault .obsidian/); crossgrub/ (GRUB theme +
@@ -75,7 +80,8 @@ install.sh modules (root-owned or per-profile targets, not stowable):
 
 Not deployed / manual: wallpapers/ (Flexoki duotone sources +
 `mntvagaflexoki.png` current → ~/Pictures/wallpapers), docs/ (specs,
-screenshots), bin/ (user scripts incl. pd-bt → ~/.local/bin), telegram/
+screenshots, keybinds.md = cross-machine bind scheme + cheatsheet/vscode),
+bin/ (user scripts incl. pd-bt → ~/.local/bin), telegram/
 (Telegram Desktop theme — imported via the app, not stowed).
 
 ### Packages
@@ -120,22 +126,23 @@ polkit (quickshell/): scoped rules (user `aru` + exact program):
 Verify: `ls /etc/polkit-1/rules.d/ && pkexec /usr/local/bin/set-epp balance_performance`
 
 ## 5. Machine deltas — vs celestia (PC repo)
-Verified: 2026-07-31
+Verified: 2026-08-22
 
-- Battery + tlp/ here (charge thresholds 85/90; EPP power knob, no
-  platform_profile); celestia is a desktop with neither.
-- quickshell battery extras: Battery widget, EPP cycler (debounced
-  pkexec), Auto-suspend idle-inhibit toggle — no celestia counterpart.
+- Bind scheme (keyd/niri/nvim/tmux/fish/kitty + docs/keybinds.md) is
+  IDENTICAL by design — any change to it must land on both branches.
+- Battery + tlp/ + power/ lid policy here; celestia is a desktop with none.
+  quickshell extras to match: Battery widget, EPP cycler, Auto-suspend row.
 - Wifi + Bluetooth here: WifiCtl/BtCtl singletons + CC rows, rfkill
   airplane toggle; celestia has no wifi/BT hardware.
-- swayidle idle/suspend pipeline + power/ lid policy are laptop-only;
-  celestia has one idle step (lock + monitors off), no dim/auto-suspend.
+- swayidle: 5m dim step is laptop-only; the CC Auto-suspend toggle here
+  holds a Wayland idle inhibitor, celestia still uses systemd-inhibit —
+  sync direction laniakea → celestia.
 - nftables forward DROP + ip_forward commented here; celestia runs forward
   ACCEPT + ip_forward=1 (Docker).
-- Greeter here is AHEAD: any-key-reveal, power keys, battery display —
-  sync direction laniakea → celestia.
-- Single internal display (eDP-1); celestia is dual-monitor + needs
-  xwayland-satellite. crossgrub/ lives only here.
+- Greeter here is AHEAD: battery display, F1 suspend — laniakea → celestia.
+- Single internal display (eDP-1); celestia is dual-monitor (sync-ws,
+  per-output bars, layer-surface popups, xwayland-satellite) and AHEAD on
+  the quickshell shell. crossgrub/ lives only here.
 
 ## §META — maintenance rules
 Verified: 2026-07-11

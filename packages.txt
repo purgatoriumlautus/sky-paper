@@ -1,4 +1,4 @@
-# laniakea explicit packages (names only) — 2026-07-12
+# laniakea explicit packages (names only) — 2026-08-22
 # regenerate: pacman -Qqe > (this file, below the header)
 # drift check: diff <(grep -v '^#\|^$' packages.txt | sort) <(pacman -Qqe | sort)
 
@@ -21,9 +21,11 @@ ffmpegthumbnailer
 firefox
 fish
 fisher
+fontforge
 fwupd
 fzf
 git
+glow
 go
 greetd
 grim
@@ -73,6 +75,7 @@ swaylock
 swaync
 tealdeer
 telegram-desktop
+thunar
 tlp
 tlp-rdw
 tmux
