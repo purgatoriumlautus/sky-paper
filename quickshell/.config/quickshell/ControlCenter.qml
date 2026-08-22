@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import Quickshell.Wayland
 import Quickshell.Services.Pipewire
 
 // iPhone-style shade, fully keyboard-driven (hjkl + Enter/Esc).
@@ -26,18 +27,31 @@ import Quickshell.Services.Pipewire
 // Both rows use arm-then-confirm: first Enter on a cell arms it (cell
 // pulses, 5 s timer); second Enter on the SAME cell fires the PowerActions
 // command and closes the CC. Moving focus disarms.
-PopupWindow {
+// Layer surface (NOT a grabbing PopupWindow). It takes keyboard focus itself
+// (Exclusive while visible), so a compositor-eaten keybind can open it with no
+// bar-focus dance and no open delay. The grabbing-popup approach needed the
+// parent bar to have *received input*, which a keybind never delivers → it only
+// worked when opened by a click, and the focus-then-open workaround added a
+// visible lag. Dismiss is Esc/Q, the λ toggle, or re-pressing the keybind (a
+// grab gave outside-click-dismiss for free; a layer surface doesn't).
+PanelWindow {
     id: cc
 
-    property var anchorWin
+    WlrLayershell.layer: WlrLayer.Overlay
+    WlrLayershell.namespace: "quickshell-cc"
+    WlrLayershell.keyboardFocus: cc.visible ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
+    // Ignore the bar's exclusive zone — otherwise the compositor places this
+    // below the reserved bar strip and margins.top stacks on top of that, so the
+    // panel lands a whole bar-height too low. Ignore = positioned against the
+    // true screen edge, overlaying.
+    exclusionMode: ExclusionMode.Ignore
+    anchors { top: true; right: true }
+    margins.top: Theme.barHeight     // sit just below the bar
+    margins.right: 9                 // 9 = niri gaps+border
 
-    anchor.window: anchorWin
-    anchor.rect.x: anchorWin ? anchorWin.width - cc.width - 9 : 0   // 9 = niri gaps+border
-    anchor.rect.y: anchorWin ? anchorWin.height : 0
     implicitWidth: 300
     implicitHeight: shell.implicitHeight
     visible: false
-    grabFocus: true
     color: "transparent"
 
     PwObjectTracker { objects: [Pipewire.defaultAudioSink] }

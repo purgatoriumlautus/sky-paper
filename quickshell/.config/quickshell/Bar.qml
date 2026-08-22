@@ -15,10 +15,11 @@ PanelWindow {
     implicitHeight: Theme.barHeight
     color: Theme.barBg
     WlrLayershell.namespace: "quickshell-bar"
-    // OnDemand so xdg-popup grab from the control-center can route Esc/Q to it.
-    // Without this the bar layer is non-focusable, the grab fails, and the
-    // popup never sees key events.
-    WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
+    // The bar never needs keyboard focus: the control-center / launcher are
+    // their own keyboard-focusable layer surfaces (they don't grab through the
+    // bar), and the λ click is a pointer event (unaffected by keyboardFocus).
+    // None keeps the bar out of the keyboard-focus chain entirely.
+    WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
 
     // left — workspaces. 12px inset, symmetric with the right edge (λ).
     Row {
@@ -81,15 +82,9 @@ PanelWindow {
         }
     }
 
-    ControlCenter {
-        id: cc
-        anchorWin: bar
-    }
+    ControlCenter { id: cc }
 
-    Launcher {
-        id: launcher
-        anchorWin: bar
-    }
+    Launcher { id: launcher }
 
     // niri binds:
     //   Mod+Space     → `qs ipc call controlcenter toggle`      (lands on row 0, power hidden)

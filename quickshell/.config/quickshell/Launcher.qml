@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import Quickshell.Wayland
 
 // App launcher popup. Backend logic lives in AppLauncher (singleton).
 // Opens centered under the bar; type to filter, arrows/Tab to move,
@@ -10,20 +11,25 @@ import Quickshell.Io
 // are handled on the focused TextInput itself so it can intercept them
 // before its default cursor/focus-traversal behavior, while printable keys
 // fall through (event.accepted left false) and type normally.
-PopupWindow {
+// Layer surface (NOT a grabbing PopupWindow) — takes keyboard focus itself so a
+// keybind opens it instantly. See ControlCenter.qml header for the full why.
+PanelWindow {
     id: launcher
 
-    property var anchorWin
+    WlrLayershell.layer: WlrLayer.Overlay
+    WlrLayershell.namespace: "quickshell-launcher"
+    WlrLayershell.keyboardFocus: launcher.visible ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
+    // Ignore the bar's exclusive zone so anchoring to the top means the true
+    // screen top (the input row sits ON the bar), not below the reserved bar
+    // strip. See ControlCenter.
+    exclusionMode: ExclusionMode.Ignore
+    // Top, horizontally centered (anchor neither left nor right). The input row
+    // sits ON the bar over the faded-out clock; results drop below.
+    anchors.top: true
 
-    // y:0 → the popup overlaps the bar from its top: the input row sits ON
-    // the bar (over the faded-out clock); the results box drops below it.
-    anchor.window: anchorWin
-    anchor.rect.x: anchorWin ? Math.round((anchorWin.width - launcher.width) / 2) : 0
-    anchor.rect.y: 0
     implicitWidth: 420
     implicitHeight: col.implicitHeight
     visible: false
-    grabFocus: true
     color: "transparent"
 
     property int sel: 0
