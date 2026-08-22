@@ -36,8 +36,9 @@ if ! nft -c -f /etc/nftables.conf; then
 fi
 
 # 4. Enable + load
+# The unit is Type=oneshot with no ExecReload: `systemctl reload` is not a
+# valid job for it. `enable --now` loads the ruleset; restart re-loads it.
 systemctl enable --now nftables
-systemctl reload nftables
 
 echo "Installed. Live ruleset: nft list ruleset"
-echo "Rollback: cp /etc/nftables.conf.bak /etc/nftables.conf && systemctl reload nftables"
+echo "Rollback: cp /etc/nftables.conf.bak /etc/nftables.conf && systemctl restart nftables"
