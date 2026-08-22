@@ -63,28 +63,49 @@ if vim.g.vscode then dofile(vim.fn.stdpath('config') .. '/vscode.lua') return en
 --   "ap           paste from register a
 --   :reg          view all registers
 --
--- CUSTOM KEYBINDS  (<leader> = F19 = tap CapsLock; \ also works)
---   grouped by prefix so which-key (\?) shows them as menus:
---   WINDOWS \w*   \wv / \ws     split vertical / horizontal
---                 \wh \wj \wk \wl   focus left/down/up/right
---                 \wq           close window
---   FIND    \f*   \ff \fg       find files / grep project
---                 \fb \fr \fh   buffers / recent / help
---   GIT     \g*   \gp \gr \gb   preview / reset / blame hunk
---                 \gd \gq       open / close diff view
---                 \gh \gH       file history (current / repo)
---                 ]c / [c       next / prev hunk
---   LSP     \l*   \lr \la       rename / code action
---                 gd gr K       definition / references / hover (conventions)
---                 ]d / [d       next / prev diagnostic
---   TREE    \n \e        toggle tree / toggle focus tree<->file
---   TERMINAL \t          open / focus toggle
---   CLOSE   \q           dismiss panel: tree, else terminal (never code window)
---   TABS    \1..\9 \0    go to tab N / last tab
---   SESSION \s*   \ss \sl \sd   restore (cwd) / restore last / don't save
---   JUMP    s / S        flash: label-jump / treesitter-select (all windows)
---   DASH    \d           start screen (:Dash); auto-shows on `nvim` no-args
---   \?            show all keymaps (which-key)
+-- CUSTOM KEYBINDS  —  full scheme and rationale: docs/keybinds.md
+--
+--   Two tiers, and the split between them is physical, not stylistic:
+--     <leader> = SPACE   actions INSIDE the editor. You're in normal mode,
+--                        letters are free, no modifier needed.
+--     Alt                crossing a container border. Inside a terminal
+--                        letters are text, so a modifier is mandatory.
+--
+--   ALT (identical here and in VSCode on the work Mac)
+--     M-t             terminal: open / focus toggle — works from BOTH sides
+--     M-h M-j M-k M-l focus split; crosses into tmux panes at the edge
+--     M-H M-J M-K M-L resize
+--     M-v / M-s       split right / down   (vim's <C-w>v / <C-w>s)
+--     M-q             close split; if it's the last one, dismiss
+--                     the tree or terminal instead
+--   ...and, handled by tmux itself: M-z zoom, M-1..9 window, M-n/M-p
+--     next/prev window, M-Space session picker, M-u scrollback, M-r reload.
+--
+--   LEADER (grouped so which-key shows them as menus on <Space>)
+--     <Space><Space>  find file            <Space>,   switch buffer
+--     <Space>/        grep project         <Space>:   command history
+--     <Space>w        write                <Space>q   close buffer
+--     FIND    \f*   \ff \fg \fb \fr \fh \fs \fk
+--     GIT     \g*   \gp \gr \gb   preview / reset / blame hunk
+--                   \gd \gq       open / close diff view
+--                   \gh \gH       file history (current / repo)
+--     BUFFERS \b*   \bb \bd \bo \bp   list / close / close others / previous
+--     CODE    \c*   \cr \ca \cf \cd  rename / action / format / diagnostics
+--     ERRORS  \x*   \xx \xw \xq   diagnostics file / workspace / quickfix
+--     TREE    \n \e        toggle tree / toggle focus tree<->file
+--     TABS    \1..\9 \0    go to tab N / last tab   (tab = window LAYOUT,
+--                          NOT a file — opening a file makes a buffer)
+--     SESSION \s*   \ss \sl \sd   restore (cwd) / restore last / don't save
+--     DASH    \d           start screen (:Dash); auto-shows on `nvim` no-args
+--     \?            show all keymaps (which-key)
+--
+--   BARE KEYS (no leader — these are vim conventions and VSCodeVim maps
+--   them itself, so they cost zero config on the Mac)
+--     gd gr K       definition / references / hover
+--     ]d / [d       next / prev diagnostic
+--     ]c / [c       next / prev git hunk
+--     H / L         previous / next buffer
+--     s / S         flash: label-jump / treesitter-select (all windows)
 
 -- ===================
 -- Mason bin path (for LSP servers)
@@ -194,12 +215,13 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>', { desc = 'Clear search highl
 -- ===================
 -- Keymaps
 -- ===================
--- Note: <leader> is backslash by default. Change with: vim.g.mapleader = ' '
-
--- CapsLock is remapped to F19 by keyd (see dotfiles keyd/); use it as <leader>.
--- (F19, not F13: it's the only F-key keyd can emit that the us xkb keymap
--- gives a clean keysym instead of a terminal-dropped XF86* vendor key.)
-vim.keymap.set({ 'n', 'x', 'o' }, '<F19>', '<Leader>', { remap = true })
+-- <leader> = Space. Not F19/CapsLock any more: macOS can only turn CapsLock
+-- into Control, Option, Command, Escape or Globe — never F19 — so the old
+-- leader was unreproducible on the work Mac. Space needs no keyd, no
+-- firmware, and works on the MacBook's built-in keyboard.
+-- (mapleader must be set before lazy.setup so plugin `keys` specs pick it up.)
+vim.g.mapleader = ' '
+vim.g.maplocalleader = ' '
 
 -- Visual-mode paste keeps the yank register: replaced text → black hole,
 -- so `yy` → `vip` then `p` doesn't clobber what you copied.
@@ -218,15 +240,35 @@ for i = 1, 9 do
 end
 vim.keymap.set('n', '<leader>0', ':tablast<CR>', { desc = 'Go to last tab' })
 
--- Window management (group <leader>w*; which-key shows it on CapsLock w).
--- These wrap the vanilla Ctrl+w commands so they live on <leader> like everything else.
-vim.keymap.set('n', '<leader>wv', '<C-w>v', { desc = 'Window: split vertical' })
-vim.keymap.set('n', '<leader>ws', '<C-w>s', { desc = 'Window: split horizontal' })
-vim.keymap.set('n', '<leader>wh', '<C-w>h', { desc = 'Window: focus left' })
-vim.keymap.set('n', '<leader>wj', '<C-w>j', { desc = 'Window: focus down' })
-vim.keymap.set('n', '<leader>wk', '<C-w>k', { desc = 'Window: focus up' })
-vim.keymap.set('n', '<leader>wl', '<C-w>l', { desc = 'Window: focus right' })
-vim.keymap.set('n', '<leader>wq', '<C-w>q', { desc = 'Window: close' })
+-- Save / close, the two highest-frequency single actions.
+-- <leader>w is WRITE, not window: the window namespace moved to Alt (below),
+-- which frees w for the obvious meaning.
+vim.keymap.set('n', '<leader>w', '<cmd>write<CR>', { desc = 'Write file' })
+vim.keymap.set('n', '<leader>q', '<cmd>bdelete<CR>', { desc = 'Close buffer' })
+
+-- Buffer cycling — bare keys, no leader. Works identically under VSCodeVim.
+vim.keymap.set('n', '<S-l>', '<cmd>bnext<CR>', { desc = 'Next buffer' })
+vim.keymap.set('n', '<S-h>', '<cmd>bprevious<CR>', { desc = 'Previous buffer' })
+
+-- ---------------------------------------------------------------
+-- Alt = containers. The same physical binds drive tmux panes here
+-- and VSCode editor groups on the work Mac — see docs/keybinds.md.
+--
+-- Splits and close go through tmux's if-shell check: tmux forwards the key
+-- into nvim when nvim owns the pane, so <M-v> splits *nvim* (one process,
+-- shared buffer list and yank register) rather than spawning a second shell.
+-- Focus is vim-tmux-navigator (plugin spec below) so it crosses the nvim /
+-- tmux boundary without you knowing where the boundary is.
+-- ---------------------------------------------------------------
+vim.keymap.set('n', '<M-v>', '<C-w>v', { desc = 'Split right' })
+vim.keymap.set('n', '<M-s>', '<C-w>s', { desc = 'Split down' })
+-- <M-q> (close split / dismiss panel) is set in the toggleterm block below:
+-- it needs the tree's and terminal's state to decide what to close.
+
+vim.keymap.set('n', '<M-H>', '<C-w><', { desc = 'Resize left' })
+vim.keymap.set('n', '<M-J>', '<C-w>-', { desc = 'Resize down' })
+vim.keymap.set('n', '<M-K>', '<C-w>+', { desc = 'Resize up' })
+vim.keymap.set('n', '<M-L>', '<C-w>>', { desc = 'Resize right' })
 
 -- Disable arrow keys in normal mode (use hjkl)
 vim.keymap.set('n', '<Up>', '<Nop>')
@@ -352,6 +394,16 @@ require('lazy').setup({
         view = {
           width = 30,
         },
+        -- Open the tree already scrolled to the file you are editing, with
+        -- its parent directories expanded, instead of at the project root.
+        -- It re-follows on every buffer switch, so the tree always shows
+        -- where you actually are.
+        --   update_root = false: expand toward the file but never move the
+        --   tree's root, so the project stays the frame of reference.
+        update_focused_file = {
+          enable = true,
+          update_root = false,
+        },
         on_attach = function(bufnr)
           local api = require('nvim-tree.api')
           -- Load default mappings first
@@ -367,8 +419,9 @@ require('lazy').setup({
           -- o opens in same tab (replace current buffer)
           vim.keymap.set('n', 'o', api.node.open.edit, opts)
           -- Splits
-          vim.keymap.set('n', '<C-v>', api.node.open.vertical, opts)
-          vim.keymap.set('n', '<C-h>', api.node.open.horizontal, opts)
+          -- Alt+v / Alt+s, matching the global split vocabulary (was Ctrl+v/h)
+          vim.keymap.set('n', '<M-v>', api.node.open.vertical, opts)
+          vim.keymap.set('n', '<M-s>', api.node.open.horizontal, opts)
 
           -- Vim-like navigation (like yazi)
           vim.keymap.set('n', 'l', api.node.open.edit, opts)        -- enter dir / open file
@@ -401,7 +454,7 @@ require('lazy').setup({
 
   -- Fuzzy finder (fzf-lua — drives the native fzf binary in a separate process,
   -- async; snappier than telescope on big trees, and reuses the fzf already in
-  -- $PATH). Same keymaps as before; Enter opens in a new tab like the old setup.
+  -- $PATH).
   {
     'ibhagwan/fzf-lua',
     dependencies = { 'nvim-tree/nvim-web-devicons' },
@@ -411,14 +464,28 @@ require('lazy').setup({
         winopts = { border = 'single' },   -- squared corners (Flexoki invariant, no rounded)
         actions = {
           files = {
-            ['enter']  = fzf.actions.file_tabedit,   -- Enter → new tab
-            ['ctrl-v'] = fzf.actions.file_vsplit,    -- Ctrl+v → vertical split
-            ['ctrl-h'] = fzf.actions.file_split,     -- Ctrl+h → horizontal split
+            -- Enter opens in the CURRENT window, as a buffer. It used to be
+            -- file_tabedit, which made every opened file a new tab — that is
+            -- why buffers never seemed to accumulate: you were looking at
+            -- tabs. Tabs in vim are window LAYOUTS, not files. See
+            -- docs/keybinds.md §1.
+            ['enter']  = fzf.actions.file_edit,
+            ['alt-v']  = fzf.actions.file_vsplit,    -- same split vocabulary
+            ['alt-s']  = fzf.actions.file_split,     -- as everywhere else
+            ['alt-t']  = fzf.actions.file_tabedit,   -- explicit new tab
           },
         },
       })
     end,
     keys = {
+      -- Top-level shortcuts for the three highest-frequency lookups. Space
+      -- Space is the cheapest sequence on the board and goes to the single
+      -- most common editor action; <leader>f* below keeps the full menu.
+      { '<leader><leader>', '<cmd>FzfLua files<CR>', desc = 'Find file (cwd)' },
+      { '<leader>,',        '<cmd>FzfLua buffers<CR>', desc = 'Switch buffer' },
+      { '<leader>/',        '<cmd>FzfLua live_grep<CR>', desc = 'Grep in project' },
+      { '<leader>:',        '<cmd>FzfLua command_history<CR>', desc = 'Command history' },
+
       { '<leader>ff', function()
           require('fzf-lua').files({
             cmd = 'fd --type f --hidden --exclude .git --exclude .cache . /home /etc /mnt',
@@ -431,6 +498,19 @@ require('lazy').setup({
       { '<leader>fb', '<cmd>FzfLua buffers<CR>', desc = 'Open buffers' },
       { '<leader>fr', '<cmd>FzfLua oldfiles<CR>', desc = 'Recent files' },
       { '<leader>fh', '<cmd>FzfLua help_tags<CR>', desc = 'Search help' },
+      { '<leader>fs', '<cmd>FzfLua lsp_document_symbols<CR>', desc = 'Symbols in file' },
+      { '<leader>fk', '<cmd>FzfLua keymaps<CR>', desc = 'All keymaps' },
+
+      -- Buffers (group <leader>b*)
+      { '<leader>bb', '<cmd>FzfLua buffers<CR>', desc = 'Buffers: list' },
+      { '<leader>bd', '<cmd>bdelete<CR>', desc = 'Buffers: close this one' },
+      { '<leader>bo', '<cmd>%bdelete|edit#|bdelete#<CR>', desc = 'Buffers: close all others' },
+      { '<leader>bp', '<cmd>buffer #<CR>', desc = 'Buffers: previous' },
+
+      -- Diagnostics list (group <leader>x*)
+      { '<leader>xx', '<cmd>FzfLua diagnostics_document<CR>', desc = 'Diagnostics: this file' },
+      { '<leader>xw', '<cmd>FzfLua diagnostics_workspace<CR>', desc = 'Diagnostics: workspace' },
+      { '<leader>xq', '<cmd>FzfLua quickfix<CR>', desc = 'Quickfix list' },
     },
   },
 
@@ -581,8 +661,13 @@ require('lazy').setup({
           vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
           vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
           vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
-          vim.keymap.set('n', '<leader>lr', vim.lsp.buf.rename, { buffer = args.buf, desc = 'LSP: rename symbol' })
-          vim.keymap.set('n', '<leader>la', vim.lsp.buf.code_action, { buffer = args.buf, desc = 'LSP: code action' })
+          -- Group <leader>c* (code), not l* (lsp): "lsp" is plumbing, "code"
+          -- is what you're actually doing, and it matches the VSCode side.
+          vim.keymap.set('n', '<leader>cr', vim.lsp.buf.rename, { buffer = args.buf, desc = 'Code: rename symbol' })
+          vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, { buffer = args.buf, desc = 'Code: code action' })
+          vim.keymap.set('n', '<leader>cf', function() vim.lsp.buf.format({ async = true }) end,
+            { buffer = args.buf, desc = 'Code: format buffer' })
+          vim.keymap.set('n', '<leader>cd', vim.diagnostic.open_float, { buffer = args.buf, desc = 'Code: line diagnostics' })
           vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
           vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
 
@@ -652,6 +737,28 @@ require('lazy').setup({
   --                 editor if it's already showing (never hides it)
   --   CapsLock q    universal "dismiss panel" (smart_close, defined below):
   --                 closes tree/terminal but never the code window
+  -- One keypress moves focus across nvim splits AND tmux panes: at the edge
+  -- of nvim the key is handed back to tmux, which selects the next pane.
+  -- Default mappings are off — the scheme uses Alt, not Ctrl, because
+  -- Ctrl+h/j/k/l would eat Backspace (0x08), newline (0x0A), fish's kill-line
+  -- and clear-screen in the shell. See docs/keybinds.md.
+  {
+    'christoomey/vim-tmux-navigator',
+    init = function()
+      vim.g.tmux_navigator_no_mappings = 1
+    end,
+    cmd = {
+      'TmuxNavigateLeft', 'TmuxNavigateDown',
+      'TmuxNavigateUp', 'TmuxNavigateRight',
+    },
+    keys = {
+      { '<M-h>', '<cmd>TmuxNavigateLeft<CR>',  desc = 'Focus left'  },
+      { '<M-j>', '<cmd>TmuxNavigateDown<CR>',  desc = 'Focus down'  },
+      { '<M-k>', '<cmd>TmuxNavigateUp<CR>',    desc = 'Focus up'    },
+      { '<M-l>', '<cmd>TmuxNavigateRight<CR>', desc = 'Focus right' },
+    },
+  },
+
   {
     'akinsho/toggleterm.nvim',
     version = '*',
@@ -668,7 +775,7 @@ require('lazy').setup({
         end
       end
 
-      -- CapsLock+t: open the terminal if it isn't showing in this tab,
+      -- Alt+t: open the terminal if it isn't showing in this tab,
       -- otherwise just bounce focus between the terminal and the editor
       -- (never hides it — the shell stays visible and alive).
       local function smart_toggle()
@@ -688,30 +795,54 @@ require('lazy').setup({
         if t then t:open() else vim.cmd('ToggleTerm') end  -- not visible here -> open
       end
 
-      -- <leader>q : universal "dismiss a panel". The code window is never
-      -- closed by it. Focus wins first; otherwise tree has priority, then term.
-      --   1. cursor inside the terminal   -> kill the terminal
-      --   2. cursor inside nvim-tree      -> close the tree
-      --   3. (cursor in a normal window)
-      --        tree open anywhere         -> close the tree
-      --        terminal open anywhere     -> kill the terminal
-      --        nothing open               -> do nothing (window stays)
-      local function smart_close()
-        local tree = require('nvim-tree.api').tree
-        if vim.bo.buftype == 'terminal' then kill(); return end   -- 1
-        if vim.bo.filetype == 'NvimTree' then tree.close(); return end  -- 2
-        if tree.is_visible() then tree.close(); return end        -- 3a
-        local t = require('toggleterm.terminal').get_all(true)[1]
-        if t and t.bufnr and vim.api.nvim_buf_is_valid(t.bufnr) then kill() end  -- 3b
+      -- Alt+q : universal close. One rule — "get rid of the thing I mean" —
+      -- and the code window is NEVER the thing, so this can be mashed safely.
+      --   1. cursor inside the terminal    -> kill the terminal
+      --   2. cursor inside nvim-tree       -> close the tree
+      --   3. cursor in a code window, and there is more than one code
+      --      window                        -> close this split
+      --   4. cursor in the LAST code window (closing it would empty nvim):
+      --        tree open anywhere          -> close the tree
+      --        terminal open anywhere      -> kill the terminal
+      --        nothing open                -> do nothing
+      --
+      -- Step 4 is the case that matters day to day: tree open on the left,
+      -- cursor in the file you are editing, Alt+q dismisses the tree without
+      -- making you jump into it first.
+      local function code_window_count()
+        local n = 0
+        for _, w in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+          local b = vim.api.nvim_win_get_buf(w)
+          local ft = vim.api.nvim_get_option_value('filetype', { buf = b })
+          local bt = vim.api.nvim_get_option_value('buftype', { buf = b })
+          if ft ~= 'NvimTree' and bt ~= 'terminal' then n = n + 1 end
+        end
+        return n
       end
 
-      -- Normal mode (from the editor).
-      vim.keymap.set('n', '<leader>t', smart_toggle, { desc = 'Terminal: open / focus toggle' })
-      vim.keymap.set('n', '<leader>q', smart_close, { desc = 'Close panel (tree/terminal, never code window)' })
-      -- Terminal mode (from inside the terminal): <leader> isn't bound there
-      -- and CapsLock is F19, so match CapsLock+t / CapsLock+q directly.
-      vim.keymap.set('t', '<F19>t', smart_toggle, { desc = 'Terminal: open / focus toggle' })
-      vim.keymap.set('t', '<F19>q', smart_close, { desc = 'Close panel (terminal)' })
+      local function smart_close()
+        local tree = require('nvim-tree.api').tree
+        if vim.bo.buftype == 'terminal' then kill(); return end         -- 1
+        if vim.bo.filetype == 'NvimTree' then tree.close(); return end  -- 2
+        if code_window_count() > 1 then vim.cmd('close'); return end    -- 3
+        if tree.is_visible() then tree.close(); return end              -- 4a
+        local t = require('toggleterm.terminal').get_all(true)[1]
+        if t and t.bufnr and vim.api.nvim_buf_is_valid(t.bufnr) then kill() end  -- 4b
+      end
+
+      -- Alt+t is THE central bind of the whole scheme: it has to work from
+      -- both sides of the editor/terminal border. Inside the terminal a bare
+      -- <leader> sequence is impossible — Space and the letter would just be
+      -- typed into the shell — so the border crossing needs a modifier.
+      -- Same key toggles the VSCode terminal panel on the work Mac.
+      --
+      -- tmux deliberately leaves M-t unbound so it reaches nvim here.
+      vim.keymap.set('n', '<M-t>', smart_toggle, { desc = 'Terminal: open / focus toggle' })
+      vim.keymap.set('t', '<M-t>', smart_toggle, { desc = 'Terminal: open / focus toggle' })
+      -- Alt+q lives here rather than next to the other Alt binds because it
+      -- needs toggleterm's and nvim-tree's state to decide what to close.
+      vim.keymap.set('n', '<M-q>', smart_close, { desc = 'Close split / dismiss panel' })
+      vim.keymap.set('t', '<M-q>', smart_close, { desc = 'Close terminal panel' })
     end,
   },
 

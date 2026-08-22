@@ -9,7 +9,7 @@ Verified: 2026-07-11
 - Monitors: DP-3 ASUS VG259QR 1080p@165 (left, ws1), DP-2 BenQ ZOWIE XL
   1080p@144 (right, ws2).
 - Keyboard: Epomaker X80 — reports Apple VID (05AC:024F) so `hid_apple`
-  claims it; tamed by fnmode=2 + keyd CapsLock→F19 (see stack map).
+  claims it; tamed by fnmode=2 + keyd CapsLock→Ctrl (see stack map).
 - Caveats: swap partition (sdb2, 4G) exists, inactive; sda2 931G BitLocker
   drive, purpose TBD; bun at `~/.bun`, off PATH; wlsunset unwired.
 
@@ -41,8 +41,8 @@ Stow modules (from `~/celestia`, target under `~/.config`):
   IPC: `qs ipc call lock|launcher|controlcenter ...`.
 - swayidle/ — 10 min → lock + monitors off, 30 min → suspend (CC
   "Auto-suspend" toggle blocks it); lock before sleep. No dim (no backlight).
-- fish/ (login shell), kitty/ (auto-attaches tmux `main`), tmux/, nvim/
-  (leader = F19 from keyd), mako/, xdg/ (mimeapps.list →
+- fish/ (login shell, default/emacs binds not vi), kitty/ (auto-attaches
+  tmux `main`), tmux/, nvim/ (leader = Space), mako/, xdg/ (mimeapps.list →
   ~/.config/mimeapps.list — new), gtk/, fontconfig/, yazi/, fastfetch/,
   zathura/, mpv/, xfce4/ (Thunar settings; deletion candidate).
 
@@ -51,9 +51,9 @@ install.sh modules (root-owned or per-profile targets, not stowable):
   runs `cage -s -m last`: `-m last` pins one output (default `-m extend`
   spans both monitors, splitting the greeter across the seam). Rescue:
   root TTY → `systemctl disable --now greetd`, start niri by hand.
-- keyd/ → /etc/keyd/default.conf. CapsLock tap→F19 (Shift+CapsLock→real
-  CapsLock). F19 = the only F13–F24 key with a clean keysym in the
-  default us map; the rest die in terminals before reaching nvim.
+- keyd/ → /etc/keyd/default.conf. CapsLock tap→Ctrl (Shift+CapsLock→real
+  CapsLock); bottom-left Ctrl→Menu, which xkb turns into the layout switch
+  (grp:menu_toggle in niri/). Keybinding scheme: docs/keybinds.md.
 - hid_apple/ → /etc/modprobe.d (fnmode=2; read at module load — script
   pokes live sysfs too); nftables/, sysctl/, sshd/ → their /etc paths
   (see §4); firefox/ (user.js → random-hash profile dir); obsidian/

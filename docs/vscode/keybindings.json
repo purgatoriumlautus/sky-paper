@@ -1,0 +1,149 @@
+// VSCode keybindings for the work Mac — merge into
+//   ~/Library/Application Support/Code/User/keybindings.json
+//
+// This is the Alt tier: identical keys to tmux + nvim on celestia, only the
+// program executing them differs. Full scheme: docs/keybinds.md
+//
+// Needs "terminal.integrated.macOptionIsMeta": true in settings.json, and
+// every command here listed in "commandsToSkipShell", or the keystroke gets
+// typed into fish instead of acted on.
+[
+  // ══════════════════════════════════════════════════════════
+  // Alt+t — THE central bind. Works from both sides of the
+  // editor/terminal border, which is exactly why it needs a
+  // modifier: inside the terminal a bare <Space>t would just be
+  // typed as text.
+  // ══════════════════════════════════════════════════════════
+  { "key": "alt+t", "command": "workbench.action.terminal.toggleTerminal" },
+
+  // ══════════════════════════════════════════════════════════
+  // Alt+hjkl — focus. The terminal is always "down", same as
+  // nvim + tmux at home.
+  // ══════════════════════════════════════════════════════════
+  { "key": "alt+j", "command": "workbench.action.terminal.focus",
+    "when": "!terminalFocus" },
+  { "key": "alt+k", "command": "workbench.action.focusActiveEditorGroup",
+    "when": "terminalFocus" },
+  { "key": "alt+h", "command": "workbench.action.focusLeftGroup" },
+  { "key": "alt+l", "command": "workbench.action.focusRightGroup" },
+
+  // Within the editor, up/down move between stacked groups
+  { "key": "alt+k", "command": "workbench.action.focusAboveGroup",
+    "when": "!terminalFocus && !sideBarFocus" },
+
+  // From the sidebar (file tree) back into the code
+  { "key": "alt+l", "command": "workbench.action.focusActiveEditorGroup",
+    "when": "sideBarFocus" },
+  { "key": "alt+h", "command": "workbench.action.focusSideBar",
+    "when": "editorTextFocus" },
+
+  // ══════════════════════════════════════════════════════════
+  // Alt+Shift+hjkl — resize
+  // ══════════════════════════════════════════════════════════
+  { "key": "alt+shift+h", "command": "workbench.action.decreaseViewSize" },
+  { "key": "alt+shift+l", "command": "workbench.action.increaseViewSize" },
+  { "key": "alt+shift+k", "command": "workbench.action.increaseViewSize" },
+  { "key": "alt+shift+j", "command": "workbench.action.decreaseViewSize" },
+
+  // ══════════════════════════════════════════════════════════
+  // Alt+v / Alt+s / Alt+q — structure, from vim's own vocabulary
+  // (<C-w>v, <C-w>s, :q)
+  // ══════════════════════════════════════════════════════════
+  { "key": "alt+v", "command": "workbench.action.splitEditor" },
+  { "key": "alt+s", "command": "workbench.action.splitEditorDown" },
+  { "key": "alt+q", "command": "workbench.action.closeActiveEditor",
+    "when": "!terminalFocus" },
+  { "key": "alt+q", "command": "workbench.action.terminal.kill",
+    "when": "terminalFocus" },
+  { "key": "alt+z", "command": "workbench.action.toggleMaximizedPanel",
+    "when": "terminalFocus" },
+  { "key": "alt+z", "command": "workbench.action.toggleEditorWidths",
+    "when": "!terminalFocus" },
+
+  // ══════════════════════════════════════════════════════════
+  // Alt+digits / Alt+n / Alt+p — tabs
+  // ══════════════════════════════════════════════════════════
+  { "key": "alt+1", "command": "workbench.action.openEditorAtIndex1" },
+  { "key": "alt+2", "command": "workbench.action.openEditorAtIndex2" },
+  { "key": "alt+3", "command": "workbench.action.openEditorAtIndex3" },
+  { "key": "alt+4", "command": "workbench.action.openEditorAtIndex4" },
+  { "key": "alt+5", "command": "workbench.action.openEditorAtIndex5" },
+  { "key": "alt+6", "command": "workbench.action.openEditorAtIndex6" },
+  { "key": "alt+7", "command": "workbench.action.openEditorAtIndex7" },
+  { "key": "alt+8", "command": "workbench.action.openEditorAtIndex8" },
+  { "key": "alt+9", "command": "workbench.action.openEditorAtIndex9" },
+  { "key": "alt+n", "command": "workbench.action.nextEditor" },
+  { "key": "alt+p", "command": "workbench.action.previousEditor" },
+
+  // ══════════════════════════════════════════════════════════
+  // Alt+Space — both thumbs, the cheapest chord on the board,
+  // given to the biggest action: go to a different project.
+  // ══════════════════════════════════════════════════════════
+  { "key": "alt+space",  "command": "workbench.action.openRecent" },
+  { "key": "alt+enter",  "command": "workbench.action.terminal.new" },
+  { "key": "alt+u",      "command": "workbench.action.terminal.focusFind",
+    "when": "terminalFocus" },
+  { "key": "alt+r",      "command": "workbench.action.reloadWindow" },
+
+  // ══════════════════════════════════════════════════════════
+  // Lists — this is what actually makes VSCode keyboard-driven.
+  // File tree, search results, extension list: all list widgets,
+  // and by default they only move with arrow keys.
+  // "listFocus && !inputFocus" = focused on a list, not typing
+  // in a text box — so bare letters are free.
+  // ══════════════════════════════════════════════════════════
+  { "key": "j", "command": "list.focusDown",
+    "when": "listFocus && !inputFocus && !treestickyScrollFocused" },
+  { "key": "k", "command": "list.focusUp",
+    "when": "listFocus && !inputFocus && !treestickyScrollFocused" },
+  { "key": "h", "command": "list.collapse",
+    "when": "listFocus && !inputFocus" },
+  { "key": "l", "command": "list.expand",
+    "when": "listFocus && !inputFocus" },
+  { "key": "g g", "command": "list.focusFirst",
+    "when": "listFocus && !inputFocus" },
+  { "key": "shift+g", "command": "list.focusLast",
+    "when": "listFocus && !inputFocus" },
+  { "key": "o", "command": "list.select",
+    "when": "listFocus && !inputFocus" },
+  { "key": "alt+v", "command": "explorer.openToSide",
+    "when": "filesExplorerFocus && !inputFocus" },
+  { "key": "escape", "command": "workbench.action.focusActiveEditorGroup",
+    "when": "filesExplorerFocus && !inputFocus" },
+
+  // ══════════════════════════════════════════════════════════
+  // Lists that DO have a text box (Quick Open, search) can't use
+  // bare j/k. One rule everywhere: Ctrl+j / Ctrl+k. Already the
+  // default in fzf and in Telescope, so it is the same motion in
+  // all three.
+  // ══════════════════════════════════════════════════════════
+  { "key": "ctrl+j", "command": "workbench.action.quickOpenSelectNext",
+    "when": "inQuickOpen" },
+  { "key": "ctrl+k", "command": "workbench.action.quickOpenSelectPrevious",
+    "when": "inQuickOpen" },
+  { "key": "ctrl+j", "command": "selectNextSuggestion",
+    "when": "suggestWidgetVisible" },
+  { "key": "ctrl+k", "command": "selectPrevSuggestion",
+    "when": "suggestWidgetVisible" },
+  { "key": "ctrl+j", "command": "showNextParameterHint",
+    "when": "parameterHintsVisible" },
+  { "key": "ctrl+k", "command": "showPrevParameterHint",
+    "when": "parameterHintsVisible" },
+
+  // ══════════════════════════════════════════════════════════
+  // Hand Ctrl back to fish. VSCode grabs some of these by default;
+  // "-" removes the default binding so the keystroke reaches the shell.
+  // ══════════════════════════════════════════════════════════
+  { "key": "ctrl+k", "command": "-workbench.action.terminal.clear",
+    "when": "terminalFocus" },
+  { "key": "ctrl+a", "command": "-editor.action.selectAll",
+    "when": "terminalFocus" },
+  { "key": "ctrl+e", "command": "-workbench.action.quickOpen",
+    "when": "terminalFocus" },
+  { "key": "ctrl+p", "command": "-workbench.action.quickOpen",
+    "when": "terminalFocus" },
+  { "key": "ctrl+n", "command": "-workbench.action.files.newUntitledFile",
+    "when": "terminalFocus" },
+  { "key": "ctrl+r", "command": "-workbench.action.openRecent",
+    "when": "terminalFocus" }
+]
