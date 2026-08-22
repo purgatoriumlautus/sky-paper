@@ -1,0 +1,154 @@
+// VSCode settings for the work Mac — merge into
+//   ~/Library/Application Support/Code/User/settings.json
+//
+// Not deployed by this repo (docs/ is not stowed): the Mac is managed and
+// gets these by hand. Full scheme: docs/keybinds.md
+//
+// Requires the VSCodeVim extension (vscodevim.vim). It is the ONLY piece of
+// software the whole scheme needs installed — without it the <Space> tier
+// does not exist on the Mac.
+{
+  // ────────────────────────────────────────────────────────────
+  // Terminal — make Alt reach the shell layer, and stop VSCode
+  // from stealing what fish needs.
+  // ────────────────────────────────────────────────────────────
+
+  // MANDATORY. Without it macOS treats Option as a compose key: Option+h
+  // produces "˙" instead of Meta-h, and the entire Alt tier is dead.
+  "terminal.integrated.macOptionIsMeta": true,
+
+  // VSCode uses Ctrl+K as the start of its own chord sequences. With chords
+  // on, Ctrl+K never reaches fish (where it is kill-to-end-of-line).
+  "terminal.integrated.allowChords": false,
+
+  // Terminals survive a dropped SSH connection. This is the one job tmux
+  // would have had on the Mac — which is why tmux is deliberately NOT
+  // installed there (it would fight VSCode over Alt+hjkl).
+  "terminal.integrated.enablePersistentSessions": true,
+  "terminal.integrated.persistentSessionReviveProcess": "onExitAndWindowClose",
+
+  // Commands VSCode handles ITSELF even while the terminal has focus.
+  // Everything on the Alt tier must be here, or it gets typed into fish.
+  // An entry prefixed with "-" does the opposite: removes a VSCode default
+  // so that keystroke goes to the shell instead.
+  "terminal.integrated.commandsToSkipShell": [
+    "workbench.action.terminal.toggleTerminal",
+    "workbench.action.terminal.focus",
+    "workbench.action.terminal.new",
+    "workbench.action.terminal.focusFind",
+    "workbench.action.focusActiveEditorGroup",
+    "workbench.action.focusLeftGroup",
+    "workbench.action.focusRightGroup",
+    "workbench.action.increaseViewSize",
+    "workbench.action.decreaseViewSize",
+    "workbench.action.splitEditor",
+    "workbench.action.splitEditorDown",
+    "workbench.action.closeActiveEditor",
+    "workbench.action.toggleMaximizedPanel",
+    "workbench.action.nextEditor",
+    "workbench.action.previousEditor",
+    "workbench.action.openRecent",
+    "workbench.action.reloadWindow",
+    "workbench.action.openEditorAtIndex1",
+    "workbench.action.openEditorAtIndex2",
+    "workbench.action.openEditorAtIndex3",
+    "workbench.action.openEditorAtIndex4",
+    "workbench.action.openEditorAtIndex5",
+    "workbench.action.openEditorAtIndex6",
+    "workbench.action.openEditorAtIndex7",
+    "workbench.action.openEditorAtIndex8",
+    "workbench.action.openEditorAtIndex9"
+  ],
+
+  // ────────────────────────────────────────────────────────────
+  // Lists — so j/k actually move instead of starting a search.
+  // "trigger" means type-ahead only starts after an explicit trigger,
+  // which leaves bare letters free for the keybindings in
+  // docs/vscode/keybindings.json.
+  // ────────────────────────────────────────────────────────────
+  "workbench.list.typeNavigationMode": "trigger",
+  "explorer.autoReveal": true,
+  "workbench.editor.enablePreview": false,
+
+  // ────────────────────────────────────────────────────────────
+  // Vim
+  // ────────────────────────────────────────────────────────────
+  "vim.leader": " ",
+  "vim.useSystemClipboard": true,
+  "vim.hlsearch": true,
+  "vim.incsearch": true,
+  "vim.easymotion": true,
+  "vim.foldfix": true,
+
+  // Keys VSCode should keep for itself rather than letting Vim swallow them.
+  "vim.handleKeys": {
+    "<C-a>": false,
+    "<C-f>": false,
+    "<C-w>": false
+  },
+
+  "vim.normalModeKeyBindingsNonRecursive": [
+    // Top level
+    { "before": ["<leader>", "<leader>"], "commands": ["workbench.action.quickOpen"] },
+    { "before": ["<leader>", ","],        "commands": ["workbench.action.showAllEditors"] },
+    { "before": ["<leader>", "/"],        "commands": ["workbench.action.findInFiles"] },
+    { "before": ["<leader>", ":"],        "commands": ["workbench.action.showCommands"] },
+    { "before": ["<leader>", "w"],        "commands": ["workbench.action.files.save"] },
+    { "before": ["<leader>", "q"],        "commands": ["workbench.action.closeActiveEditor"] },
+    { "before": ["<leader>", "e"],        "commands": ["workbench.view.explorer"] },
+    { "before": ["<leader>", "d"],        "commands": ["workbench.action.showAllEditors"] },
+
+    // f — find
+    { "before": ["<leader>", "f", "f"], "commands": ["workbench.action.quickOpen"] },
+    { "before": ["<leader>", "f", "g"], "commands": ["workbench.action.findInFiles"] },
+    { "before": ["<leader>", "f", "b"], "commands": ["workbench.action.showAllEditors"] },
+    { "before": ["<leader>", "f", "r"], "commands": ["workbench.action.openRecent"] },
+    { "before": ["<leader>", "f", "s"], "commands": ["workbench.action.gotoSymbol"] },
+    { "before": ["<leader>", "f", "k"], "commands": ["workbench.action.openGlobalKeybindings"] },
+
+    // g — git
+    { "before": ["<leader>", "g", "g"], "commands": ["workbench.view.scm"] },
+    { "before": ["<leader>", "g", "s"], "commands": ["workbench.view.scm"] },
+    { "before": ["<leader>", "g", "d"], "commands": ["git.openChange"] },
+    { "before": ["<leader>", "g", "b"], "commands": ["gitlens.toggleFileBlame"] },
+    { "before": ["<leader>", "g", "p"], "commands": ["editor.action.dirtydiff.next"] },
+    { "before": ["<leader>", "g", "r"], "commands": ["git.revertSelectedRanges"] },
+    { "before": ["<leader>", "g", "S"], "commands": ["git.stageSelectedRanges"] },
+
+    // c — code
+    { "before": ["<leader>", "c", "a"], "commands": ["editor.action.quickFix"] },
+    { "before": ["<leader>", "c", "r"], "commands": ["editor.action.rename"] },
+    { "before": ["<leader>", "c", "f"], "commands": ["editor.action.formatDocument"] },
+    { "before": ["<leader>", "c", "d"], "commands": ["editor.action.showHover"] },
+    { "before": ["<leader>", "c", "s"], "commands": ["workbench.action.gotoSymbol"] },
+
+    // b — buffers
+    { "before": ["<leader>", "b", "d"], "commands": ["workbench.action.closeActiveEditor"] },
+    { "before": ["<leader>", "b", "o"], "commands": ["workbench.action.closeOtherEditors"] },
+    { "before": ["<leader>", "b", "b"], "commands": ["workbench.action.openPreviousRecentlyUsedEditorInGroup"] },
+
+    // x — problems
+    { "before": ["<leader>", "x", "x"], "commands": ["workbench.actions.view.problems"] },
+    { "before": ["<leader>", "x", "w"], "commands": ["workbench.actions.view.problems"] },
+    { "before": ["<leader>", "x", "q"], "commands": ["workbench.actions.view.problems"] },
+
+    // u — ui
+    { "before": ["<leader>", "u", "w"], "commands": ["editor.action.toggleWordWrap"] },
+    { "before": ["<leader>", "u", "n"], "commands": ["editor.action.toggleRenderLineNumbers"] },
+    { "before": ["<leader>", "u", "t"], "commands": ["workbench.action.selectTheme"] },
+
+    // Bare keys that vim users expect and VSCode does not give for free
+    { "before": ["<S-l>"], "commands": ["workbench.action.nextEditor"] },
+    { "before": ["<S-h>"], "commands": ["workbench.action.previousEditor"] },
+    { "before": ["]", "d"], "commands": ["editor.action.marker.next"] },
+    { "before": ["[", "d"], "commands": ["editor.action.marker.prev"] },
+    { "before": ["]", "c"], "commands": ["workbench.action.editor.nextChange"] },
+    { "before": ["[", "c"], "commands": ["workbench.action.editor.previousChange"] },
+    { "before": ["g", "r"], "commands": ["editor.action.goToReferences"] }
+  ],
+
+  "vim.visualModeKeyBindingsNonRecursive": [
+    { "before": ["<leader>", "c", "f"], "commands": ["editor.action.formatSelection"] },
+    { "before": ["<leader>", "c", "a"], "commands": ["editor.action.quickFix"] }
+  ]
+}

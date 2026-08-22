@@ -14,7 +14,18 @@ input {
 
             // For example:
             layout "us,ru"
-            options "grp:alt_shift_toggle"
+            // Layout switch = the bottom-left Ctrl key, alone. keyd makes
+            // that key emit Menu (see keyd/etc/keyd/default.conf for why it
+            // can't just stay Ctrl), and `grp:menu_toggle` puts
+            // ISO_Next_Group on <COMP> — one key, no chord, and not a
+            // modifier, so holding it can't misfire.
+            //
+            // NOT grp:alt_shift_toggle: Alt+Shift+hjkl now resizes panes
+            // (docs/keybinds.md) and every resize would flip the layout.
+            //
+            // Applied when a keyboard is ADDED, not on config reload —
+            // `sudo keyd/install.sh` restarts keyd and triggers exactly that.
+            options "grp:menu_toggle"
 
             // If this section is empty, niri will fetch xkb settings
             // from org.freedesktop.locale1. You can control these using
@@ -575,7 +586,11 @@ binds {
     // Makes the column "fill the rest of the space".
     Mod+Ctrl+F { expand-column-to-available-width; }
 
-    Mod+C { center-column; }
+    // Mod+C and Mod+V are deliberately NOT bound: they are left free so they
+    // fall through to the focused app, where kitty maps super+c / super+v to
+    // copy/paste. That puts copy on the same physical key as Cmd+C on the Mac.
+    // See docs/keybinds.md.
+    Mod+Shift+C { center-column; }
 
     // Center all fully visible columns on screen.
     Mod+Ctrl+C { center-visible-columns; }
@@ -596,21 +611,19 @@ binds {
     Mod+Shift+Equal { set-window-height "+10%"; }
 
     // Move the focused window between the floating and the tiling layout.
-    Mod+V       { toggle-window-floating; }
-    Mod+Shift+V { switch-focus-between-floating-and-tiling; }
+    // On G, not V: V is reserved for kitty's super+v paste (see Mod+Shift+C).
+    Mod+G       { toggle-window-floating; }
+    Mod+Shift+G { switch-focus-between-floating-and-tiling; }
 
     // Toggle tabbed column display mode.
     // Windows in this column will appear as vertical tabs,
     // rather than stacked on top of each other.
     Mod+W { toggle-column-tabbed-display; }
 
-    // Actions to switch layouts.
-    // Note: if you uncomment these, make sure you do NOT have
-    // a matching layout switch hotkey configured in xkb options above.
-    // Having both at once on the same hotkey will break the switching,
-    // since it will switch twice upon pressing the hotkey (once by xkb, once by niri).
-    // Mod+Space       { switch-layout "next"; }
-    // Mod+Shift+Space { switch-layout "prev"; }
+    // Keyboard layout is NOT bound here — it is the bare bottom-left Ctrl
+    // key, which niri cannot express as a bind (a lone modifier). It is done
+    // in xkb instead: see `options "grp:menu_toggle"` in the input block above.
+    // Do not add a switch-layout bind back, or the layout would flip twice.
 
     Print { screenshot; }
     Ctrl+Print { screenshot-screen; }

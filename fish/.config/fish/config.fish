@@ -65,10 +65,14 @@ alias gb='git branch'
 alias glog='git log --oneline --graph'
 
 # -----------------
-# Vi mode
+# Key bindings
 # -----------------
-set -g fish_key_bindings fish_vi_key_bindings
-set -g fish_escape_delay_ms 10
+# Default (emacs-style), NOT vi mode. Reason: fish's default preset is the
+# same set macOS uses in every text field system-wide — Ctrl+A/E/K/Y,
+# Option+Backspace, Option+arrows. One muscle memory for this shell, for the
+# VSCode terminal on the work Mac, and for any Mac text field. A command line
+# lives for seconds and needs no modes. See docs/keybinds.md.
+set -g fish_key_bindings fish_default_key_bindings
 
 # -----------------
 # Prompt — Flexoki Dark minimal
@@ -105,23 +109,30 @@ function fish_prompt
 end
 
 # -----------------
-# Visual-mode clipboard (Wayland via wl-copy/wl-paste)
+# Keybind overrides
 # -----------------
-# Fish ships fish_clipboard_copy / fish_clipboard_paste — wl-copy on Wayland.
-bind --erase -M visual y 2>/dev/null
-bind -M visual y fish_clipboard_copy end-selection repaint-mode
-bind -M visual d 'fish_clipboard_copy; commandline -f kill-selection repaint-mode'
-bind -M visual p 'commandline -f kill-selection; fish_clipboard_paste'
+# Everything else comes from the default preset and must NOT be repeated here
+# — Ctrl+A/E (line ends), Ctrl+K (kill to end), Ctrl+Y (yank), Ctrl+P/N
+# (history), Ctrl+X / Ctrl+V (system clipboard via fish_clipboard_copy /
+# _paste — wl-copy on Wayland), Alt+Backspace (kill word back), Alt+arrows
+# (word motion), Right / Ctrl+F (accept autosuggestion).
+#
+# Ctrl+X is what copies a command line: it takes the *commandline buffer*,
+# so nothing from the screen comes with it — no `λ ` prompt, no padding, no
+# right-prompt clock. tmux copy-mode copies screen cells and cannot do that.
+#
+# The one real override: the preset's Ctrl+U is backward-kill-line (only up
+# to the start). Whole line is what's actually wanted.
+bind ctrl-u kill-whole-line
 
-# Insert-mode useful keybinds (most are default in fish vi, kept for parity)
-bind -M insert \cA beginning-of-line
-bind -M insert \cE end-of-line
-bind -M insert \cU kill-whole-line
-bind -M insert \cK kill-line
-bind -M insert \cW backward-kill-word
-bind -M insert \cY yank
-bind -M insert \cP up-or-search
-bind -M insert \cN down-or-search
+# Ctrl+D deletes forward, never exits. The preset binds it to delete-or-exit,
+# which on an empty line sends EOF -> fish exits -> the tmux pane it was
+# running in disappears. Close a pane deliberately with M-q (tmux) instead.
+# `exit` still works if you actually mean it.
+bind ctrl-d delete-char
+
+# Left as the preset has it on purpose: Ctrl+W is backward-kill-path-component
+# (one path segment per press), which beats killing a whole word in a shell.
 
 # -----------------
 # FZF (fuzzy finder)
@@ -130,10 +141,8 @@ set -gx FZF_DEFAULT_COMMAND 'fd --type f --hidden --exclude .git --exclude .cach
 set -gx FZF_CTRL_T_COMMAND $FZF_DEFAULT_COMMAND
 set -gx FZF_ALT_C_COMMAND  'fd --type d --hidden --exclude .git --exclude .cache . /home /etc /mnt'
 fzf --fish | source 2>/dev/null
-bind -M insert \cG fzf-cd-widget
-
-# Ctrl-D exits in default vi mode by preset, but is unbound in insert mode.
-bind -M insert \cD delete-or-exit
+# Ctrl+T (files) and Ctrl+R (history) come from `fzf --fish` itself.
+bind ctrl-g fzf-cd-widget
 
 # -----------------
 # zoxide — replaces cd, must be last
