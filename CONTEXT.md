@@ -1,70 +1,68 @@
 # CONTEXT.md — laniakea · system manifest (maintenance rules: §META)
 
 ## 1. Machine identity
-Verified: 2026-07-31
+Verified: 2026-08-23
 
 - Hostname `laniakea`, user `aru`, repo `~/dotfiles` (branch `laniakea`).
-  ThinkPad X280 laptop; companion to celestia (PC, branch `celestia`).
-- Intel 8th-gen (i5/i7 — exact model unknown), iGPU UHD 620, intel_pstate
-  active. RAM 16 GB, NVMe 238 GB.
+  ThinkPad X280 (20KE); companion to celestia (PC, branch `celestia`).
+- Intel i5-8350U (Kaby Lake-R, 4c/8t), iGPU UHD 620, intel_pstate active.
+- RAM 16 GB; NVMe 238 GB = 1G /boot, 16G swap, 221G ext4 `/`. Swap ≥ RAM,
+  so hibernate is viable — power/ gates its install on exactly that.
 - Display eDP-1: 1920x1080, 12.5", scale=1 in niri.
-- Battery BAT0 (01AV470 Cellonic, 44.46 Wh, 2026-07); TLP 85/90; EPP knob,
-  no platform_profile; lid→suspend-then-hibernate, S3 pinned (`power/`).
-- Wifi + Bluetooth present. Arch Linux; login shell fish; boot flow
-  greetd + cage + quickshell-greeter on VT1.
+- Battery BAT0 (01AV470 replacement pack, 44.46 Wh design, 2026-07); TLP
+  85/90; EPP knob, no platform_profile; lid→suspend-then-hibernate, S3
+  pinned (`power/`).
+- Intel AX210 wifi (NetworkManager, `wifi.backend=iwd`) + Bluetooth. Arch
+  Linux; fish login shell; boot greetd + cage + quickshell-greeter on VT1.
 
 ## 2. Ideology
-Verified: 2026-07-11
+Verified: 2026-08-23
 
-- Performance-driven minimalism: every component earns its RAM and its
-  LOC; no daemon a script can replace.
-- Every package must answer three questions: simpler alternative?
-  removable? replaceable by something already present?
+- Performance-driven minimalism: every component earns its RAM and LOC.
+  Every package answers: simpler? removable? already present elsewhere?
 - CLI-first, keyboard-driven (hjkl everywhere); GUI only where a terminal
-  genuinely can't do it.
-- One resident Qt process (quickshell) is the whole desktop chrome: bar,
-  control center, locker, launcher; greeter is the same stack.
+  can't. quickshell is the entire desktop chrome in one Qt process — bar,
+  CC, locker, launcher — and the greeter is the same stack.
 - Flexoki Dark invariants: squared corners (never rounded), no blur,
-  Terminess Nerd Font Mono (Unifont for bitmap-crisp bar/CJK); kitty italic
-  = the custom Terminus Italic (`terminus-italic/`); GTK widgets stock
-  Adwaita dark + Flexoki named-color overrides. Palette source of truth:
-  PALETTE.md — never invent hex values.
-- No decorative Unicode glyphs in QML — bitmap fonts render them unevenly;
-  pixel primitives (Rectangles) instead. Don't iterate palette or fonts
-  without explicit direction from Ars.
-- Root-owned `/etc` configs are never symlinked: module `install.sh`
-  (backup, validate, reload) is the source of truth. User configs deploy
-  via stow; packages with non-config top-level files carry
-  `.stow-local-ignore`.
-- Repo is the single source: edit here, deploy out; never hand-edit
-  deployed copies. Trim before adding; this file obeys its budgets (§META).
+  Terminess Nerd Font Mono (Unifont for bar/CJK), kitty italic = custom
+  Terminus Italic, GTK stock Adwaita dark + Flexoki named colors, no
+  decorative Unicode in QML (pixel Rectangles). PALETTE.md rules: never
+  invent hex or re-pick fonts without Ars.
+- Root-owned `/etc` is never symlinked — `install.sh` owns it, user configs
+  stow. Repo is the single source: edit here, deploy out, never hand-edit.
 
 ## 3. Stack map
-Verified: 2026-08-22
+Verified: 2026-08-23
 
 Stow modules (from `~/dotfiles`, target under `~/.config`):
-- niri/ — Wayland compositor. Spawns qs, swaybg, swayidle, mako.
-- quickshell/ — bar + control center + locker + launcher, plus battery
-  widget, EPP power cycler, wifi/BT/airplane rows; polkit rules + set-epp
-  (dir symlink; rules/set-epp = manual sudo install to
-  /etc/polkit-1/rules.d, /usr/local/bin).
-- swayidle/ — idle pipeline: 5m dim → 10m lock+screen-off → 30m suspend;
-  lock before sleep; lid handling.
+- niri/ — Wayland compositor. Spawns qs, swaybg, swayidle, mako and
+  xwayland-satellite `:0` (arg must match the exported DISPLAY).
+- quickshell/ — bar + control center + locker + launcher (CC and launcher
+  are layer surfaces), plus battery widget, EPP cycler, wifi/BT/airplane
+  and mako-DND rows; polkit rules + set-epp (dir symlink; rules/set-epp =
+  manual sudo install to /etc/polkit-1/rules.d, /usr/local/bin).
+- swayidle/ — 5m dim → 10m lock+screen-off → 30m suspend; lock before
+  sleep. Lid handling belongs to logind (power/).
 - fish/ (login shell; default/emacs binds not vi; zoxide `cd`), kitty/
-  (Terminess 12pt; super+c/v copy-paste), tmux/ (256-idx statusline, TPM,
+  (Terminess 12pt; clipboard on Ctrl/Shift+Insert), tmux/ (256-idx bar, TPM,
   sesh popup on M-Space; Alt tier forwarded into nvim via is_vim), nvim/
   (native treesitter, flexoki lualine, fzf-lua, session start-screen,
-  Space leader), mako/
-  (Quiet/DND wired to CC), xdg/ (mimeapps.list), gtk/ (+ apply.sh,
-  icons-install.sh), fontconfig/ (Terminus alias; Terminess AA-off on
-  native px only), yazi/, fastfetch/, zathura/, mpv/.
+  Space leader), mako/ (Quiet/DND wired to CC), xdg/ (mimeapps.list +
+  yazi-kitty.desktop), gtk/ (+ apply.sh, icons-install.sh), fastfetch/,
+  mpv/, yazi/ + zathura/ (config stows; their install.sh only pulls pacman
+  deps and sets xdg-mime defaults). Modules whose top-level files would
+  leak into $HOME carry `.stow-local-ignore`.
+- fontconfig/ — NOT stowed: install.sh links conf.d/ and the Obsidian
+  .desktop, two targets one stow tree can't share (Terminus alias,
+  Terminess AA-off on native px).
 
 install.sh modules (root-owned or per-profile targets, not stowable):
 - quickshell-greeter/ → /etc/quickshell-greeter + /etc/greetd/config.toml
-  (mirrors the lock state-machine).
+  (mirrors the lock state-machine; `cage -s`, XKB_DEFAULT_LAYOUT=us).
 - keyd/ → /etc/keyd (CapsLock tap→Ctrl; Shift+CapsLock→real CapsLock;
-  corner Ctrl→Menu, which xkb turns into the layout switch — grp:menu_toggle
-  in niri/); hid_apple/ → /etc/modprobe.d (external kbd F1-F12, fnmode=2).
+  corner Ctrl→Menu → layout switch via grp:menu_toggle in niri/; [meta]/[alt]
+  layers carry the Mac's Cmd tier — docs/keybinds.md §7); hid_apple/ →
+  /etc/modprobe.d (external kbd F1-F12, fnmode=2).
 - udev/ → /etc/udev/rules.d — hidraw uaccess for the Keychron (VID 3434) so
   VIA/QMK tools reach it without root. Rule file only, deployed by hand.
 - nftables/, sysctl/, sshd/ → their /etc paths (see §4); firefox/ (user.js
@@ -76,11 +74,13 @@ install.sh modules (root-owned or per-profile targets, not stowable):
   being viable). tlp/ owns charging, power/ owns sleep depth.
 - terminus-italic/ → ~/.local/share/fonts (custom Terminus Italic for kitty;
   install.sh ships prebuilt TTFs, build.sh regenerates via fontforge).
-
+- skills/ → ~/.claude/skills (personal Claude Code skills, symlinked per
+  skill so repo edits are live; `.claude/` is gitignored, hence not stow).
 
 Not deployed / manual: wallpapers/ (Flexoki duotone sources +
 `mntvagaflexoki.png` current → ~/Pictures/wallpapers), docs/ (specs,
-screenshots, keybinds.md = cross-machine bind scheme + cheatsheet/vscode),
+screenshots, keybinds.md = cross-machine bind scheme, keybinds.png = its
+cheatsheet, vscode/ = Mac keymap),
 bin/ (user scripts incl. pd-bt → ~/.local/bin), telegram/
 (Telegram Desktop theme — imported via the app, not stowed).
 
@@ -88,33 +88,36 @@ bin/ (user scripts incl. pd-bt → ~/.local/bin), telegram/
 Authoritative: packages.txt — names only (regenerate: `pacman -Qqe`);
 drift check in §META. Must be generated on the laptop itself. Non-obvious
 keepers: passim (masked, fwupd hard dep), swaylock (manual fallback lock),
-cage (`--asexplicit`, greeter runs on it), smartmontools (battery/disk
-health alongside TLP), tree-sitter-cli (nvim-treesitter main compiles parsers
-via it), sesh-bin (tmux session popup on M-s), fontforge (build dep for
-terminus-italic — deploy needs only the prebuilt TTFs).
+cage (greeter runs on it), smartmontools (battery/disk health), imv (xdg
+image handler), xwayland-satellite (X11 apps under niri), tree-sitter-cli
+(nvim-treesitter main compiles parsers with it), sesh-bin (tmux popup on
+M-Space), fontforge (build dep for terminus-italic; deploy needs only the
+prebuilt TTFs).
 
 ## 4. Security posture — deltas from Arch defaults, each with a live check
-Verified: 2026-07-11
+Verified: 2026-08-23
 
 sshd (sshd/): drop-in etc/ssh/sshd_config.d/00-hardening.conf. sshd is
-first-obtained-value-wins, so `00-` sorts first and wins (install.sh
-removes the old `99-` file). Effective: PasswordAuthentication no,
-KbdInteractive no, PermitRootLogin no, PermitEmptyPasswords no,
-X11Forwarding no. No ~/.ssh/authorized_keys → inbound SSH impossible until
-`ssh-copy-id`; outbound unaffected.
+first-obtained-value-wins, so `00-` sorts first and wins. Effective:
+PasswordAuthentication no, KbdInteractive no, PermitRootLogin no,
+PermitEmptyPasswords no, X11Forwarding no. No ~/.ssh/authorized_keys →
+inbound SSH impossible until `ssh-copy-id`; outbound unaffected.
 Verify: `ls /etc/ssh/sshd_config.d/ && sudo sshd -T | grep -Ei 'passwordauth|kbdinteractive|permitroot|permitempty|x11forwarding'`
 
-nftables (nftables/): single inet table; input DROP, forward DROP (laptop
-— no Docker/libvirt). nft verdicts across tables are ANDed. DHCP allow
-(udp 67→68; v6 547→546) must stay ABOVE `ct state invalid drop` or renewal
-breaks silently. Reject is `pkttype host` + rate-limited; `iif lo accept`;
-inbound-ssh/virbr0 commented; mDNS not allowed.
+nftables (nftables/): single inet table; input DROP, forward DROP. nft
+verdicts across tables are ANDed. DHCP allow (udp 67→68; v6 547→546) must
+stay ABOVE `ct state invalid drop` or renewal breaks silently. Reject is
+`pkttype host` + rate-limited; `iif lo accept`; inbound-ssh/virbr0
+commented; mDNS not allowed.
 Verify: `sudo nft list ruleset | grep -E 'policy|counter'`
 
 sysctl (sysctl/, 99-hardening.conf): kptr_restrict=1, yama.ptrace_scope=1,
 randomize_va_space=2, rp_filter=1, ICMP redirects off (accept+send),
-tcp_syncookies=1. ip_forward stays COMMENTED — no containers.
-Verify: `sysctl kernel.kptr_restrict kernel.yama.ptrace_scope net.ipv4.conf.all.rp_filter net.ipv4.tcp_syncookies net.ipv4.ip_forward`
+tcp_syncookies=1. ip_forward stays COMMENTED. docker is installed and
+docker.socket enabled, but dockerd is not running: starting it inserts its
+own chains and flips ip_forward at runtime — a live dockerd is a posture
+change, not the steady state.
+Verify: `sysctl kernel.kptr_restrict kernel.yama.ptrace_scope net.ipv4.conf.all.rp_filter net.ipv4.tcp_syncookies net.ipv4.ip_forward; systemctl is-active docker`
 
 passim.service masked (fwupd cache on 0.0.0.0:27500; socket-activated, no
 [Install], fwupd hard dep).
@@ -126,7 +129,7 @@ polkit (quickshell/): scoped rules (user `aru` + exact program):
 Verify: `ls /etc/polkit-1/rules.d/ && pkexec /usr/local/bin/set-epp balance_performance`
 
 ## 5. Machine deltas — vs celestia (PC repo)
-Verified: 2026-08-22
+Verified: 2026-08-23
 
 - Bind scheme (keyd/niri/nvim/tmux/fish/kitty + docs/keybinds.md) is
   IDENTICAL by design — any change to it must land on both branches.
@@ -139,17 +142,17 @@ Verified: 2026-08-22
   sync direction laniakea → celestia.
 - nftables forward DROP + ip_forward commented here; celestia runs forward
   ACCEPT + ip_forward=1 (Docker).
-- Greeter here is AHEAD: battery display, F1 suspend — laniakea → celestia.
-- Single internal display (eDP-1); celestia is dual-monitor (sync-ws,
-  per-output bars, layer-surface popups, xwayland-satellite) and AHEAD on
-  the quickshell shell. crossgrub/ lives only here.
+- AHEAD here, laniakea → celestia: greeter (battery, F1 suspend), CC and
+  launcher as layer surfaces. Both now run xwayland-satellite `:0`.
+- Single internal display (eDP-1) vs celestia dual (sync-ws, per-output
+  bars) — celestia AHEAD there. crossgrub/ here; restic/+rclone/ there.
 
 ## §META — maintenance rules
 Verified: 2026-07-11
 
 Root whitelist — module dirs plus exactly: README.md, CLAUDE.md,
-CONTEXT.md, PALETTE.md, packages.txt, .gitignore, bin/, docs/. Anything
-else at root is a violation: into a module, into docs/, or deleted.
+CONTEXT.md, PALETTE.md, packages.txt, .gitignore, bin/, docs/, skills/.
+Anything else at root is a violation: into a module, into docs/, or deleted.
 
 Budgets (trim-don't-grow; breach = cut before commit, never raise):
 identity 12 · ideology 12 · stack ~1/module · security 30 · deltas 15 ·
