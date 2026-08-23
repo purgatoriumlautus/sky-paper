@@ -37,6 +37,13 @@
   { "key": "alt+h", "command": "workbench.action.focusSideBar",
     "when": "editorTextFocus" },
 
+  // Inside a SPLIT terminal, left/right move between terminal panes rather
+  // than editor groups — the same keys tmux uses to walk its own panes.
+  { "key": "alt+h", "command": "workbench.action.terminal.focusPreviousPane",
+    "when": "terminalFocus" },
+  { "key": "alt+l", "command": "workbench.action.terminal.focusNextPane",
+    "when": "terminalFocus" },
+
   // ══════════════════════════════════════════════════════════
   // Alt+Shift+hjkl — resize
   // ══════════════════════════════════════════════════════════
@@ -49,8 +56,19 @@
   // Alt+v / Alt+s / Alt+q — structure, from vim's own vocabulary
   // (<C-w>v, <C-w>s, :q)
   // ══════════════════════════════════════════════════════════
-  { "key": "alt+v", "command": "workbench.action.splitEditor" },
-  { "key": "alt+s", "command": "workbench.action.splitEditorDown" },
+  // Whoever has focus is who splits — the same rule as celestia, where
+  // tmux.conf routes Alt+v/Alt+s through an is_vim test and either forwards
+  // the key into nvim or splits the pane itself.
+  { "key": "alt+v", "command": "workbench.action.splitEditor",
+    "when": "!terminalFocus" },
+  { "key": "alt+s", "command": "workbench.action.splitEditorDown",
+    "when": "!terminalFocus" },
+  // VSCode has no directional terminal split: the direction follows the
+  // panel's own orientation, so both keys land on the one command.
+  { "key": "alt+v", "command": "workbench.action.terminal.split",
+    "when": "terminalFocus" },
+  { "key": "alt+s", "command": "workbench.action.terminal.split",
+    "when": "terminalFocus" },
   { "key": "alt+q", "command": "workbench.action.closeActiveEditor",
     "when": "!terminalFocus" },
   { "key": "alt+q", "command": "workbench.action.terminal.kill",
@@ -61,19 +79,31 @@
     "when": "!terminalFocus" },
 
   // ══════════════════════════════════════════════════════════
-  // Alt+digits / Alt+n / Alt+p — tabs
+  // Alt+digits / Alt+n / Alt+p — TERMINALS, not editors.
+  //
+  // This mirrors tmux, where these keys select windows, and a tmux window is
+  // a terminal (tmux.conf: M-1..9 select-window, M-n/M-p next/previous).
+  // They are bound in tmux's root table, so on celestia they fire from
+  // anywhere — including from inside nvim — and so they do here.
+  //
+  // Editors are a different axis and have their own keys on both machines:
+  //   Shift+H / Shift+L   previous / next buffer
+  //   <leader>1..9        editor (nvim: tab) N
+  // Putting editors on Alt+digits as well would have made Alt+n a synonym of
+  // Shift+L in VSCode while meaning "next terminal" on celestia — the exact
+  // kind of split the whole scheme exists to prevent.
   // ══════════════════════════════════════════════════════════
-  { "key": "alt+1", "command": "workbench.action.openEditorAtIndex1" },
-  { "key": "alt+2", "command": "workbench.action.openEditorAtIndex2" },
-  { "key": "alt+3", "command": "workbench.action.openEditorAtIndex3" },
-  { "key": "alt+4", "command": "workbench.action.openEditorAtIndex4" },
-  { "key": "alt+5", "command": "workbench.action.openEditorAtIndex5" },
-  { "key": "alt+6", "command": "workbench.action.openEditorAtIndex6" },
-  { "key": "alt+7", "command": "workbench.action.openEditorAtIndex7" },
-  { "key": "alt+8", "command": "workbench.action.openEditorAtIndex8" },
-  { "key": "alt+9", "command": "workbench.action.openEditorAtIndex9" },
-  { "key": "alt+n", "command": "workbench.action.nextEditor" },
-  { "key": "alt+p", "command": "workbench.action.previousEditor" },
+  { "key": "alt+1", "command": "workbench.action.terminal.focusAtIndex1" },
+  { "key": "alt+2", "command": "workbench.action.terminal.focusAtIndex2" },
+  { "key": "alt+3", "command": "workbench.action.terminal.focusAtIndex3" },
+  { "key": "alt+4", "command": "workbench.action.terminal.focusAtIndex4" },
+  { "key": "alt+5", "command": "workbench.action.terminal.focusAtIndex5" },
+  { "key": "alt+6", "command": "workbench.action.terminal.focusAtIndex6" },
+  { "key": "alt+7", "command": "workbench.action.terminal.focusAtIndex7" },
+  { "key": "alt+8", "command": "workbench.action.terminal.focusAtIndex8" },
+  { "key": "alt+9", "command": "workbench.action.terminal.focusAtIndex9" },
+  { "key": "alt+n", "command": "workbench.action.terminal.focusNext" },
+  { "key": "alt+p", "command": "workbench.action.terminal.focusPrevious" },
 
   // ══════════════════════════════════════════════════════════
   // Alt+Space — both thumbs, the cheapest chord on the board,
@@ -84,6 +114,57 @@
   { "key": "alt+u",      "command": "workbench.action.terminal.focusFind",
     "when": "terminalFocus" },
   { "key": "alt+r",      "command": "workbench.action.reloadWindow" },
+
+  // ══════════════════════════════════════════════════════════
+  // Cmd tier — plain macOS. Mostly restating defaults, listed anyway so the
+  // file is a complete statement of the scheme rather than a diff against
+  // whatever Apple ships this year.
+  //
+  // Physically it lines up with celestia: after the Mac's Modifier Keys swap,
+  // the 2nd key out from the space bar emits Command, and on the PC the 2nd
+  // key out is Super. Same thumb travel, same result.
+  //
+  // celestia reaches the same place by a different road — there keyd rewrites
+  // Super+C/V/X/A/Z into chords Linux programs already understand
+  // (keyd/etc/keyd/default.conf), because Ctrl+C there is SIGINT and cannot be
+  // reused. That translation is a Linux problem and stays in the Linux config;
+  // nothing about it belongs in this file.
+  //
+  // Cmd+F and Cmd+W have no celestia counterpart: niri owns Mod+F (fullscreen)
+  // and Mod+W. Find stays <leader>/ and vim's own /, identical on both.
+  // ══════════════════════════════════════════════════════════
+  { "key": "cmd+c", "command": "editor.action.clipboardCopyAction",  "when": "!terminalFocus" },
+  { "key": "cmd+v", "command": "editor.action.clipboardPasteAction", "when": "!terminalFocus" },
+  { "key": "cmd+x", "command": "editor.action.clipboardCutAction",   "when": "!terminalFocus" },
+  // vim.handleKeys in settings.json gives <C-a> back to VSCode rather than
+  // letting VSCodeVim treat it as increment; Cmd+A is unaffected either way.
+  { "key": "cmd+a", "command": "editor.action.selectAll",            "when": "!terminalFocus" },
+  { "key": "cmd+z", "command": "undo",                               "when": "!terminalFocus" },
+  { "key": "cmd+shift+z", "command": "redo",                         "when": "!terminalFocus" },
+  { "key": "cmd+s", "command": "workbench.action.files.save" },
+
+  // Inside the terminal these copy/paste the SCREEN selection. That is a
+  // different operation from fish's Ctrl+X, which copies the command-line
+  // buffer and therefore brings no prompt, padding or right-prompt clock
+  // with it. Both are kept on purpose; they are not redundant.
+  { "key": "cmd+c", "command": "workbench.action.terminal.copySelection",
+    "when": "terminalFocus && terminalTextSelected" },
+  { "key": "cmd+v", "command": "workbench.action.terminal.paste",
+    "when": "terminalFocus" },
+
+  // ══════════════════════════════════════════════════════════
+  // Ctrl+C in the terminal must always be SIGINT.
+  //
+  // VSCode ships a binding that makes Ctrl+C copy instead of interrupting
+  // whenever text happens to be selected, so a stray selection silently turns
+  // "kill this process" into "copy". A "-" entry deletes a default binding by
+  // naming the exact command it is bound to; if this build does not ship that
+  // default the line simply matches nothing.
+  //
+  // Ctrl+V is untouched: it is already claimed by the sendSequence block below
+  // and goes to fish.
+  // ══════════════════════════════════════════════════════════
+  { "key": "ctrl+c", "command": "-workbench.action.terminal.copySelection" },
 
   // ══════════════════════════════════════════════════════════
   // Lists — this is what actually makes VSCode keyboard-driven.
@@ -112,6 +193,48 @@
     "when": "filesExplorerFocus && !inputFocus" },
 
   // ══════════════════════════════════════════════════════════
+  // File operations in the tree — nvim-tree's default set, which
+  // init.lua keeps by calling default_on_attach() before its own
+  // overrides. Same letters, same meanings.
+  //
+  // One unavoidable split: nvim-tree's `a` makes a file or a directory
+  // depending on a trailing "/", while VSCode has two separate commands.
+  // So `a` is the file and `A` the folder.
+  //
+  // "!inputFocus" matters more here than anywhere else: the moment one of
+  // these opens its name box, focus moves into a text input and every bare
+  // letter must go back to being a letter.
+  // ══════════════════════════════════════════════════════════
+  { "key": "a", "command": "explorer.newFile",
+    "when": "filesExplorerFocus && !inputFocus" },
+  { "key": "shift+a", "command": "explorer.newFolder",
+    "when": "filesExplorerFocus && !inputFocus" },
+  { "key": "r", "command": "renameFile",
+    "when": "filesExplorerFocus && !inputFocus" },
+  { "key": "d", "command": "deleteFile",
+    "when": "filesExplorerFocus && !inputFocus" },
+  { "key": "shift+d", "command": "moveFileToTrash",
+    "when": "filesExplorerFocus && !inputFocus" },
+  // y / x / p — vim's own three letters, not nvim-tree's defaults. Upstream
+  // puts copy-the-file on `c` and copy-the-NAME on `y`, which inverts what
+  // yank means everywhere else in vim; init.lua now overrides it the same way.
+  { "key": "y", "command": "filesExplorer.copy",
+    "when": "filesExplorerFocus && !inputFocus" },
+  { "key": "x", "command": "filesExplorer.cut",
+    "when": "filesExplorerFocus && !inputFocus" },
+  { "key": "p", "command": "filesExplorer.paste",
+    "when": "filesExplorerFocus && !inputFocus" },
+  { "key": "shift+y", "command": "copyRelativeFilePath",
+    "when": "filesExplorerFocus && !inputFocus" },
+  // v marks a node for a multi-file operation — the selection that y/x/p
+  // then act on. nvim-tree calls this a bookmark and ships it on `m`;
+  // VSCode has no bookmark concept, only a list selection.
+  { "key": "v", "command": "list.toggleSelection",
+    "when": "filesExplorerFocus && !inputFocus" },
+  { "key": "shift+r", "command": "workbench.files.action.refreshFilesExplorer",
+    "when": "filesExplorerFocus && !inputFocus" },
+
+  // ══════════════════════════════════════════════════════════
   // Lists that DO have a text box (Quick Open, search) can't use
   // bare j/k. One rule everywhere: Ctrl+j / Ctrl+k. Already the
   // default in fzf and in Telescope, so it is the same motion in
@@ -131,19 +254,55 @@
     "when": "parameterHintsVisible" },
 
   // ══════════════════════════════════════════════════════════
-  // Hand Ctrl back to fish. VSCode grabs some of these by default;
-  // "-" removes the default binding so the keystroke reaches the shell.
+  // Hand Ctrl back to fish.
+  //
+  // The obvious way — "-command" entries that delete VSCode's own binding —
+  // does NOT work portably, because it has to name the exact command bound to
+  // that key, and VSCode's defaults differ per platform: on Linux Ctrl+E is
+  // quickOpen and Ctrl+W closes the window, on macOS neither is. Written
+  // against macOS defaults, the removals silently miss on Linux.
+  //
+  // So instead of removing whatever VSCode has, we OVERRIDE the key and send
+  // the control character to the shell ourselves. A user binding beats a
+  // default one, "terminalFocus" keeps it out of the editor, and the byte is
+  // the same byte on both machines — this block needs no per-OS variant.
+  //
+  // Codes are ASCII control characters: Ctrl+letter = letter - 64.
+  // Deliberately NOT listed: Ctrl+C (must stay SIGINT / copy-selection) and
+  // Ctrl+Z (SIGTSTP) — VSCode's defaults already do the right thing there.
   // ══════════════════════════════════════════════════════════
-  { "key": "ctrl+k", "command": "-workbench.action.terminal.clear",
-    "when": "terminalFocus" },
-  { "key": "ctrl+a", "command": "-editor.action.selectAll",
-    "when": "terminalFocus" },
-  { "key": "ctrl+e", "command": "-workbench.action.quickOpen",
-    "when": "terminalFocus" },
-  { "key": "ctrl+p", "command": "-workbench.action.quickOpen",
-    "when": "terminalFocus" },
-  { "key": "ctrl+n", "command": "-workbench.action.files.newUntitledFile",
-    "when": "terminalFocus" },
-  { "key": "ctrl+r", "command": "-workbench.action.openRecent",
-    "when": "terminalFocus" }
+  { "key": "ctrl+a", "command": "workbench.action.terminal.sendSequence",
+    "args": { "text": "\u0001" }, "when": "terminalFocus" },   // beginning-of-line
+  { "key": "ctrl+b", "command": "workbench.action.terminal.sendSequence",
+    "args": { "text": "\u0002" }, "when": "terminalFocus" },   // backward-char
+  { "key": "ctrl+d", "command": "workbench.action.terminal.sendSequence",
+    "args": { "text": "\u0004" }, "when": "terminalFocus" },   // delete-char
+  { "key": "ctrl+e", "command": "workbench.action.terminal.sendSequence",
+    "args": { "text": "\u0005" }, "when": "terminalFocus" },   // end-of-line
+  { "key": "ctrl+f", "command": "workbench.action.terminal.sendSequence",
+    "args": { "text": "\u0006" }, "when": "terminalFocus" },   // accept autosuggestion
+  { "key": "ctrl+g", "command": "workbench.action.terminal.sendSequence",
+    "args": { "text": "\u0007" }, "when": "terminalFocus" },   // fzf cd
+  { "key": "ctrl+k", "command": "workbench.action.terminal.sendSequence",
+    "args": { "text": "\u000b" }, "when": "terminalFocus" },   // kill to end of line
+  { "key": "ctrl+l", "command": "workbench.action.terminal.sendSequence",
+    "args": { "text": "\u000c" }, "when": "terminalFocus" },   // clear screen
+  { "key": "ctrl+n", "command": "workbench.action.terminal.sendSequence",
+    "args": { "text": "\u000e" }, "when": "terminalFocus" },   // history next
+  { "key": "ctrl+p", "command": "workbench.action.terminal.sendSequence",
+    "args": { "text": "\u0010" }, "when": "terminalFocus" },   // history previous
+  { "key": "ctrl+r", "command": "workbench.action.terminal.sendSequence",
+    "args": { "text": "\u0012" }, "when": "terminalFocus" },   // fzf history
+  { "key": "ctrl+t", "command": "workbench.action.terminal.sendSequence",
+    "args": { "text": "\u0014" }, "when": "terminalFocus" },   // fzf files
+  { "key": "ctrl+u", "command": "workbench.action.terminal.sendSequence",
+    "args": { "text": "\u0015" }, "when": "terminalFocus" },   // kill whole line
+  { "key": "ctrl+v", "command": "workbench.action.terminal.sendSequence",
+    "args": { "text": "\u0016" }, "when": "terminalFocus" },   // paste from clipboard
+  { "key": "ctrl+w", "command": "workbench.action.terminal.sendSequence",
+    "args": { "text": "\u0017" }, "when": "terminalFocus" },   // kill path component
+  { "key": "ctrl+x", "command": "workbench.action.terminal.sendSequence",
+    "args": { "text": "\u0018" }, "when": "terminalFocus" },   // copy commandline
+  { "key": "ctrl+y", "command": "workbench.action.terminal.sendSequence",
+    "args": { "text": "\u0019" }, "when": "terminalFocus" }    // yank
 ]
