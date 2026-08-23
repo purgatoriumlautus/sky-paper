@@ -127,6 +127,13 @@ end
 # to the start). Whole line is what's actually wanted.
 bind ctrl-u kill-whole-line
 
+# The preset binds Ctrl+D to `exit`, which ends the shell process on an empty
+# line — and a dead shell means tmux tears the pane down (or toggleterm's
+# buffer dies). One stray keypress destroys a pane. Rebound to delete-char,
+# which is also what Ctrl+D does in every macOS text field, so this stays in
+# step with the rest of the preset. Panes close with Alt+q; shells with `exit`.
+bind ctrl-d delete-char
+
 # Left as the preset has it on purpose: Ctrl+W is backward-kill-path-component
 # (one path segment per press), which beats killing a whole word in a shell.
 

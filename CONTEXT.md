@@ -53,7 +53,8 @@ install.sh modules (root-owned or per-profile targets, not stowable):
   root TTY → `systemctl disable --now greetd`, start niri by hand.
 - keyd/ → /etc/keyd/default.conf. CapsLock tap→Ctrl (Shift+CapsLock→real
   CapsLock); bottom-left Ctrl→Menu, which xkb turns into the layout switch
-  (grp:menu_toggle in niri/). Keybinding scheme: docs/keybinds.md.
+  (grp:menu_toggle in niri/); Super+C/V→Ctrl/Shift+Insert so copy sits on
+  the Mac's key without colliding with SIGINT. Scheme: docs/keybinds.md.
 - hid_apple/ → /etc/modprobe.d (fnmode=2; read at module load — script
   pokes live sysfs too); nftables/, sysctl/, sshd/ → their /etc paths
   (see §4); firefox/ (user.js → random-hash profile dir); obsidian/

@@ -227,6 +227,22 @@ vim.g.maplocalleader = ' '
 -- so `yy` → `vip` then `p` doesn't clobber what you copied.
 vim.keymap.set('x', 'p', '"_dP', { desc = 'Paste over selection without clobbering register' })
 
+-- Super+C — the Mac's Cmd+C gesture, arriving as Ctrl+Insert. keyd rewrites
+-- the Super pair below the compositor (keyd/etc/keyd/default.conf: Ctrl+C
+-- there is SIGINT and could not be reused), kitty forwards it on
+-- `copy_or_noop` whenever it has no selection of its own, and nvim decodes the
+-- xterm sequence natively — verified by feeding \27[2;5~ to a headless nvim.
+--
+-- Redundant with `y`, which already reaches the system clipboard through
+-- clipboard=unnamedplus. Kept anyway: the point of the scheme is that one
+-- gesture works in every layer, and nvim is a layer.
+--
+-- No <S-Insert> counterpart on purpose — it would be dead code. kitty binds
+-- Shift+Insert to paste_from_clipboard and consumes it, so nvim never sees the
+-- key; the text arrives as a bracketed paste instead, which nvim already
+-- handles correctly.
+vim.keymap.set('x', '<C-Insert>', '"+y', { desc = 'Copy selection to system clipboard' })
+
 -- Ctrl+A to select all
 vim.keymap.set('n', '<C-a>', 'ggVG', { desc = 'Select all' })
 
@@ -430,6 +446,18 @@ require('lazy').setup({
           -- Change tree root
           vim.keymap.set('n', 'H', api.tree.change_root_to_parent, opts)  -- root up
           vim.keymap.set('n', 'L', api.tree.change_root_to_node, opts)    -- root into dir
+
+          -- File ops in vim's own vocabulary, not nvim-tree's defaults.
+          -- Upstream puts copy-the-file on `c` and copy-the-NAME on `y`,
+          -- which inverts what every other yank in vim means. Here y is the
+          -- yank, x the cut, p the paste — the same three letters as in a
+          -- buffer, and the same three the VSCode explorer now uses
+          -- (docs/vscode/keybindings.json). x and p already match upstream.
+          vim.keymap.set('n', 'y', api.fs.copy.node, opts)
+          -- v marks a node for a multi-file operation. Upstream has this on
+          -- `m` (bookmark); v is what selects in vim, and VSCode's explorer
+          -- has no bookmark concept at all — only a selection.
+          vim.keymap.set('n', 'v', api.marks.toggle, opts)
 
           -- Disable arrow keys in tree
           vim.keymap.set('n', '<Up>', '<Nop>', opts)
@@ -859,9 +887,45 @@ require('lazy').setup({
       -- We bind to <Plug>(nvim-surround-visual); its getchar() then consumes the
       -- trailing delimiter raw, so text objects (vi(, va", ci[…) are untouched.
       -- < and > are left alone on purpose — they're visual indent in/out.
+      --
+      -- On a LINEWISE selection (V) nvim-surround deliberately puts each
+      -- delimiter on its own line, turning one line into three:
+      --     (
+      --     line
+      --     )
+      -- Wanted here is the inline form, (line), so a V selection is redrawn
+      -- as a charwise one covering the same text before the wrap runs.
+      --
+      -- Simply pressing v does NOT work: in V mode both visual ends sit at
+      -- column 0, so switching to charwise yields a one-character selection
+      -- and you get (h)ello. The range has to be rebuilt from the '< and '>
+      -- marks, which is also the only way that survives selecting upwards —
+      -- there the active end is the FIRST line, not the last.
+      -- NOT an expr mapping: expr runs under textlock, where changing the
+      -- buffer or the mode is forbidden, so the reselect below silently does
+      -- nothing and the wrap never happens.
+      local function t(keys)
+        return vim.api.nvim_replace_termcodes(keys, true, false, true)
+      end
+
+      local function surround_visual(ch)
+        return function()
+          if vim.fn.mode() == 'V' then
+            -- <Esc> commits '< and '>; the x flag runs it before we read them.
+            vim.api.nvim_feedkeys(t('<Esc>'), 'nx', false)
+            local sl = vim.api.nvim_buf_get_mark(0, '<')[1]
+            local el = vim.api.nvim_buf_get_mark(0, '>')[1]
+            local width = math.max(#vim.fn.getline(el), 1)
+            vim.cmd(('normal! %dG0v%dG%d|'):format(sl, el, width))
+          end
+          -- 'm' so <Plug> is resolved through the mapping table.
+          vim.api.nvim_feedkeys(t('<Plug>(nvim-surround-visual)' .. ch), 'm', false)
+        end
+      end
+
       for _, ch in ipairs({ '(', ')', '[', ']', '{', '}', '"', "'", '`' }) do
-        vim.keymap.set('x', ch, '<Plug>(nvim-surround-visual)' .. ch,
-          { remap = true, desc = 'Surround selection with ' .. ch })
+        vim.keymap.set('x', ch, surround_visual(ch),
+          { desc = 'Surround selection with ' .. ch })
       end
     end,
   },

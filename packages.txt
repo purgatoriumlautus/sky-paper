@@ -121,6 +121,7 @@ xorg-xwayland
 xwayland-satellite
 yay
 yazi
+yt-dlp
 zathura
 zathura-pdf-mupdf
 zip
