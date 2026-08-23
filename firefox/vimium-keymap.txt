@@ -1,0 +1,114 @@
+# Vimium — Custom key mappings
+#
+# Спека: docs/keybinds.md §9. Этот файл авторитетен, живой браузер — нет.
+#
+# УСТАНОВКА (руками, скриптом нельзя — Vimium держит бинды в storage
+# расширения, а не в файле):
+#   1. Vimium Options → Custom key mappings → вставить всё ниже
+#   2. Там же включить filtered hints («Use link text for filtering»):
+#      метки хинтов становятся цифрами, и `f` начинает работать в RU
+#      раскладке тоже. Буквенные метки в RU не набираются в принципе,
+#      дублями это не чинится (§9.5).
+#
+# Не работает на about:*, view-source:*, addons.mozilla.org и странице
+# новой вкладки — WebExtensions туда не инжектятся.
+
+
+# ─── Ярус Alt: вкладки (§9.2) ────────────────────────────────────────
+# Alt+1..9 = вкладка N делает сам Firefox, биндить нечего.
+
+map <a-n> nextTab
+map <a-p> previousTab
+map <a-q> removeTab
+map <a-enter> createTab
+
+
+# ─── Голые клавиши: паритет с §4.3 (§9.3) ────────────────────────────
+# Дефолты Vimium инвертированы: у него H/L = история, J/K = вкладки.
+# В схеме вкладка это буфер, значит вкладки на H/L, история на C-o/C-i.
+
+unmap J
+unmap K
+map H previousTab
+map L nextTab
+map <c-o> goBack
+map <c-i> goForward
+
+# s/S — мышечная память flash из редактора. Дефолтные f/F остаются.
+map s LinkHints.activateMode
+map S LinkHints.activateModeToOpenInNewTab
+
+
+# ─── Ярус Пробел: только верхний уровень §4.1 (§9.4) ─────────────────
+# Веток f/g/c/b/x/u нет — в браузере нечем их наполнить.
+# Цена: пробел перестаёт скроллить страницу, скролл на j/k + C-d/C-u.
+
+map <space><space> Vomnibar.activate
+map <space>, Vomnibar.activateTabSelection
+map <space>e Vomnibar.activateBookmarks
+map <space>q removeTab
+
+
+# ─── Кириллица (§10) ─────────────────────────────────────────────────
+# langmap у Vimium нет, поэтому дубли по физической позиции клавиши.
+# Хинты сюда не входят — их закрывает filtered mode, см. шапку.
+
+# ярус Alt
+map <a-т> nextTab
+map <a-з> previousTab
+map <a-й> removeTab
+
+# история и вкладки
+map <c-щ> goBack
+map <c-ш> goForward
+map Р previousTab
+map Д nextTab
+
+# leader
+map <space>б Vomnibar.activateTabSelection
+map <space>у Vomnibar.activateBookmarks
+map <space>й removeTab
+
+# скролл
+map о scrollDown
+map л scrollUp
+map в scrollPageDown
+map г scrollPageUp
+map пп scrollToTop
+map П scrollToBottom
+
+# прыжки по ссылкам
+map а LinkHints.activateMode
+map А LinkHints.activateModeToOpenInNewTab
+map ы LinkHints.activateMode
+map Ы LinkHints.activateModeToOpenInNewTab
+
+# поиск по странице
+# `.` — дубль `/` по физической позиции. Побочка: в EN-раскладке точка
+# тоже начнёт поиск. Vimium её ничем не занимает, цена нулевая.
+map . enterFindMode
+map т performFind
+map Т performBackwardsFind
+
+# вкладки и адреса
+map щ Vomnibar.activate
+map Щ Vomnibar.activateInNewTab
+map Е Vomnibar.activateTabSelection
+map и Vomnibar.activateBookmarks
+map И Vomnibar.activateBookmarksInNewTab
+map е createTab
+map ч removeTab
+map Ч restoreTab
+map н copyCurrentUrl
+map к reload
+
+# прочее
+map ш enterInsertMode
+map пш focusInput
+map пг goUp
+map хх goPrevious
+map ъъ goNext
+
+# Дубля на `?` (showHelp) нет намеренно: по физической позиции он дал бы
+# `,`, а запятая читается в обеих раскладках — в EN она бы отбирала
+# клавишу ради бинда, который жмут раз в месяц. В RU help = Shift+7.
