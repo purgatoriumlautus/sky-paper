@@ -34,12 +34,38 @@
   // From the sidebar (file tree) back into the code
   { "key": "alt+l", "command": "workbench.action.focusActiveEditorGroup",
     "when": "sideBarFocus" },
-  { "key": "alt+h", "command": "workbench.action.focusSideBar",
-    "when": "editorTextFocus" },
 
-  // Inside a SPLIT terminal, left/right move between terminal panes rather
-  // than editor groups — the same keys tmux uses to walk its own panes.
-  { "key": "alt+h", "command": "workbench.action.terminal.focusPreviousPane",
+  // Alt+h has to mean two things, and which one depends on where you already
+  // are. The tree sits to the left of the LEFTMOST editor group, so from that
+  // group Alt+h is "go to the tree" — but from any group further right it has
+  // to mean "go one group left", or split editors become unreachable in one
+  // direction. tmux and nvim behave exactly this way: the key walks panes
+  // until there is nothing left to walk to.
+  //
+  // A single unconditional rule cannot express that, because VSCode resolves
+  // to the LAST matching rule rather than the most specific one — so an
+  // "editorTextFocus → focusSideBar" line placed after "focusLeftGroup" wins
+  // everywhere and swallows the left-group case entirely.
+  //
+  // activeEditorGroupIndex is 1-based and counts from the left, so index 1 IS
+  // the leftmost group. The two clauses below are mutually exclusive, which is
+  // what makes them safe to leave in either order.
+  { "key": "alt+h", "command": "workbench.action.focusSideBar",
+    "when": "editorTextFocus && activeEditorGroupIndex == 1" },
+  { "key": "alt+h", "command": "workbench.action.focusLeftGroup",
+    "when": "editorTextFocus && activeEditorGroupIndex != 1" },
+
+  // From the terminal, Alt+h goes to the tree. That is not a special case, it
+  // is the geometry: the sidebar spans the full height of the window, so it
+  // really is what sits to the left of the terminal panel, exactly as it sits
+  // to the left of the editor.
+  //
+  // Alt+l keeps walking terminal panes, and the asymmetry is deliberate:
+  // there is nothing to the right of the panel, so the key would otherwise be
+  // dead, while there IS something to the left. Panes stay reachable in both
+  // directions through Alt+n / Alt+p, which walk every terminal instance —
+  // split panes included.
+  { "key": "alt+h", "command": "workbench.action.focusSideBar",
     "when": "terminalFocus" },
   { "key": "alt+l", "command": "workbench.action.terminal.focusNextPane",
     "when": "terminalFocus" },
@@ -79,31 +105,65 @@
     "when": "!terminalFocus" },
 
   // ══════════════════════════════════════════════════════════
-  // Alt+digits / Alt+n / Alt+p — TERMINALS, not editors.
+  // Alt+digits / Alt+n / Alt+p — "window N", where what counts as a window
+  // depends on which container has focus.
   //
-  // This mirrors tmux, where these keys select windows, and a tmux window is
-  // a terminal (tmux.conf: M-1..9 select-window, M-n/M-p next/previous).
-  // They are bound in tmux's root table, so on celestia they fire from
-  // anywhere — including from inside nvim — and so they do here.
+  // In the terminal these select terminals; in the editor they select
+  // editors. One key, one meaning — "go to the Nth thing in front of me" —
+  // resolved by context rather than by remembering two separate keys.
   //
-  // Editors are a different axis and have their own keys on both machines:
+  // celestia reaches the same place from the other side: tmux binds M-1..9
+  // and M-n/M-p in its ROOT table, so there a tmux window is always what
+  // answers. VSCode has no tmux, so the editor half has to be spelled out.
+  //
+  // Editors also keep their own vim-native keys, unchanged:
   //   Shift+H / Shift+L   previous / next buffer
-  //   <leader>1..9        editor (nvim: tab) N
-  // Putting editors on Alt+digits as well would have made Alt+n a synonym of
-  // Shift+L in VSCode while meaning "next terminal" on celestia — the exact
-  // kind of split the whole scheme exists to prevent.
+  //   <leader>1..9        editor N
   // ══════════════════════════════════════════════════════════
-  { "key": "alt+1", "command": "workbench.action.terminal.focusAtIndex1" },
-  { "key": "alt+2", "command": "workbench.action.terminal.focusAtIndex2" },
-  { "key": "alt+3", "command": "workbench.action.terminal.focusAtIndex3" },
-  { "key": "alt+4", "command": "workbench.action.terminal.focusAtIndex4" },
-  { "key": "alt+5", "command": "workbench.action.terminal.focusAtIndex5" },
-  { "key": "alt+6", "command": "workbench.action.terminal.focusAtIndex6" },
-  { "key": "alt+7", "command": "workbench.action.terminal.focusAtIndex7" },
-  { "key": "alt+8", "command": "workbench.action.terminal.focusAtIndex8" },
-  { "key": "alt+9", "command": "workbench.action.terminal.focusAtIndex9" },
-  { "key": "alt+n", "command": "workbench.action.terminal.focusNext" },
-  { "key": "alt+p", "command": "workbench.action.terminal.focusPrevious" },
+  { "key": "alt+1", "command": "workbench.action.terminal.focusAtIndex1",
+    "when": "terminalFocus" },
+  { "key": "alt+1", "command": "workbench.action.openEditorAtIndex1",
+    "when": "!terminalFocus" },
+  { "key": "alt+2", "command": "workbench.action.terminal.focusAtIndex2",
+    "when": "terminalFocus" },
+  { "key": "alt+2", "command": "workbench.action.openEditorAtIndex2",
+    "when": "!terminalFocus" },
+  { "key": "alt+3", "command": "workbench.action.terminal.focusAtIndex3",
+    "when": "terminalFocus" },
+  { "key": "alt+3", "command": "workbench.action.openEditorAtIndex3",
+    "when": "!terminalFocus" },
+  { "key": "alt+4", "command": "workbench.action.terminal.focusAtIndex4",
+    "when": "terminalFocus" },
+  { "key": "alt+4", "command": "workbench.action.openEditorAtIndex4",
+    "when": "!terminalFocus" },
+  { "key": "alt+5", "command": "workbench.action.terminal.focusAtIndex5",
+    "when": "terminalFocus" },
+  { "key": "alt+5", "command": "workbench.action.openEditorAtIndex5",
+    "when": "!terminalFocus" },
+  { "key": "alt+6", "command": "workbench.action.terminal.focusAtIndex6",
+    "when": "terminalFocus" },
+  { "key": "alt+6", "command": "workbench.action.openEditorAtIndex6",
+    "when": "!terminalFocus" },
+  { "key": "alt+7", "command": "workbench.action.terminal.focusAtIndex7",
+    "when": "terminalFocus" },
+  { "key": "alt+7", "command": "workbench.action.openEditorAtIndex7",
+    "when": "!terminalFocus" },
+  { "key": "alt+8", "command": "workbench.action.terminal.focusAtIndex8",
+    "when": "terminalFocus" },
+  { "key": "alt+8", "command": "workbench.action.openEditorAtIndex8",
+    "when": "!terminalFocus" },
+  { "key": "alt+9", "command": "workbench.action.terminal.focusAtIndex9",
+    "when": "terminalFocus" },
+  { "key": "alt+9", "command": "workbench.action.openEditorAtIndex9",
+    "when": "!terminalFocus" },
+  { "key": "alt+n", "command": "workbench.action.terminal.focusNext",
+    "when": "terminalFocus" },
+  { "key": "alt+p", "command": "workbench.action.terminal.focusPrevious",
+    "when": "terminalFocus" },
+  { "key": "alt+n", "command": "workbench.action.nextEditor",
+    "when": "!terminalFocus" },
+  { "key": "alt+p", "command": "workbench.action.previousEditor",
+    "when": "!terminalFocus" },
 
   // ══════════════════════════════════════════════════════════
   // Alt+Space — both thumbs, the cheapest chord on the board,

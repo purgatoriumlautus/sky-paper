@@ -23,6 +23,19 @@
   // produces "˙" instead of Meta-h, and the entire Alt tier is dead.
   "terminal.integrated.macOptionIsMeta": true,
 
+  // fish on the remote box — and this is the ONLY correct way to get it there.
+  //
+  // The tempting alternative, `chsh -s /usr/bin/fish`, breaks Remote-SSH
+  // outright: after authenticating, the extension pipes a POSIX bootstrap
+  // script into the LOGIN shell and waits for markers back. fish cannot parse
+  // that syntax, so nothing is echoed and the connection hangs to timeout. The
+  // symptom in the Remote-SSH log is "$PLATFORM is undefined in installation
+  // script output" immediately after a successful publickey auth.
+  //
+  // A terminal profile is not a login shell, so it sidesteps that entirely.
+  // Login shell on the server stays bash. See docs/remote/config.fish.
+  "terminal.integrated.defaultProfile.linux": "fish",
+
   // VSCode uses Ctrl+K as the start of its own chord sequences. With chords
   // on, Ctrl+K never reaches fish (where it is kill-to-end-of-line).
   "terminal.integrated.allowChords": false,
@@ -45,6 +58,9 @@
     "workbench.action.focusActiveEditorGroup",
     "workbench.action.focusLeftGroup",
     "workbench.action.focusRightGroup",
+    // Alt+h from inside the terminal goes to the tree. Without this line the
+    // keystroke is typed at fish instead.
+    "workbench.action.focusSideBar",
     "workbench.action.increaseViewSize",
     "workbench.action.decreaseViewSize",
     "workbench.action.splitEditor",
