@@ -1,16 +1,13 @@
-# Palette — Flexoki Dark (warm ink & paper, ночная версия)
+# Palette — Flexoki Dark
 
 Тёплый почти-чёрный «paper» фон, чернильный светлый текст, полная восьмёрка
 Flexoki-акцентов (тона 400 — рассчитаны под тёмный фон). Главный UI-акцент —
 purple. Источник: **flexoki.com** (Steph Ango), значения сверены с
-`kepano/flexoki` 2026-07-11. Контрасты ниже посчитаны, не скопированы.
+`kepano/flexoki`. Контрасты посчитаны, не скопированы.
 
-**Источник:** flexoki.com, adopted as-is 2026-07-11. Четвёртая итерация
-(dark Cool Mono → light Cool Paper → light Sky Paper → **Flexoki Dark**).
-Дизайн-решения перехода: `docs/superpowers/specs/2026-07-11-flexoki-dark-transition-design.md`.
-
-**Шрифты:** Terminess Nerd Font Mono (UI/kitty), Unifont (CJK/символы),
-Terminus Italic (kitty курсив — кастомный, собран в `terminus-italic/`).
+**Шрифты:** Terminess Nerd Font Mono (UI/kitty), Unifont (CJK/символы в
+kitty через `symbol_map`), Terminus Italic (kitty курсив — кастомный,
+собран в `terminus-italic/`).
 
 ---
 
@@ -29,10 +26,9 @@ Terminus Italic (kitty курсив — кастомный, собран в `ter
 | **accent** | purple-400 | `#8B7EC8` | 5.4:1 | главный UI-акцент: рамки, selection, маркеры |
 | accent-bright | purple-300 | `#A699D0` | 7.4:1 | hover/bright-вариант акцента |
 
-Ключевое упрощение vs Sky Paper: там нужны были **два** акцента (sky 1.7:1 не
-читался как текст). Purple-400 на тёмном фоне тянет обе роли — и заливка, и
-текст (5.4:1). Но на самой пурпурной заливке текст **только тёмный** `#100F0F`
-(5.4:1); светлый fg на ней слепнет (2.2:1) — то же правило, что было со sky.
+Purple-400 тянет обе роли — и заливка, и текст (5.4:1), поэтому второй
+акцент не нужен. **Правило:** на пурпурной заливке текст только тёмный
+`#100F0F` (5.4:1); светлый fg на ней слепнет (2.2:1).
 
 ## Accents (все 400, контраст к bg)
 
@@ -43,19 +39,29 @@ Terminus Italic (kitty курсив — кастомный, собран в `ter
 | yellow | `#D0A215` | 8.1:1 | types, warning |
 | green | `#879A39` | 6.1:1 | keywords/control flow, ok/plus |
 | cyan | `#3AA99F` | 6.7:1 | strings |
-| blue | `#4385BE` | 4.9:1 | links, urls, directories |
+| blue | `#4385BE` | 4.9:1 | links, urls |
 | purple | `#8B7EC8` | 5.4:1 | UI-акцент; numbers/constants в синтаксисе |
 | magenta | `#CE5D97` | 5.1:1 | special/regex/escape |
 
 Bright-ряд (ANSI 9–14) — те же hue, тон **300**: `#E8705F` `#A0AF54` `#DFB431`
 `#66A0C8` `#E47DA8` `#5ABDAC` (все 6.3–9.8:1).
 
+## Alpha-варианты (quickshell)
+
+Composited поверх обоев, поэтому заданы как ARGB, а не как отдельные хексы:
+
+| role | ARGB | = |
+|---|---|---|
+| barBg | `#BF1C1B1A` | bg-alt @ 0.75 |
+| boxFill | `#D91C1B1A` | bg-alt @ 0.85 (lock + greeter) |
+| boxBorder | `#80403E3C` | border-dim @ 0.5 |
+| dim | `#80000000` | чёрный @ 0.5 (затемнение обоев под локом) |
+
 ---
 
 ## Syntax (nvim)
 
-Структурная логика nvim-syntax-v2 сохранена (control flow / verb / literal /
-weight-for-structure), цвета — Flexoki:
+Структурная логика: control flow / verb / literal / weight-for-structure.
 
 | role | hex | rationale |
 |---|---|---|
@@ -75,7 +81,7 @@ weight-for-structure), цвета — Flexoki:
 
 | role | hex | note |
 |---|---|---|
-| error | `#D14D41` | bold + underline — теперь настоящий red |
+| error | `#D14D41` | bold + underline |
 | warning | `#D0A215` | yellow |
 | hint | `#878580` | muted |
 | ok/plus | `#879A39` | green |
@@ -85,8 +91,7 @@ weight-for-structure), цвета — Flexoki:
 
 ## Terminal 16-color (kitty)
 
-Полноцветная схема (Sky Paper схлопывал каналы — Flexoki нет). Normal = 400,
-bright = 300.
+Normal = 400, bright = 300.
 
 | idx | ANSI | hex | note |
 |---|---|---|---|
@@ -107,12 +112,10 @@ bright = 300.
 | 14 | br cyan | `#5ABDAC` | cyan-300 |
 | 15 | br white | `#FFFCF0` | paper |
 
----
-
 ## Win95 bevel quad (gtk)
 
-Рельеф сохранён: `hi > face > sh > dk` по светлоте. Белый highlight мёртв —
-на тёмной панели он неон.
+Рельеф: `hi > face > sh > dk` по светлоте. Белого highlight нет — на тёмной
+панели он читается как неон.
 
 | role | flexoki | hex |
 |---|---|---|
@@ -127,64 +130,64 @@ bright = 300.
 
 **kitty:**
 - bg `#100F0F`, fg `#CECDC3`
-- cursor `#8B7EC8` (accent)
-- selection bg `#8B7EC8`, fg `#100F0F` (только тёмный текст на акценте)
+- cursor `#8B7EC8` (accent), block, с trail
+- selection bg `#8B7EC8`, fg `#100F0F`
 - url `#4385BE` (blue = links)
 - active border `#8B7EC8`, inactive `#403E3C`, bell `#CECDC3`
-- active tab bg `#8B7EC8` fg `#100F0F`
-- inactive tab bg `#1C1B1A` fg `#878580`
+- active tab bg `#8B7EC8` fg `#100F0F`; inactive bg `#1C1B1A` fg `#878580`
 - font: Terminess Nerd Font Mono 12pt; курсив Terminus Italic (кастом);
-  Unifont для CJK/символов (symbol_map)
+  Unifont для CJK через `symbol_map U+3000-U+9FFF,U+F900-U+FAFF`
 
-**niri border:**
-- active `#CECDC3` (fg ink — белая рамка, не accent fill)
-- inactive `transparent` (как было)
-- urgent `#D14D41` (теперь настоящий red)
-
-**tmux statusline:**
-- bar bg `#1C1B1A` fg `#878580`
-- session marker bg `#8B7EC8` fg `#100F0F` bold
-- current window bg `#8B7EC8` fg `#100F0F` bold
-- inactive window fg `#878580`
-- pane border `#403E3C`, active `#8B7EC8`
-- message bg `#343331` fg `#CECDC3`
-
-**nvim:** vague colors override + custom lualine theme (роли выше).
-
-**quickshell bar:**
-- bar bg `#1C1B1A` @ 0.75 (transparent overlay; работает, пока обои тёмные)
-- workspace fg `#878580`, active bg `#8B7EC8` fg `#100F0F`, urgent bg `#D14D41` fg `#100F0F`
-- empty workspace `#403E3C`
-- font: Unifont 11px
-
-**quickshell-greeter:**
-- form bg `#1C1B1A` 0.85 over wallpaper
-- input bg `#282726`, border `#403E3C`
-- focused input border `#8B7EC8`
-- button bg `#8B7EC8` fg `#100F0F`
-
-**launcher (quickshell):**
-- глиф `Δ` — accent `#8B7EC8`, паре к `λ` на CC
-- input текст `#CECDC3`, `>` prompt
-- результаты — бокс вниз, цвет = `barBg` (`bg-alt @ 0.75`), square
-- selection bg `#8B7EC8`, текст `#100F0F`
-- font Terminess Nerd Font Mono 16px (= bar)
-- анимации без изменений
-
-**niri (full visuals, square — no rounded corners):**
-- border 1px active `#CECDC3` (fg ink, белая), inactive transparent, urgent `#D14D41`
-- focus-ring off
-- shadow on, color `#00000066`, softness 15, spread 5, offset y6 (тень на
-  тёмном — чистый чёрный, не fg-based)
+**niri** (square — no rounded corners):
+- border 1px: active `#CECDC3` (fg ink, белая рамка — не accent fill),
+  inactive `transparent`, urgent `#D14D41`
+- focus-ring `off`
+- shadow `on`, color `#00000066`, softness 15, spread 5, offset y6
+  (тень на тёмном — чистый чёрный, не fg-based)
 - tab-indicator: top, width 3, gap 6, radius 0, active `#8B7EC8`,
   inactive `#403E3C`, urgent `#D14D41`
 - insert-hint `#8B7EC880`
-- background-color `#100F0F` (fallback)
-- wallpaper: `mntvagaflexoki.png` (Vagabond-горы, инверс-гравюра: штрихи
-  muted `#878580` на `#100F0F`; сорс в `wallpapers/`) via swaybg
-- geometry-corner-radius 0 + clip-to-geometry (без изменений)
-- overview backdrop `#1C1B1A`, workspace-shadow `#00000059` softness 30 offset y8
+- background-color `#100F0F` (fallback, если swaybg не поднялся)
+- geometry-corner-radius 0 + clip-to-geometry
+- overview backdrop `#1C1B1A`, workspace-shadow `#00000059` softness 30
+  spread 4 offset y8
 - layer-rule launcher: radius 0, shadow on
+- обои: `mntvagaflexoki.png` (Vagabond-горы, инверс-гравюра: штрихи muted
+  `#878580` на `#100F0F`; сорс в `wallpapers/`) через swaybg
+
+**tmux:** hex в style-опциях тут не рендерится — только 256-палитра, так что
+роли записаны ближайшими индексами (см. коммент в `tmux.conf`):
+
+| роль | idx | ≈ |
+|---|---|---|
+| bar bg | `colour234` | bg-alt |
+| bar fg / inactive window | `colour102` | muted |
+| session marker + current window + активный pane-border + mode-style | `colour104` на `colour233` bold | accent на bg |
+| pane border | `colour237` | border-dim |
+| message | `colour251` на `colour236` | fg на ui |
+
+**nvim:** vague colors override + кастомная тема lualine (роли выше).
+
+**quickshell bar:**
+- bar bg `barBg` (bg-alt @ 0.75) — прозрачная накладка, рассчитана на тёмные обои
+- workspace fg `#878580`, active bg `#8B7EC8` fg `#100F0F`,
+  urgent bg `#D14D41` fg `#100F0F`, empty `#403E3C`
+- font: Terminess Nerd Font Mono 16px (`Theme.fontSize`), cellSize 32
+
+**quickshell lock + greeter** (одна палитра на оба):
+- бокс `boxFill` (bg-alt @ 0.85) поверх затемнённых обоев (`dim`),
+  рамка `boxBorder`
+- поля ввода без заливки: лейбл `#878580`, при фокусе → `#8B7EC8`;
+  selection bg `#8B7EC8`, текст на ней `#100F0F`
+- статус/ошибка `#D14D41`, крупные часы `#FFFCF0` (paper — редкий пик)
+- font: Terminess Nerd Font Mono 16px, статусные строки на 2px меньше
+
+**launcher (quickshell):**
+- глиф `Δ` — accent `#8B7EC8`, в пару к `λ` на Control Center
+- input текст `#CECDC3`, prompt `>`
+- результаты — бокс вниз, цвет `barBg` (bg-alt @ 0.75), square
+- selection bg `#8B7EC8`, текст `#100F0F`
+- font Terminess Nerd Font Mono 16px (= bar)
 
 **gtk (3 слоя):**
 1. switches: `settings.ini` prefer-dark-theme=true; `apply.sh` color-scheme
@@ -202,22 +205,27 @@ bright = 300.
 highlight `#8B7EC8` (active `#A699D0`), recolor: lightcolor `#100F0F`
 darkcolor `#CECDC3` (тёмный режим читалки = наш родной)
 
-**mpv/osc:** фон-элементы `#1C1B1A`, текст `#CECDC3`, акцент `#8B7EC8`
+**mpv:** `mpv.conf` пишет цвета как `#AARRGGBB` (`FF` = непрозрачно):
+background `#FF100F0F`, osd `#FFCECDC3`, osd-outline `#FF100F0F`.
+`script-opts/osc.conf`: фон-элементы `#1C1B1A`, текст `#CECDC3`,
+акцент `#8B7EC8`
 
-**obsidian:** официальная тема Flexoki из каталога (автор палитры = CEO
-Obsidian); кастомный css уходит, vimrc остаётся
+**yazi:** директории и cwd — `#8B7EC8` (accent, не blue), selection и
+маркеры bg `#8B7EC8` fg `#100F0F`, find-keyword accent bold italic
+underline, hover-строки `#A699D0`
 
-**telegram (Desktop):** полный палитр-файл (467 vars, из night-дефолта
-tdesktop). Пузыри монохромные — входящие `#1C1B1A` (bg-alt), исходящие
-`#343331` (ui), текст всегда светлый; purple — маркер, не заливка. Акцент
-`#8B7EC8`: кнопка отправки, unread-бейдж, активный чат, reply-outline,
-selection, галочки; текст на пурпуре только тёмный `#100F0F`. Ссылки blue
-`#66A0C8`, inline-code cyan, 8 цветов имён = кольцо акцентов 1:1. Фон чата —
-сплошной `#100F0F` (вшитый тайл). Импорт через приложение, не stow —
-`telegram/` module, детали в его README.
+**fish:** git-branch в промпте `#8B7EC8` (и clean, и dirty); остальное —
+дефолтные цвета fish поверх 16-цветной схемы kitty
 
-**fish/fastfetch:** роли из Base/Accents; директории `#4385BE` (blue),
-selection везде bg `#8B7EC8` fg `#100F0F`
+**fastfetch:** accent `#8B7EC8` (ascii + ключи), muted `#878580`,
+fg `#CECDC3` на `#100F0F`
 
-**yazi:** как выше, но директории и cwd — `#8B7EC8` (accent, не blue):
-purple-forward по просьбе. selection bg `#8B7EC8` fg `#100F0F`
+**obsidian:** официальная тема Flexoki из каталога; свой только vimrc/hotkeys
+
+**telegram (Desktop):** полный палитр-файл (467 vars). Пузыри монохромные —
+входящие `#1C1B1A` (bg-alt), исходящие `#343331` (ui), текст всегда светлый;
+purple — маркер, не заливка. Акцент `#8B7EC8`: кнопка отправки,
+unread-бейдж, активный чат, reply-outline, selection, галочки; текст на
+пурпуре только тёмный `#100F0F`. Ссылки blue `#66A0C8`, inline-code cyan,
+8 цветов имён = кольцо акцентов 1:1. Фон чата — сплошной `#100F0F`
+(вшитый тайл). Импорт через приложение, не stow — детали в `telegram/README`.
