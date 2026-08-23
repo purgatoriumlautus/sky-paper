@@ -66,9 +66,11 @@ install.sh modules (root-owned or per-profile targets, not stowable):
 - udev/ → /etc/udev/rules.d — hidraw uaccess for the Keychron (VID 3434) so
   VIA/QMK tools reach it without root. Rule file only, deployed by hand.
 - nftables/, sysctl/, sshd/ → their /etc paths (see §4); firefox/ (user.js
-  → random-hash *.default-release profile); obsidian/ (official Flexoki
-  theme + vimrc/hotkeys → per-vault .obsidian/); crossgrub/ (GRUB theme +
-  Terminess .pf2 fonts); tlp/ → /etc/tlp.d/00-aru.conf (thresholds 85/90).
+  → random-hash *.default-release profile; vimium-keymap.txt is paste-only —
+  Vimium keeps binds in extension storage, docs/keybinds.md §9); obsidian/
+  (official Flexoki theme + vimrc/hotkeys → per-vault .obsidian/);
+  crossgrub/ (GRUB theme + Terminess .pf2 fonts); tlp/ →
+  /etc/tlp.d/00-aru.conf (thresholds 85/90).
 - power/ → /etc/systemd/{logind,sleep}.conf.d (lid→`sleep`, 30m
   suspend-then-hibernate, `MemorySleepMode=deep`; install gated on hibernate
   being viable). tlp/ owns charging, power/ owns sleep depth.
@@ -80,8 +82,8 @@ install.sh modules (root-owned or per-profile targets, not stowable):
 Not deployed / manual: wallpapers/ (Flexoki duotone sources +
 `mntvagaflexoki.png` current → ~/Pictures/wallpapers), docs/ (specs,
 screenshots, keybinds.md = cross-machine bind scheme, keybinds.png = its
-cheatsheet, vscode/ = Mac keymap),
-bin/ (user scripts incl. pd-bt → ~/.local/bin), telegram/
+cheatsheet, vscode/ = Mac keymap), bin/ (user scripts incl. pd-bt →
+~/.local/bin), telegram/
 (Telegram Desktop theme — imported via the app, not stowed).
 
 ### Packages
