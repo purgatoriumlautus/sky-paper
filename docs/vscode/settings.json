@@ -1,8 +1,14 @@
 // VSCode settings for the work Mac — merge into
 //   ~/Library/Application Support/Code/User/settings.json
 //
-// Not deployed by this repo (docs/ is not stowed): the Mac is managed and
-// gets these by hand. Full scheme: docs/keybinds.md
+// macOS ONLY. VSCode does not run on celestia; there the editor is nvim and
+// the scheme is carried by niri + kitty + tmux + nvim directly. Nothing in
+// this file should carry a Linux accommodation — if a keystroke needs
+// translating on the PC, that belongs in keyd/kitty/tmux, not here.
+//
+// Not deployed by this repo (docs/ is not stowed) and deliberately not a stow
+// module: the Mac is managed and its config is pasted in by hand.
+// Full scheme: docs/keybinds.md
 //
 // Requires the VSCodeVim extension (vscodevim.vim). It is the ONLY piece of
 // software the whole scheme needs installed — without it the <Space> tier
@@ -16,6 +22,19 @@
   // MANDATORY. Without it macOS treats Option as a compose key: Option+h
   // produces "˙" instead of Meta-h, and the entire Alt tier is dead.
   "terminal.integrated.macOptionIsMeta": true,
+
+  // fish on the remote box — and this is the ONLY correct way to get it there.
+  //
+  // The tempting alternative, `chsh -s /usr/bin/fish`, breaks Remote-SSH
+  // outright: after authenticating, the extension pipes a POSIX bootstrap
+  // script into the LOGIN shell and waits for markers back. fish cannot parse
+  // that syntax, so nothing is echoed and the connection hangs to timeout. The
+  // symptom in the Remote-SSH log is "$PLATFORM is undefined in installation
+  // script output" immediately after a successful publickey auth.
+  //
+  // A terminal profile is not a login shell, so it sidesteps that entirely.
+  // Login shell on the server stays bash. See docs/remote/config.fish.
+  "terminal.integrated.defaultProfile.linux": "fish",
 
   // VSCode uses Ctrl+K as the start of its own chord sequences. With chords
   // on, Ctrl+K never reaches fish (where it is kill-to-end-of-line).
@@ -39,25 +58,43 @@
     "workbench.action.focusActiveEditorGroup",
     "workbench.action.focusLeftGroup",
     "workbench.action.focusRightGroup",
+    // Alt+h from inside the terminal goes to the tree. Without this line the
+    // keystroke is typed at fish instead.
+    "workbench.action.focusSideBar",
     "workbench.action.increaseViewSize",
     "workbench.action.decreaseViewSize",
     "workbench.action.splitEditor",
     "workbench.action.splitEditorDown",
+    "workbench.action.terminal.split",
+    "workbench.action.terminal.focusNextPane",
+    "workbench.action.terminal.focusPreviousPane",
     "workbench.action.closeActiveEditor",
     "workbench.action.toggleMaximizedPanel",
     "workbench.action.nextEditor",
     "workbench.action.previousEditor",
     "workbench.action.openRecent",
     "workbench.action.reloadWindow",
-    "workbench.action.openEditorAtIndex1",
-    "workbench.action.openEditorAtIndex2",
-    "workbench.action.openEditorAtIndex3",
-    "workbench.action.openEditorAtIndex4",
-    "workbench.action.openEditorAtIndex5",
-    "workbench.action.openEditorAtIndex6",
-    "workbench.action.openEditorAtIndex7",
-    "workbench.action.openEditorAtIndex8",
-    "workbench.action.openEditorAtIndex9"
+    // Terminal switching — Alt+n/p and Alt+1..9, the tmux-window analogue.
+    // These must reach VSCode precisely BECAUSE the terminal has focus.
+    "workbench.action.terminal.focusNext",
+    "workbench.action.terminal.focusPrevious",
+    "workbench.action.terminal.focusAtIndex1",
+    "workbench.action.terminal.focusAtIndex2",
+    "workbench.action.terminal.focusAtIndex3",
+    "workbench.action.terminal.focusAtIndex4",
+    "workbench.action.terminal.focusAtIndex5",
+    "workbench.action.terminal.focusAtIndex6",
+    "workbench.action.terminal.focusAtIndex7",
+    "workbench.action.terminal.focusAtIndex8",
+    "workbench.action.terminal.focusAtIndex9",
+    // Super tier inside the terminal — without these, Super+C/V/S would be
+    // typed at the shell instead of acted on.
+    "workbench.action.terminal.copySelection",
+    "workbench.action.terminal.paste",
+    "workbench.action.files.save",
+    // The Ctrl tier is delivered by sendSequence bindings (see
+    // keybindings.json); VSCode has to run them rather than pass the raw key.
+    "workbench.action.terminal.sendSequence"
   ],
 
   // ────────────────────────────────────────────────────────────
@@ -87,6 +124,17 @@
     "<C-w>": false
   },
 
+  // The tree below IS nvim's leader tree (nvim/.config/nvim/init.lua), key for
+  // key. Where VSCode has no equivalent the key is left UNBOUND on purpose —
+  // a dead key fails loudly and teaches the gap, whereas a key silently doing
+  // something else is how muscle memory rots. Deliberately unbound, and why:
+  //   <leader>fh   help tags        — VSCode has no :help corpus
+  //   <leader>gH   repo history     — Timeline is per-file only; no repo view
+  //   <leader>ss/sl/sd  sessions    — VSCode restores workspaces by itself
+  //   <leader>?    buffer keymaps   — which-key has no counterpart
+  // The single VSCode-only addition is <leader>gs (Source Control view):
+  // nvim's git story is inline (gitsigns + diffview) so no key collides, and
+  // VSCode's is a panel that otherwise needs the mouse.
   "vim.normalModeKeyBindingsNonRecursive": [
     // Top level
     { "before": ["<leader>", "<leader>"], "commands": ["workbench.action.quickOpen"] },
@@ -95,8 +143,25 @@
     { "before": ["<leader>", ":"],        "commands": ["workbench.action.showCommands"] },
     { "before": ["<leader>", "w"],        "commands": ["workbench.action.files.save"] },
     { "before": ["<leader>", "q"],        "commands": ["workbench.action.closeActiveEditor"] },
-    { "before": ["<leader>", "e"],        "commands": ["workbench.view.explorer"] },
-    { "before": ["<leader>", "d"],        "commands": ["workbench.action.showAllEditors"] },
+    // n toggles the tree, e reveals the current file in it — same split of
+    // duties as NvimTreeToggle vs the reveal helper in init.lua.
+    { "before": ["<leader>", "n"],        "commands": ["workbench.action.toggleSidebarVisibility"] },
+    { "before": ["<leader>", "e"],        "commands": ["workbench.files.action.showActiveFileInExplorer"] },
+    // nvim's dashboard; VSCode's nearest real start screen is the Welcome tab.
+    { "before": ["<leader>", "d"],        "commands": ["workbench.action.openWalkthrough"] },
+
+    // Digits — nvim maps <leader>N to tab N. VSCode has no tabs in vim's
+    // sense, so the index of the editor in the group is the honest analogue.
+    { "before": ["<leader>", "1"], "commands": ["workbench.action.openEditorAtIndex1"] },
+    { "before": ["<leader>", "2"], "commands": ["workbench.action.openEditorAtIndex2"] },
+    { "before": ["<leader>", "3"], "commands": ["workbench.action.openEditorAtIndex3"] },
+    { "before": ["<leader>", "4"], "commands": ["workbench.action.openEditorAtIndex4"] },
+    { "before": ["<leader>", "5"], "commands": ["workbench.action.openEditorAtIndex5"] },
+    { "before": ["<leader>", "6"], "commands": ["workbench.action.openEditorAtIndex6"] },
+    { "before": ["<leader>", "7"], "commands": ["workbench.action.openEditorAtIndex7"] },
+    { "before": ["<leader>", "8"], "commands": ["workbench.action.openEditorAtIndex8"] },
+    { "before": ["<leader>", "9"], "commands": ["workbench.action.openEditorAtIndex9"] },
+    { "before": ["<leader>", "0"], "commands": ["workbench.action.lastEditorInGroup"] },
 
     // f — find
     { "before": ["<leader>", "f", "f"], "commands": ["workbench.action.quickOpen"] },
@@ -106,36 +171,33 @@
     { "before": ["<leader>", "f", "s"], "commands": ["workbench.action.gotoSymbol"] },
     { "before": ["<leader>", "f", "k"], "commands": ["workbench.action.openGlobalKeybindings"] },
 
-    // g — git
-    { "before": ["<leader>", "g", "g"], "commands": ["workbench.view.scm"] },
+    // g — git. Blame is VSCode's own since 1.9x (git.blame.*), so GitLens is
+    // not a dependency: it would fail CONTEXT.md §2 ("replaceable by something
+    // already present?") and it cannot be assumed present on a managed Mac.
     { "before": ["<leader>", "g", "s"], "commands": ["workbench.view.scm"] },
     { "before": ["<leader>", "g", "d"], "commands": ["git.openChange"] },
-    { "before": ["<leader>", "g", "b"], "commands": ["gitlens.toggleFileBlame"] },
+    { "before": ["<leader>", "g", "h"], "commands": ["timeline.focus"] },
+    { "before": ["<leader>", "g", "q"], "commands": ["workbench.action.closeActiveEditor"] },
+    { "before": ["<leader>", "g", "b"], "commands": ["git.blame.toggleEditorDecoration"] },
     { "before": ["<leader>", "g", "p"], "commands": ["editor.action.dirtydiff.next"] },
     { "before": ["<leader>", "g", "r"], "commands": ["git.revertSelectedRanges"] },
-    { "before": ["<leader>", "g", "S"], "commands": ["git.stageSelectedRanges"] },
 
     // c — code
     { "before": ["<leader>", "c", "a"], "commands": ["editor.action.quickFix"] },
     { "before": ["<leader>", "c", "r"], "commands": ["editor.action.rename"] },
     { "before": ["<leader>", "c", "f"], "commands": ["editor.action.formatDocument"] },
     { "before": ["<leader>", "c", "d"], "commands": ["editor.action.showHover"] },
-    { "before": ["<leader>", "c", "s"], "commands": ["workbench.action.gotoSymbol"] },
 
     // b — buffers
+    { "before": ["<leader>", "b", "b"], "commands": ["workbench.action.showAllEditors"] },
     { "before": ["<leader>", "b", "d"], "commands": ["workbench.action.closeActiveEditor"] },
     { "before": ["<leader>", "b", "o"], "commands": ["workbench.action.closeOtherEditors"] },
-    { "before": ["<leader>", "b", "b"], "commands": ["workbench.action.openPreviousRecentlyUsedEditorInGroup"] },
+    { "before": ["<leader>", "b", "p"], "commands": ["workbench.action.openPreviousRecentlyUsedEditorInGroup"] },
 
     // x — problems
     { "before": ["<leader>", "x", "x"], "commands": ["workbench.actions.view.problems"] },
     { "before": ["<leader>", "x", "w"], "commands": ["workbench.actions.view.problems"] },
     { "before": ["<leader>", "x", "q"], "commands": ["workbench.actions.view.problems"] },
-
-    // u — ui
-    { "before": ["<leader>", "u", "w"], "commands": ["editor.action.toggleWordWrap"] },
-    { "before": ["<leader>", "u", "n"], "commands": ["editor.action.toggleRenderLineNumbers"] },
-    { "before": ["<leader>", "u", "t"], "commands": ["workbench.action.selectTheme"] },
 
     // Bare keys that vim users expect and VSCode does not give for free
     { "before": ["<S-l>"], "commands": ["workbench.action.nextEditor"] },
@@ -144,11 +206,45 @@
     { "before": ["[", "d"], "commands": ["editor.action.marker.prev"] },
     { "before": ["]", "c"], "commands": ["workbench.action.editor.nextChange"] },
     { "before": ["[", "c"], "commands": ["workbench.action.editor.previousChange"] },
-    { "before": ["g", "r"], "commands": ["editor.action.goToReferences"] }
+    { "before": ["g", "r"], "commands": ["editor.action.goToReferences"] },
+
+    // flash.nvim lives on `s` (init.lua binds it for n/x/o). VSCodeVim's
+    // EasyMotion is the same idea — label every match, type the label — but
+    // its triggers are hardcoded as N x <leader> + letters, and the 1-char
+    // search is <leader><leader>s.
+    //
+    // "after" here is deliberately in the NonRecursive list: recursive
+    // expansion would re-enter user remaps, hit our own <leader><leader>
+    // (quick open) and swallow the sequence. Non-recursive sends the keys
+    // straight to vim's action matcher, where EasyMotion lives.
+    { "before": ["s"], "after": ["<leader>", "<leader>", "s"] },
+    // S is flash treesitter-select in nvim; the nearest thing VSCode has is
+    // expanding the selection to the enclosing syntax node.
+    { "before": ["S"], "commands": ["editor.action.smartSelect.expand"] }
   ],
 
   "vim.visualModeKeyBindingsNonRecursive": [
     { "before": ["<leader>", "c", "f"], "commands": ["editor.action.formatSelection"] },
-    { "before": ["<leader>", "c", "a"], "commands": ["editor.action.quickFix"] }
+    { "before": ["<leader>", "c", "a"], "commands": ["editor.action.quickFix"] },
+
+    // Surround the selection by pressing the delimiter itself — no S first.
+    // This is nvim-surround plus the loop in init.lua that binds each
+    // delimiter in visual mode to <Plug>(nvim-surround-visual). VSCodeVim's
+    // own surround only offers S<char>, so each char is routed to it here.
+    //
+    // < and > are left out on purpose, exactly as in init.lua: they are
+    // visual-mode indent, and that is worth more than surrounding with them.
+    { "before": ["("],  "after": ["S", "("] },
+    { "before": [")"],  "after": ["S", ")"] },
+    { "before": ["["],  "after": ["S", "["] },
+    { "before": ["]"],  "after": ["S", "]"] },
+    { "before": ["{"],  "after": ["S", "{"] },
+    { "before": ["}"],  "after": ["S", "}"] },
+    { "before": ["\""], "after": ["S", "\""] },
+    { "before": ["'"],  "after": ["S", "'"] },
+    { "before": ["`"],  "after": ["S", "`"] },
+
+    // flash.nvim's `s` in visual mode too (init.lua binds it for n, x, o).
+    { "before": ["s"], "after": ["<leader>", "<leader>", "s"] }
   ]
 }

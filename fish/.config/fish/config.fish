@@ -41,6 +41,10 @@ set -gx COMPOSE_DOCKER_CLI_BUILD 1
 # -----------------
 fish_add_path -g $HOME/.local/bin
 fish_add_path -g $HOME/.local/bin/npm
+# Where `go install` drops binaries. Not where gopls comes from — that one is
+# managed by mason under ~/.local/share/nvim. fish_add_path skips a directory
+# that does not exist yet, so this stays inert until something lands there.
+fish_add_path -g $HOME/go/bin
 
 # -----------------
 # Aliases
@@ -125,10 +129,11 @@ end
 # to the start). Whole line is what's actually wanted.
 bind ctrl-u kill-whole-line
 
-# Ctrl+D deletes forward, never exits. The preset binds it to delete-or-exit,
-# which on an empty line sends EOF -> fish exits -> the tmux pane it was
-# running in disappears. Close a pane deliberately with M-q (tmux) instead.
-# `exit` still works if you actually mean it.
+# The preset binds Ctrl+D to `exit`, which ends the shell process on an empty
+# line — and a dead shell means tmux tears the pane down (or toggleterm's
+# buffer dies). One stray keypress destroys a pane. Rebound to delete-char,
+# which is also what Ctrl+D does in every macOS text field, so this stays in
+# step with the rest of the preset. Panes close with Alt+q; shells with `exit`.
 bind ctrl-d delete-char
 
 # Left as the preset has it on purpose: Ctrl+W is backward-kill-path-component
