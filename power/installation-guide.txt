@@ -1,0 +1,151 @@
+================================================================================
+POWER / BATTERY — WHAT'S LEFT TO DO                    laniakea (ThinkPad X280)
+written 2026-08-01 · repo changes are done & uncommitted in ~/dotfiles
+================================================================================
+
+Everything below is deploy + verify. All code/config is already written in the
+repo. Nothing has been installed to /etc. Nothing has been committed.
+
+--------------------------------------------------------------------------------
+STEP 1 — TEST HIBERNATE                                       [DONE - PASSED]
+--------------------------------------------------------------------------------
+Run 2026-08-03 17:44:57, on the boot that started 17:42:14. It worked:
+  - powered down 49.7 s (CLOCK_BOOTTIME - CLOCK_MONOTONIC), image restored
+  - one boot_id and one "Linux version" banner all day - no cold boot
+  - session survived: niri pid 1456, kitty 1634, tmux 1670 all from 17:42:4x
+  - loginctl: only session 3, opened 17:42:37 - no login after the resume
+Nothing to redo here.
+
+It LOOKED like a failure, and the check written here originally was the reason.
+A successful resume is visually identical to a cold boot: the machine really is
+fully powered off, so it must come back through GRUB -> kernel -> initramfs
+before the image is restored, and the password prompt you then get is
+LockScreen.qml, which quickshell-greeter deliberately mirrors.
+
+Corrected check, for next time:
+
+    journalctl -b 0 -k | grep -iE 'hibernation entry|hibernation exit'
+    python3 -c 'import time; print(time.clock_gettime(time.CLOCK_BOOTTIME)-time.clock_gettime(time.CLOCK_MONOTONIC))'
+
+PASS = "hibernation exit" present, and the second number is the seconds spent
+switched off. On a cold boot it is 0.0.
+
+Four things that mislead, all of them normal:
+  - Use -b 0, NOT -b -1. A successful hibernate restores the pre-hibernate boot
+    id, so the resume continues the SAME journal boot. -b -1 is the session
+    before it and shows nothing.
+  - Do NOT grep "Image saved". The kernel snapshots memory first and writes the
+    image to swap afterwards, so that line is printed after the snapshot and is
+    not inside it. A restored log always ends at "Disabling non-boot CPUs".
+  - Seeing GRUB is expected.
+  - Being asked for a password is expected - it is the lock screen, not greetd.
+    `loginctl list-sessions` shows whether a new session was really created.
+  - Cheapest check: your terminals and windows are still open.
+
+NOTE = "Unable to resume from device ... continuing boot process" on a COLD
+       boot is normal. You have one at 17:42:15 - that was the boot after the
+       battery ran flat, before the test. Unrelated.
+
+--------------------------------------------------------------------------------
+STEP 2 — INSTALL THE power/ MODULE                          [DONE 2026-08-03]
+--------------------------------------------------------------------------------
+    sudo ~/dotfiles/power/install.sh
+
+Ran 17:59. Preconditions passed (resume=259:2, swap 16777212 kB >= RAM
+16104688 kB). Both drop-ins are in place and LIVE in logind's runtime:
+
+    HandleLidSwitch                "sleep"
+    HandleLidSwitchExternalPower   "sleep"
+    HandleLidSwitchDocked          "ignore"
+    SleepOperation                 "suspend-then-hibernate" "suspend"
+    mem_sleep                      s2idle [deep]
+    block-mode sleep inhibitors    0
+
+logind was reloaded, not restarted (same PID since 17:42:20) - the session was
+never torn down.
+
+STILL TO DO - comment out the two hand-edited lines the drop-ins now shadow,
+so the repo is the single source of truth:
+    /etc/systemd/logind.conf:27   SleepOperation=suspend-then-hibernate suspend
+    /etc/systemd/sleep.conf:27    HibernateDelaySec=1800
+
+--------------------------------------------------------------------------------
+STEP 3 — RESTART swayidle                            [DONE - by the reboot]
+--------------------------------------------------------------------------------
+No longer needed: the battery ran flat on 2026-08-02 22:47 and the machine
+booted fresh 2026-08-03 17:42, so swayidle (pid 1510, started 17:42:40) loaded
+the current config on its own. The command, if it is ever needed again:
+
+    pkill -x swayidle; setsid -f swayidle -w
+
+--------------------------------------------------------------------------------
+STEP 4 — CHECK THE NEW BATTERY DISCHARGES                    [DONE - PASSED]
+--------------------------------------------------------------------------------
+Confirmed both directions, and a full calibration cycle completed 2026-08-02:
+
+    energy_full         45800000   (45.80 Wh)
+    energy_full_design  44460000   (44.46 Wh)
+    cycle_count         1
+    thresholds          85 / 90    (reapplied by tlp on boot)
+
+energy_full now exceeds design and no longer just echoes it, which means the
+gauge ran a real learning cycle. The pack is fine.
+
+--------------------------------------------------------------------------------
+STEP 5 — VERIFY IT ALL TOOK
+--------------------------------------------------------------------------------
+    systemd-analyze cat-config systemd/logind.conf | grep -E '^Handle|^SleepOperation'
+    systemd-analyze cat-config systemd/sleep.conf  | grep -E '^Hibernate|^MemorySleep'
+    cat /sys/power/mem_sleep                     # must show: s2idle [deep]
+    systemd-inhibit --list | grep 'block.*sleep' # must be EMPTY
+
+Lid test: shut the lid, confirm it drops to sleep within a second or two.
+Leave it shut past 30 min, then resume and confirm it hibernated:
+    journalctl -b -1 | grep -i hibernation
+
+--------------------------------------------------------------------------------
+STEP 6 — BIOS (cannot be set or checked from Linux)
+--------------------------------------------------------------------------------
+Config -> Power -> Sleep State  must be  "Linux"  (not "Windows 10").
+
+Currently effectively correct — `cat /sys/power/mem_sleep` shows deep as an
+option, which only happens in Linux mode. Re-check after any BIOS/firmware
+update, because if it flips to Windows mode the kernel only offers s2idle and
+MemorySleepMode=deep silently cannot apply.
+
+Also re-run the charge-threshold check after any BIOS/EC update — threshold
+support on a non-Lenovo (Cellonic) pack is not guaranteed across firmware:
+    cat /sys/class/power_supply/BAT0/charge_control_start_threshold   # 85
+    cat /sys/class/power_supply/BAT0/charge_control_end_threshold     # 90
+
+--------------------------------------------------------------------------------
+OPTIONAL — DISABLE USB WAKE FROM SLEEP
+--------------------------------------------------------------------------------
+Not installed, by your call. A jostled USB dongle in a bag can wake the
+machine from S3. With the lid fix in place this self-corrects (resume ->
+logind sees the closed lid -> re-suspends in seconds), and disabling it means
+the external Galaxy80 keyboard can no longer wake the laptop.
+
+If you ever want it:
+    sudo install -m 644 ~/dotfiles/power/optional/99-no-usb-wake.rules /etc/udev/rules.d/
+    sudo udevadm control --reload && sudo udevadm trigger -s pci
+    grep XHC /proc/acpi/wakeup        # -> *disabled
+
+================================================================================
+ALREADY DONE — no action needed
+================================================================================
+- Auto-suspend toggle now actually keeps the screen on. It holds a Wayland
+  idle inhibitor, so the whole swayidle timeline pauses (no 5m dim, no 10m
+  lock/screen-off, no 30m suspend). Tested: acquire, hold, release, re-acquire.
+  Lid close is deliberately NOT inhibited and always sleeps.
+- Charge thresholds 85/90 confirmed live in the EC (not just in config).
+- No conflicting power daemons — TLP only, nothing else installed.
+- Thermals clean: 47-54 C idle, zero throttling events in any retained boot.
+- Hibernate is configured correctly (swap 16 GiB > RAM, resume= resolves).
+  Untested only — that's step 1.
+- CONTEXT.md corrected to the new pack (01AV470 Cellonic, 44.46 Wh).
+
+Known pre-existing, unrelated, not touched:
+- LockScreen.qml:400 logs "ReferenceError: lockClock is not defined" on lock.
+- CONTEXT.md section 5 is 17 lines against its budget of 15.
+================================================================================
