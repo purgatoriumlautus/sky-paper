@@ -1,0 +1,340 @@
+# ~/.config/fd/ignore
+# Global fd ignore. Applies to every fd invocation, not just fzf.
+# Syntax is .gitignore syntax. No leading slash — patterns match at any depth.
+
+# ─────────────────────────────────────────────
+# VCS internals
+# ─────────────────────────────────────────────
+.git/
+.svn/
+.hg/
+.jj/
+
+# ─────────────────────────────────────────────
+# Generic caches and state
+# ─────────────────────────────────────────────
+.cache/
+.local/state/
+.local/share/Trash/
+.thumbnails/
+.thumbs/
+*.pyc
+*.pyo
+*.o
+*.so
+*.a
+*.class
+*.swp
+*.swo
+.DS_Store
+
+# ─────────────────────────────────────────────
+# Language toolchains and package managers
+# ─────────────────────────────────────────────
+node_modules/
+.npm/
+.yarn/
+.pnpm-store/
+.local/share/pnpm/
+bower_components/
+
+__pycache__/
+.venv/
+venv/
+.tox/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.local/share/virtualenv/
+.local/lib/python*/
+
+.cargo/registry/
+.cargo/git/
+.rustup/
+target/
+
+go/pkg/
+go/bin/
+
+.m2/
+.gradle/
+.ivy2/
+.sbt/
+
+.gem/
+.bundle/
+.rbenv/
+.nvm/
+.pyenv/
+.rvm/
+.stack/
+.cabal/
+.ghcup/
+.opam/
+.deno/
+.bun/
+
+# ─────────────────────────────────────────────
+# Build output
+# ─────────────────────────────────────────────
+build/
+dist/
+out/
+.next/
+.nuxt/
+.svelte-kit/
+.turbo/
+.parcel-cache/
+.output/
+cmake-build-*/
+CMakeFiles/
+
+# ─────────────────────────────────────────────
+# Editors and IDEs
+# ─────────────────────────────────────────────
+.local/share/nvim/
+.local/share/vim/
+.local/share/JetBrains/
+.config/JetBrains/
+.idea/
+.vscode-server/
+.config/Code/
+.config/Code\ -\ OSS/
+.config/VSCodium/
+.vim/undo/
+.vim/swap/
+
+# ─────────────────────────────────────────────
+# Containers, k8s, infra — the DevOps noise
+# ─────────────────────────────────────────────
+.docker/
+.local/share/containers/
+.local/share/docker/
+.minikube/
+.kube/cache/
+.kube/http-cache/
+.terraform/
+.terraform.d/
+.vagrant/
+.ansible/
+.helm/
+.krew/
+.talos/
+.vscode/extensions/
+
+# ─────────────────────────────────────────────
+# Browsers and chat/desktop apps
+# ─────────────────────────────────────────────
+.mozilla/
+.config/BraveSoftware/
+.config/chromium/
+.config/google-chrome/
+.config/discord/
+.config/Slack/
+.config/Signal/
+.config/telegram-desktop/
+.config/obsidian/
+.config/spotify/
+.zoom/
+.var/
+.local/share/flatpak/
+snap/
+
+# ─────────────────────────────────────────────
+# Games and heavy media
+# ─────────────────────────────────────────────
+.local/share/Steam/
+.steam/
+.wine/
+.PlayOnLinux/
+.lutris/
+
+# ─────────────────────────────────────────────
+# Secrets and keyrings — never want these in a fuzzy list
+# ─────────────────────────────────────────────
+.gnupg/
+.pki/
+.password-store/
+.local/share/keyrings/
+
+# ─────────────────────────────────────────────
+# Misc runtime junk
+# ─────────────────────────────────────────────
+.dbus/
+.pulse/
+.Xauthority
+.esd_auth
+.ICEauthority
+.sudo_as_admin_successful
+.viminfo
+.lesshst
+.wget-hsts
+.python_history
+.node_repl_history
+
+/proc/
+/sys/
+/dev/
+/run/
+/tmp/
+/boot/
+/lost+found/
+/usr/lib/
+/usr/lib32/
+/usr/share/doc/
+/usr/share/man/
+/usr/share/locale/
+/usr/src/
+/var/lib/docker/
+/var/lib/containers/
+/var/lib/libvirt/
+/var/cache/
+/var/tmp/
+/swapfile
+
+**/.local/share/nvim/
+**/.local/share/JetBrains/
+**/.local/state/
+**/.local/share/Trash/
+**/.local/share/Steam/
+**/.local/share/containers/
+**/.local/share/flatpak/
+**/.local/share/keyrings/
+**/.local/share/pnpm/
+**/.local/share/virtualenv/
+**/.config/Code/
+**/.config/BraveSoftware/
+**/.config/chromium/
+**/.config/google-chrome/
+**/.config/discord/
+**/.config/Slack/
+**/.config/JetBrains/
+**/.cargo/registry/
+**/.cargo/git/
+**/.kube/cache/
+**/.kube/http-cache/
+**/.vim/undo/
+**/.vim/swap/
+**/go/pkg/
+**/go/bin/
+/usr/share/icons/
+/usr/share/fonts/
+/usr/share/themes/
+/usr/share/backgrounds/
+/usr/share/pixmaps/
+/usr/share/zoneinfo/
+/usr/share/terminfo/
+/usr/share/i18n/
+/usr/share/hwdata/
+/usr/include/
+/usr/lib/modules/
+/usr/lib/firmware/
+/usr/lib/python*/
+/usr/lib/node_modules/
+**/local/pkg/
+/home/segfault/go/
+/usr/lib/
+lost+found/
+
+# ─────────────────────────────────────────────
+# Binary / media — nothing to open in an editor
+# ─────────────────────────────────────────────
+# images
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.bmp
+*.tiff
+*.tif
+*.ico
+*.svg
+*.psd
+*.xcf
+*.heic
+*.avif
+
+# video
+*.mp4
+*.mkv
+*.webm
+*.mov
+*.avi
+*.mpg
+*.mpeg
+*.flv
+*.m4v
+*.wmv
+
+# audio
+*.mp3
+*.flac
+*.wav
+*.ogg
+*.opus
+*.aac
+*.m4a
+*.wma
+*.aiff
+*.mid
+
+# fonts
+*.ttf
+*.otf
+*.woff
+*.woff2
+*.eot
+*.pfb
+
+# archives
+*.zip
+*.tar
+*.gz
+*.bz2
+*.xz
+*.zst
+*.7z
+*.rar
+*.tgz
+*.iso
+*.img
+*.qcow2
+*.vdi
+*.deb
+*.rpm
+*.pkg.tar.zst
+*.AppImage
+
+# documents
+*.pdf
+*.epub
+*.mobi
+*.djvu
+*.doc
+*.docx
+*.xls
+*.xlsx
+*.ppt
+*.pptx
+*.odt
+*.ods
+*.odp
+
+# compiled / binary
+*.bin
+*.exe
+*.dll
+*.dylib
+*.wasm
+*.pyd
+*.jar
+*.war
+*.db
+*.sqlite
+*.sqlite3
+*.pack
+*.idx
+*.WAV
+*.asd
