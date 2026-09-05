@@ -27,7 +27,7 @@ Singleton {
     // the start Process returns immediately.
     Process {
         id: startProc
-        command: ["sh", "-c", "setsid -f wlsunset -T 5500 -t 5499 >/dev/null 2>&1"]
+        command: ["sh", "-c", "setsid -f wlsunset -T 2000 -t 1999 >/dev/null 2>&1"]
     }
     Process { id: stopProc; command: ["pkill", "-x", "wlsunset"] }
 }
