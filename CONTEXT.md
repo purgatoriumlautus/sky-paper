@@ -1,4 +1,4 @@
-# CONTEXT.md — laniakea · system manifest (maintenance rules: §META)
+ CONTEXT.md — laniakea · system manifest (maintenance rules: §META)
 
 ## 1. Machine identity
 Verified: 2026-08-23
