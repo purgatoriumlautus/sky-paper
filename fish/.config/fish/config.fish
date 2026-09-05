@@ -68,6 +68,9 @@ alias gco='git checkout'
 alias gb='git branch'
 alias glog='git log --oneline --graph'
 
+# cloud storage
+alias sync='rclone bisync ~/cloud storagebox:sync --check-access --fast-list'                                                                                                  
+
 # -----------------
 # Key bindings
 # -----------------
@@ -136,18 +139,40 @@ bind ctrl-u kill-whole-line
 # step with the rest of the preset. Panes close with Alt+q; shells with `exit`.
 bind ctrl-d delete-char
 
-# Left as the preset has it on purpose: Ctrl+W is backward-kill-path-component
-# (one path segment per press), which beats killing a whole word in a shell.
 
 # -----------------
 # FZF (fuzzy finder)
 # -----------------
-set -gx FZF_DEFAULT_COMMAND 'fd --type f --hidden --exclude .git --exclude .cache . /home /etc /mnt'
-set -gx FZF_CTRL_T_COMMAND $FZF_DEFAULT_COMMAND
-set -gx FZF_ALT_C_COMMAND  'fd --type d --hidden --exclude .git --exclude .cache . /home /etc /mnt'
+set -gx FZF_ALT_C_COMMAND 'fd --type d --hidden --exclude .git --exclude .cache'
+
+function __fzf_edit_widget
+    fd --hidden --type f --type d \
+       --exclude proc --exclude sys --exclude dev --exclude run --exclude tmp --exclude mnt --exclude usr --exclude boot \
+       --ignore-file ~/.config/fd/ignore \
+       . / 2>/dev/null | fzf \
+        --height 50% --layout=reverse \
+        --preview '[ -d {} ] && eza --tree --level=2 --color=always {} || bat --color=always --style=numbers --line-range=:100 {}' \
+        --preview-window=right:50%:wrap \
+        --bind 'tab:down,btab:up' \
+        --bind "enter:become($EDITOR {})"
+    commandline -f repaint
+end
+
 fzf --fish | source 2>/dev/null
-# Ctrl+T (files) and Ctrl+R (history) come from `fzf --fish` itself.
+
+bind ctrl-t __fzf_edit_widget
+
 bind ctrl-g fzf-cd-widget
+
+bind ctrl-g fzf-cd-widget
+
+# -----------------
+# eza - smart ls
+# -----------------
+
+alias ls='eza --icons --group-directories-first'
+alias ll='eza -la --icons --group-directories-first --git'
+alias lt='eza --tree --level=2 --icons'
 
 # -----------------
 # zoxide — replaces cd, must be last
