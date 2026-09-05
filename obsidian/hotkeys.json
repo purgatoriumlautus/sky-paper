@@ -1,6 +1,178 @@
 {
-  "editor:toggle-code":          [{ "modifiers": ["Mod"],          "key": "`" }],
-  "editor:toggle-heading-up":    [{ "modifiers": ["Mod", "Alt"],   "key": "]" }],
-  "editor:toggle-heading-down":  [{ "modifiers": ["Mod", "Alt"],   "key": "[" }],
-  "app:toggle-left-sidebar":     [{ "modifiers": ["Mod"],          "key": "\\" }]
+  "editor:toggle-code": [
+    {
+      "modifiers": [
+        "Mod"
+      ],
+      "key": "`"
+    }
+  ],
+  "editor:toggle-heading-up": [
+    {
+      "modifiers": [
+        "Mod",
+        "Alt"
+      ],
+      "key": "]"
+    }
+  ],
+  "editor:toggle-heading-down": [
+    {
+      "modifiers": [
+        "Mod",
+        "Alt"
+      ],
+      "key": "["
+    }
+  ],
+  "app:toggle-left-sidebar": [
+    {
+      "modifiers": [
+        "Mod"
+      ],
+      "key": "\\"
+    }
+  ],
+  "workspace:close": [
+    {
+      "modifiers": [
+        "Alt"
+      ],
+      "key": "W"
+    }
+  ],
+  "command-palette:open": [],
+  "workspace:goto-tab-1": [
+    {
+      "modifiers": [
+        "Alt"
+      ],
+      "key": "1"
+    }
+  ],
+  "workspace:goto-tab-2": [
+    {
+      "modifiers": [
+        "Alt"
+      ],
+      "key": "2"
+    }
+  ],
+  "workspace:goto-tab-3": [
+    {
+      "modifiers": [
+        "Alt"
+      ],
+      "key": "3"
+    }
+  ],
+  "workspace:goto-tab-4": [
+    {
+      "modifiers": [
+        "Alt"
+      ],
+      "key": "4"
+    }
+  ],
+  "workspace:goto-tab-5": [
+    {
+      "modifiers": [
+        "Alt"
+      ],
+      "key": "5"
+    }
+  ],
+  "workspace:goto-tab-6": [
+    {
+      "modifiers": [
+        "Alt"
+      ],
+      "key": "6"
+    }
+  ],
+  "workspace:goto-tab-7": [
+    {
+      "modifiers": [
+        "Alt"
+      ],
+      "key": "7"
+    }
+  ],
+  "workspace:goto-tab-8": [
+    {
+      "modifiers": [
+        "Alt"
+      ],
+      "key": "8"
+    }
+  ],
+  "graph:open": [],
+  "workspace:new-tab": [],
+  "editor:follow-link": [],
+  "bookmarks:bookmark-current-view": [
+    {
+      "modifiers": [
+        "Alt"
+      ],
+      "key": "B"
+    }
+  ],
+  "workspace:close-window": [],
+  "file-explorer:new-file-in-new-pane": [],
+  "file-explorer:new-file": [
+    {
+      "modifiers": [
+        "Alt"
+      ],
+      "key": "Enter"
+    }
+  ],
+  "workspace:next-tab": [
+    {
+      "modifiers": [
+        "Alt"
+      ],
+      "key": "N"
+    }
+  ],
+  "workspace:previous-tab": [
+    {
+      "modifiers": [
+        "Alt"
+      ],
+      "key": "P"
+    }
+  ],
+  "workspace:goto-last-tab": [
+    {
+      "modifiers": [
+        "Alt"
+      ],
+      "key": "9"
+    }
+  ],
+  "app:go-back": [
+    {
+      "modifiers": [
+        "Mod"
+      ],
+      "key": "ArrowLeft"
+    }
+  ],
+  "app:go-forward": [
+    {
+      "modifiers": [
+        "Mod"
+      ],
+      "key": "ArrowRight"
+    }
+  ],
+  "insert-template": [
+    {
+      "modifiers": [
+        "Alt"
+      ],
+      "key": "T"
+    }
+  ]
 }
