@@ -4,9 +4,8 @@ After=network-online.target
 Wants=network-online.target
 
 [Service]
-User=segfault
-Group=segfault
+User=aru
+Group=aru
 Type=oneshot
-Environment=HOME=/home/segfault
-ExecStart=/usr/bin/rclone bisync /home/segfault/cloud storagebox:sync --check-access --fast-list -v
-
+Environment=HOME=/home/aru
+ExecStart=/usr/bin/rclone bisync /home/aru/cloud storagebox:sync --check-access --fast-list -v

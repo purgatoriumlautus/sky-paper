@@ -4,16 +4,16 @@ After=network-online.target
 Wants=network-online.target
 
 [Service]
-User=segfault
-Group=segfault
+User=aru
+Group=aru
 Type=notify
-Environment=HOME=/home/segfault
-ExecStart=/usr/bin/rclone mount storagebox:archive /home/segfault/archive \
+Environment=HOME=/home/aru
+ExecStart=/usr/bin/rclone mount storagebox:archive /home/aru/archive \
   --vfs-cache-mode full \
   --vfs-cache-max-size 5G \
   --dir-cache-time 24h \
   -v
-ExecStop=/bin/fusermount -u /home/segfault/archive
+ExecStop=/bin/fusermount -u /home/aru/archive
 Restart=on-failure
 
 [Install]
