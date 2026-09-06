@@ -1,0 +1,20 @@
+[Unit]
+Description=restic backup
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+Environment=RESTIC_REPOSITORY=sftp:storagebox:restic
+Environment=RESTIC_PASSWORD_FILE=/root/.restic-pass
+Environment=HOME=/root
+ExecStart=/usr/bin/restic backup / --one-file-system --exclude-caches \
+  --exclude /dev --exclude /proc --exclude /sys --exclude /run \
+  --exclude /tmp --exclude /var/tmp \
+  --exclude /var/cache/pacman/pkg --exclude /var/lib/pacman/sync \
+  --exclude /home/*/.cache \
+  --exclude /home/aru/archive \
+  --exclude /mnt --exclude /media \
+  --exclude /var/lib/libvirt \
+  --exclude /home/*/.local/share/Trash
+ExecStartPost=/usr/bin/restic forget --host laniakea --keep-weekly 8 --keep-monthly 12 --prune
