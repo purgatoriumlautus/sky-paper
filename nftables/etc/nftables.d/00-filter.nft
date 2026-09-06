@@ -1,4 +1,4 @@
-# celestia firewall. inet family covers v4 + v6 in one table.
+# firewall. inet family covers v4 + v6 in one table.
 #
 # Findings baked in (don't relearn the hard way):
 #   - DHCP replies often arrive before conntrack can track them (src 0.0.0.0,

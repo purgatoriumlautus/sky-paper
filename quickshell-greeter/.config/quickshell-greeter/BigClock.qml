@@ -3,7 +3,7 @@ import Quickshell
 
 // Big HH:MM with small date below. Mirrors the lock screen's LockClock —
 // duplicated because the greeter runs as `greeter` user and can't read
-// /home/aru (same reason Theme.qml / Field.qml are duplicated).
+// /home/user (same reason Theme.qml / Field.qml are duplicated).
 Column {
     id: clk
     spacing: 6

@@ -1,0 +1,21 @@
+[Unit]
+Description=rclone mount archive
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=segfault
+Group=segfault
+Type=notify
+Environment=HOME=/home/segfault
+ExecStart=/usr/bin/rclone mount storagebox:archive /home/segfault/archive \
+  --vfs-cache-mode full \
+  --vfs-cache-max-size 5G \
+  --dir-cache-time 24h \
+  -v
+ExecStop=/bin/fusermount -u /home/segfault/archive
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+
