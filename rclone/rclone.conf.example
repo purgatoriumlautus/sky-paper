@@ -1,0 +1,17 @@
+# Shape of ~/.config/rclone/rclone.conf — real file is NEVER tracked.
+# Recreate with `rclone config` (type: sftp), or copy this and fill in.
+#
+# key_file points at the ssh private key registered on the Storage Box;
+# the key itself lives in ~/.ssh and stays out of this repo.
+
+[storagebox]
+type = sftp
+host = uXXXXXX.your-storagebox.de
+user = uXXXXXX
+port = 23
+key_file = ~/.ssh/<KEY>
+shell_type = unix
+known_hosts_file = ~/.ssh/known_hosts
+md5sum_command = md5sum
+sha1sum_command = sha1sum
+
