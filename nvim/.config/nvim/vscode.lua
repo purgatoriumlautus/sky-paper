@@ -4,7 +4,7 @@
 --
 -- Nothing here loads plugins: VSCode owns the UI. This file only
 -- reproduces the keybinding scheme so muscle memory does not switch
--- between this machine and the work Mac. Full scheme: docs/keybinds.md
+-- between the Linux machines and the work Mac. Full scheme: docs/keybinds.md
 --
 -- Split of responsibility on the Mac:
 --   this file            <leader> tier — actions inside the editor

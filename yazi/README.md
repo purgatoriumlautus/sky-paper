@@ -5,7 +5,7 @@ Flexoki Dark themed yazi (file manager). Stow package.
 ## Deploy
 
 ```bash
-cd ~/dotfiles && stow yazi      # symlinks ~/.config/yazi → here
+stow yazi                       # symlinks ~/.config/yazi → here
 ./yazi/install.sh               # optional: video/PDF thumbnail helpers (sudo)
 ```
 

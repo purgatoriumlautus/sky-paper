@@ -620,7 +620,7 @@ require('lazy').setup({
     'nvim-lualine/lualine.nvim',
     dependencies = { 'nvim-tree/nvim-web-devicons' },
     config = function()
-      -- Flexoki Dark — see ~/dotfiles/PALETTE.md
+      -- Flexoki Dark — see PALETTE.md
       local flexoki_dark = {
         normal = {
           a = { bg = '#8B7EC8', fg = '#100F0F', gui = 'bold' },

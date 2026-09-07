@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# zathura on laniakea — pacman pkgs + xdg-mime defaults.
+# zathura — pacman pkgs + xdg-mime defaults.
 #
 # Why a script and not part of stow: these are system-level operations
 # (pacman + xdg-mime), not config. The zathurarc itself is deployed with

@@ -5,7 +5,7 @@ Flexoki Dark themed zathura (PDF / ePub / XPS / CBZ viewer). Stow package.
 ## Deploy
 
 ```bash
-cd ~/dotfiles && stow zathura     # symlinks ~/.config/zathura → here
+stow zathura                      # symlinks ~/.config/zathura → here
 ./zathura/install.sh              # pacman pkgs + xdg-mime defaults (sudo)
 ```
 

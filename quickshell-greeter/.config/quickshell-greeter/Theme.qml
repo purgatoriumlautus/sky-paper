@@ -3,7 +3,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 
-// Flexoki Dark — greeter copy. Mirrors ~/dotfiles/quickshell/.config/quickshell/Theme.qml.
+// Flexoki Dark — greeter copy. Mirrors quickshell/.config/quickshell/Theme.qml.
 // Separate file because greeter runs as `greeter` user and can't traverse $HOME (mode 700).
 // If you re-tone the main palette, update this too. Text ON the purple accent
 // is always dark (Theme.bg) — light fg on it drops to 2.2:1.
