@@ -30,5 +30,3 @@ sudo rm /etc/systemd/system/rclone-archive.service
 sudo rm /etc/systemd/system/rclone-sync.service 
 sudo systemctl daemon-reload
 EOF
-
-

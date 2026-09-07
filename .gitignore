@@ -1,3 +1,4 @@
 tmux/.config/tmux/plugins/
 .claude/
+rclone/rclone.conf
 fish/.config/fish/completions/

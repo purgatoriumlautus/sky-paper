@@ -1,12 +1,10 @@
 [Unit]
-Description=rclone bisync ~/cloud
-After=network-online.target
-Wants=network-online.target
+Description=rclone bisync timer
 
-[Service]
-User=aru
-Group=aru
-Type=oneshot
-Environment=HOME=/home/aru
-ExecStart=/usr/bin/rclone bisync /home/aru/cloud storagebox:sync --check-access --fast-list -v
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=15min
+Persistent=true
 
+[Install]
+WantedBy=timers.target

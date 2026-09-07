@@ -14,4 +14,3 @@ shell_type = unix
 known_hosts_file = ~/.ssh/known_hosts
 md5sum_command = md5sum
 sha1sum_command = sha1sum
-
