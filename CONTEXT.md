@@ -74,6 +74,12 @@ install.sh modules (root-owned or per-profile targets, not stowable):
 - power/ → /etc/systemd/{logind,sleep}.conf.d (lid→`sleep`, 30m
   suspend-then-hibernate, `MemorySleepMode=deep`; install gated on hibernate
   being viable). tlp/ owns charging, power/ owns sleep depth.
+- restic/ → /etc/systemd/system + /etc/systemd/user. Weekly `/` snapshot via
+  restic's own sftp backend (ssh alias in /root/.ssh/config, not rclone),
+  skipped on a METERED link; a user timer notifies when the run's stamp goes
+  >7d stale. /root/.restic-pass untracked — lose it, lose the repo.
+- rclone/ → /etc/systemd/system. Same Storage Box, separate creds
+  (rclone.conf, gitignored): ~/archive mount + ~/cloud bisync every 15 min.
 - terminus-italic/ → ~/.local/share/fonts (custom Terminus Italic for kitty;
   install.sh ships prebuilt TTFs, build.sh regenerates via fontforge).
 - skills/ → ~/.claude/skills (personal Claude Code skills, symlinked per
@@ -81,9 +87,10 @@ install.sh modules (root-owned or per-profile targets, not stowable):
 
 Not deployed / manual: wallpapers/ (Flexoki duotone sources +
 `mntvagaflexoki.png` current → ~/Pictures/wallpapers), docs/ (specs,
-screenshots, keybinds.md = cross-machine bind scheme, keybinds.png = its
-cheatsheet, vscode/ = Mac keymap), bin/ (user scripts incl. pd-bt →
-~/.local/bin), telegram/
+screenshots, keybinds.md = cross-machine bind scheme and the only
+cheatsheet — generated png/html/pdf copies are banned, they drift;
+keybinds-brief.md = its source brief, remote/ = work Ubuntu box, vscode/ =
+Mac keymap), bin/ (user scripts incl. pd-bt → ~/.local/bin), telegram/
 (Telegram Desktop theme — imported via the app, not stowed).
 
 ### Packages
@@ -133,23 +140,23 @@ polkit (quickshell/): scoped rules (user `aru` + exact program):
 Verify: `ls /etc/polkit-1/rules.d/ && pkexec /usr/local/bin/set-epp balance_performance`
 
 ## 5. Machine deltas — vs celestia (PC repo)
-Verified: 2026-08-23
+Verified: 2026-09-07
 
 - Bind scheme (keyd/niri/nvim/tmux/fish/kitty + docs/keybinds.md) is
   IDENTICAL by design — any change to it must land on both branches.
 - Battery + tlp/ + power/ lid policy here; celestia is a desktop with none.
-  quickshell extras to match: Battery widget, EPP cycler, Auto-suspend row.
-- Wifi + Bluetooth here: WifiCtl/BtCtl singletons + CC rows, rfkill
-  airplane toggle; celestia has no wifi/BT hardware.
-- swayidle: 5m dim step is laptop-only; the CC Auto-suspend toggle here
-  holds a Wayland idle inhibitor, celestia still uses systemd-inhibit —
-  sync direction laniakea → celestia.
-- nftables forward DROP + ip_forward commented here; celestia runs forward
-  ACCEPT + ip_forward=1 (Docker).
-- AHEAD here, laniakea → celestia: greeter (battery, F1 suspend), CC and
-  launcher as layer surfaces. Both now run xwayland-satellite `:0`.
-- Single internal display (eDP-1) vs celestia dual (sync-ws, per-output
-  bars) — celestia AHEAD there. crossgrub/ here; restic/+rclone/ there.
+  quickshell extras to match: Battery, Brightness, EPP cycler.
+- Wifi + Bluetooth here (WifiCtl/BtCtl + CC rows, rfkill airplane); celestia
+  has no such hardware.
+- swayidle: the 5m dim step is laptop-only (no backlight there). The
+  auto-suspend Wayland idle inhibitor is now the same on both.
+- nftables table identical (forward accept + docker0); ip_forward stays
+  commented here, =1 on celestia.
+- AHEAD here, laniakea → celestia: greeter battery + F1 suspend.
+- Single display (eDP-1) vs celestia dual — sync-ws, per-output bars, shared
+  CC/launcher popups. celestia AHEAD there.
+- Only here: crossgrub/, power/, tlp/; only there: xfce4/, gtk bookmarks.
+  restic/+rclone/ on both, METERED skip laptop-only.
 
 ## §META — maintenance rules
 Verified: 2026-07-11
