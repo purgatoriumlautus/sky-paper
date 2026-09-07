@@ -40,6 +40,12 @@ Singleton {
     // cells identical & edges symmetric. Nudge cellSize to taste.
     readonly property int    cellSize:   32
 
+    // right-cluster cells (wifi, language, λ) hug their content with this much
+    // horizontal padding each side. With Row spacing 0 every gap between
+    // adjacent cells is therefore 2*cellPad — keeps them evenly spaced
+    // regardless of differing glyph widths.
+    readonly property int    cellPad:    7
+
     // launcher glyph — paired with the CC's λ. Core-Terminus letter (crisp).
     readonly property string launcherGlyph: "Δ";
 }

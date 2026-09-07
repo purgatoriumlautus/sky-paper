@@ -1,6 +1,6 @@
 # swayidle — idle pipeline
 
-The idle daemon for celestia (niri session). Watches "seconds since last
+The idle daemon for this machine (niri session). Watches "seconds since last
 input" and fires actions on a timeline. Started by niri:
 `spawn-at-startup "swayidle" "-w"` (niri restarts it if it dies).
 
@@ -25,16 +25,24 @@ Plus always-on hooks:
 
 ## Design notes
 
-- **No dim step** — the one delta vs the laptop config: celestia is a
-  desktop with external monitors; there is no backlight for `brightnessctl`
-  to dim.
+- **No dim step** — the one delta vs the laptop config: this is a desktop
+  with external monitors, so there is no backlight for `brightnessctl` to dim.
 - **Lock + screen-off in the same 10m step** — locking later than screen-off
   would leave a window where the screen is dark but unlocked (a mouse nudge
   shows the desktop). Lock paints first so there's no bare-desktop frame.
 - **Auto-suspend is toggleable** from the Quickshell control center
-  ("Auto-suspend" row). Off → a `systemd-inhibit --mode=block --what=sleep`
-  process blocks the 30m suspend; lock + screen-off still work — they don't
-  go through logind sleep. Session-scoped, resets to on each login.
+  ("Auto-suspend" row). Off → `Bar.qml` holds a Wayland idle inhibitor
+  (`IdleInhibitor`, zwp_idle_inhibit) on the bar surface, niri stops reporting
+  idle, and **this entire timeline pauses** — no lock, no screen-off,
+  no suspend. Same mechanism fullscreen video already uses. State lives only in
+  the qs process, so a crash fails safe (pipeline resumes).
+- **Why not `systemd-inhibit`.** The toggle used to be a
+  `systemd-inhibit --mode=block --what=sleep` process. It blocked *every*
+  logind sleep path (on a laptop that meant a closed lid did nothing and the
+  machine cooked in a bag), and it did not actually keep the screen on — lock
+  and screen-off still fired on schedule. zwp_idle_inhibit suppresses only the
+  idle notifications swayidle listens to, so it pauses the timeline and leaves
+  logind alone.
 - **Video**: mpv / fullscreen browser video hold a wayland idle-inhibitor,
   so the timeline pauses. Small windowed browser video may not — known
   limitation, use fullscreen.

@@ -43,6 +43,17 @@ PanelWindow {
     // None keeps the bar out of the keyboard-focus chain entirely.
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
 
+    // Keep-awake. CC "Auto-suspend" off → hold a Wayland idle inhibitor on the
+    // bar surface, which is always mapped. niri then stops reporting idle and
+    // swayidle's whole timeline pauses (lock+screen-off, suspend), so the
+    // screen stays on. One per bar is harmless — any single inhibitor is
+    // enough. See SuspendInhibit.qml for why the two earlier mechanisms were
+    // wrong.
+    IdleInhibitor {
+        window: bar
+        enabled: !SuspendInhibit.enabled
+    }
+
     // left — workspaces (this output only). 9px inset matches niri's gap.
     Row {
         anchors.left: parent.left

@@ -28,6 +28,9 @@ Scope {
         function toggle(): void { ccPopup.toggleCc(); }
         function open(): void { ccPopup.openCc(); }
         function close(): void { ccPopup.closeCc(); }
+        // keepAwake: inverse of the row label — true = stay awake, screen on.
+        function keepAwake(on: bool): void { SuspendInhibit.enabled = !on; }
+        function keepAwakeState(): string { return SuspendInhibit.enabled ? "off" : "on"; }
         // togglePower: closed → open+show power+focus Lock; open&power → close;
         // open&no-power → reveal power. onVisibleChanged resets row/power on
         // open, so set them AFTER openCc().

@@ -1,9 +1,10 @@
-# swayidle — celestia idle pipeline.
+# swayidle — idle pipeline.
 # Spawned by niri (`spawn-at-startup "swayidle" "-w"`).
 #
-# Desktop: no dim (no backlight — deliberate). Flow: 10m lock+screen-off →
-# 30m suspend, plus lock-on-sleep hooks.
-# CC "Auto-suspend" toggle blocks the 30m step via systemd-inhibit.
+# Flow: 10m lock+screen-off (together) → 30m suspend. No dim step: this is a
+# desktop with external monitors, there is no backlight for brightnessctl.
+# CC "Auto-suspend" toggle pauses the WHOLE timeline via a Wayland idle
+# inhibitor held by Bar.qml (see below / SuspendInhibit.qml).
 #
 # NOTE: swayidle has no `\` line continuation — each directive must be
 # on one physical line (verified: backslash → wordexp syntax error).
@@ -13,6 +14,9 @@
 timeout 600 'qs ipc call lock lock; niri msg action power-off-monitors' resume 'niri msg action power-on-monitors'
 
 # 30m — suspend. No resume hook: logind/swayidle re-init on wake.
+# Nothing is gated here: the CC "Auto-suspend" toggle works by holding a
+# Wayland idle inhibitor (Bar.qml), so when it's off this whole file's timeline
+# never advances and every step above is paused too.
 timeout 1800 'systemctl suspend'
 
 # Lock BEFORE any suspend (idle or manual) so wake shows the lock screen
