@@ -82,19 +82,19 @@ if vim.g.vscode then dofile(vim.fn.stdpath('config') .. '/vscode.lua') return en
 --     next/prev window, M-Space session picker, M-u scrollback, M-r reload.
 --
 --   LEADER (grouped so which-key shows them as menus on <Space>)
---     <Space><Space>  find file            <Space>,   switch buffer
---     <Space>/        grep project         <Space>:   command history
---     <Space>w        write                <Space>q   close buffer
---     FIND    \f*   \ff \fg \fb \fr \fh \fs \fk
+--     <Space><Space>  find file            <Space>,   switch tab
+--     <Space><CR>     new empty tab        <Space>:   command history
+--     <Space>/        grep project
+--     <Space>w        write                <Space>q   close tab
+--     FIND    \f*   \ff \fg \ft \fr \fh \fs \fk
 --     GIT     \g*   \gp \gr \gb   preview / reset / blame hunk
 --                   \gd \gq       open / close diff view
 --                   \gh \gH       file history (current / repo)
---     BUFFERS \b*   \bb \bd \bo \bp   list / close / close others / previous
+--     TABS    \t*   \tt \td \to \tp   list / close / close others / previous
 --     CODE    \c*   \cr \ca \cf \cd  rename / action / format / diagnostics
 --     ERRORS  \x*   \xx \xw \xq   diagnostics file / workspace / quickfix
 --     TREE    \n \e        toggle tree / toggle focus tree<->file
---     TABS    \1..\9 \0    go to tab N / last tab   (tab = window LAYOUT,
---                          NOT a file — opening a file makes a buffer)
+--     TABS    \1..\9 \0    go to tab N / last tab
 --     SESSION \s*   \ss \sl \sd   restore (cwd) / restore last / don't save
 --     DASH    \d           start screen (:Dash); auto-shows on `nvim` no-args
 --     \?            show all keymaps (which-key)
@@ -104,7 +104,7 @@ if vim.g.vscode then dofile(vim.fn.stdpath('config') .. '/vscode.lua') return en
 --     gd gr K       definition / references / hover
 --     ]d / [d       next / prev diagnostic
 --     ]c / [c       next / prev git hunk
---     H / L         previous / next buffer
+--     H / L         previous / next tab
 --     s / S         flash: label-jump / treesitter-select (all windows)
 
 -- ===================
@@ -130,6 +130,13 @@ vim.opt.wildmode = 'longest,list'
 vim.opt.clipboard = 'unnamedplus'
 vim.opt.scrolloff = 30           -- cursor stays centered (your 'so=30')
 vim.opt.termguicolors = true     -- needed for modern colorschemes
+
+-- Tab-per-file model (see §TABS in the keymap header): a jump to a file that
+-- is already open reuses its tab instead of replacing the current window's
+-- buffer, and an unopened one gets its own tab. Without this, `gd` into
+-- another file, quickfix and diagnostic jumps silently break the model by
+-- leaving a file open with no tab of its own.
+vim.opt.switchbuf = 'usetab,newtab'
 
 -- What persistence.nvim saves per session (no globals/terminal — avoids
 -- restoring stale toggleterm shells and global-var surprises).
@@ -260,11 +267,15 @@ vim.keymap.set('n', '<leader>0', ':tablast<CR>', { desc = 'Go to last tab' })
 -- <leader>w is WRITE, not window: the window namespace moved to Alt (below),
 -- which frees w for the obvious meaning.
 vim.keymap.set('n', '<leader>w', '<cmd>write<CR>', { desc = 'Write file' })
-vim.keymap.set('n', '<leader>q', '<cmd>bdelete<CR>', { desc = 'Close buffer' })
+vim.keymap.set('n', '<leader>q', '<cmd>tabclose<CR>', { desc = 'Close tab' })
+-- Space Enter = a new empty tab, mirroring Space Space (find file, which now
+-- opens into its own tab). Enter is the "make a new one" key here; <M-t> is
+-- NOT available for it — that is the terminal toggle.
+vim.keymap.set('n', '<leader><CR>', '<cmd>tabnew<CR>', { desc = 'New tab (empty)' })
 
--- Buffer cycling — bare keys, no leader. Works identically under VSCodeVim.
-vim.keymap.set('n', '<S-l>', '<cmd>bnext<CR>', { desc = 'Next buffer' })
-vim.keymap.set('n', '<S-h>', '<cmd>bprevious<CR>', { desc = 'Previous buffer' })
+-- Tab cycling — bare keys, no leader. Works identically under VSCodeVim.
+vim.keymap.set('n', '<S-l>', 'gt', { desc = 'Next tab' })
+vim.keymap.set('n', '<S-h>', 'gT', { desc = 'Previous tab' })
 
 -- ---------------------------------------------------------------
 -- Alt = containers. The same physical binds drive tmux panes here
@@ -490,17 +501,27 @@ require('lazy').setup({
       local fzf = require('fzf-lua')
       fzf.setup({
         winopts = { border = 'single' },   -- squared corners (Flexoki invariant, no rounded)
+        -- Tab / Shift-Tab move the selection, matching blink.cmp's completion
+        -- menu so one pair of keys walks every list in the editor. NOTE the
+        -- syntax split: the `fzf` table takes fzf's own lowercase-and-dashes
+        -- names, the `builtin` table takes vim's `<S-Tab>` form.
+        keymap = {
+          fzf = {
+            ['tab']       = 'down',
+            ['shift-tab'] = 'up',
+          },
+        },
         actions = {
           files = {
-            -- Enter opens in the CURRENT window, as a buffer. It used to be
-            -- file_tabedit, which made every opened file a new tab — that is
-            -- why buffers never seemed to accumulate: you were looking at
-            -- tabs. Tabs in vim are window LAYOUTS, not files. See
+            -- Enter opens the file in its OWN TAB. Tabs are vim's window
+            -- layouts, not files — but binding one file per tab is what makes
+            -- the tabline a visible list of open files, which the buffer list
+            -- can never be. See §TABS in the keymap header and
             -- docs/keybinds.md §1.
-            ['enter']  = fzf.actions.file_edit,
+            ['enter']  = fzf.actions.file_tabedit,
             ['alt-v']  = fzf.actions.file_vsplit,    -- same split vocabulary
             ['alt-s']  = fzf.actions.file_split,     -- as everywhere else
-            ['alt-t']  = fzf.actions.file_tabedit,   -- explicit new tab
+            ['alt-e']  = fzf.actions.file_edit,      -- override: reuse this window
           },
         },
       })
@@ -510,7 +531,7 @@ require('lazy').setup({
       -- Space is the cheapest sequence on the board and goes to the single
       -- most common editor action; <leader>f* below keeps the full menu.
       { '<leader><leader>', '<cmd>FzfLua files<CR>', desc = 'Find file (cwd)' },
-      { '<leader>,',        '<cmd>FzfLua buffers<CR>', desc = 'Switch buffer' },
+      { '<leader>,',        '<cmd>FzfLua tabs<CR>', desc = 'Switch tab' },
       { '<leader>/',        '<cmd>FzfLua live_grep<CR>', desc = 'Grep in project' },
       { '<leader>:',        '<cmd>FzfLua command_history<CR>', desc = 'Command history' },
 
@@ -523,17 +544,19 @@ require('lazy').setup({
           })
         end, desc = 'Find files in /home /etc /mnt' },
       { '<leader>fg', '<cmd>FzfLua live_grep<CR>', desc = 'Grep in project' },
-      { '<leader>fb', '<cmd>FzfLua buffers<CR>', desc = 'Open buffers' },
+      { '<leader>ft', '<cmd>FzfLua tabs<CR>', desc = 'Open tabs' },
       { '<leader>fr', '<cmd>FzfLua oldfiles<CR>', desc = 'Recent files' },
       { '<leader>fh', '<cmd>FzfLua help_tags<CR>', desc = 'Search help' },
       { '<leader>fs', '<cmd>FzfLua lsp_document_symbols<CR>', desc = 'Symbols in file' },
       { '<leader>fk', '<cmd>FzfLua keymaps<CR>', desc = 'All keymaps' },
 
-      -- Buffers (group <leader>b*)
-      { '<leader>bb', '<cmd>FzfLua buffers<CR>', desc = 'Buffers: list' },
-      { '<leader>bd', '<cmd>bdelete<CR>', desc = 'Buffers: close this one' },
-      { '<leader>bo', '<cmd>%bdelete|edit#|bdelete#<CR>', desc = 'Buffers: close all others' },
-      { '<leader>bp', '<cmd>buffer #<CR>', desc = 'Buffers: previous' },
+      -- Tabs (group <leader>t*) — one tab per file, so this is the "open
+      -- files" menu. It was <leader>b* for buffers; the b namespace went away
+      -- with the buffer-based workflow rather than being left as a misnomer.
+      { '<leader>tt', '<cmd>FzfLua tabs<CR>', desc = 'Tabs: list' },
+      { '<leader>td', '<cmd>tabclose<CR>', desc = 'Tabs: close this one' },
+      { '<leader>to', '<cmd>tabonly<CR>', desc = 'Tabs: close all others' },
+      { '<leader>tp', 'g<Tab>', desc = 'Tabs: previous' },
 
       -- Diagnostics list (group <leader>x*)
       { '<leader>xx', '<cmd>FzfLua diagnostics_document<CR>', desc = 'Diagnostics: this file' },
@@ -579,6 +602,10 @@ require('lazy').setup({
   {
     'sindrets/diffview.nvim',
     dependencies = { 'nvim-lua/plenary.nvim' },
+    -- `keys` alone would leave :DiffviewOpen undefined until one of them is
+    -- pressed, so the command form (the only one that takes a revision, e.g.
+    -- `:DiffviewOpen origin/celestia -- %`) failed with E492 on a fresh start.
+    cmd = { 'DiffviewOpen', 'DiffviewClose', 'DiffviewFileHistory', 'DiffviewToggleFiles', 'DiffviewFocusFiles' },
     keys = {
       { '<leader>gd', '<cmd>DiffviewOpen<CR>', desc = 'Open diff view' },
       { '<leader>gh', '<cmd>DiffviewFileHistory %<CR>', desc = 'File history (current)' },
