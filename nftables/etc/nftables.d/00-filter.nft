@@ -6,9 +6,10 @@
 #     `ct state invalid drop`, not after.
 #   - `pkttype host` excludes broadcast/multicast, so mDNS/SSDP fall through
 #     to policy drop silently rather than getting reject'd (no reflection risk).
-#   - `forward policy accept`: celestia runs Docker, which manages its own
-#     forward rules via iptables-nft (separate ip/ip6 tables). A drop in this
-#     inet table would ALSO drop Docker-forwarded packets, breaking containers.
+#   - `forward policy accept`: Docker manages its own forward rules via
+#     iptables-nft (separate ip/ip6 tables), and nft verdicts across tables are
+#     ANDed. A drop here would ALSO drop Docker-forwarded packets, breaking
+#     containers. dockerd sets net.ipv4.ip_forward=1 itself at start.
 #   - virbr0 allow is commented: uncomment when libvirt VMs need host
 #     services (dnsmasq DNS, etc.). Off by default = smaller attack surface.
 
@@ -48,4 +49,3 @@ table inet filter {
     type filter hook output priority filter; policy accept;
   }
 }
-

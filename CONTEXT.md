@@ -106,11 +106,13 @@ PermitEmptyPasswords no, X11Forwarding no. No ~/.ssh/authorized_keys →
 inbound SSH impossible until `ssh-copy-id`; outbound unaffected.
 Verify: `ls /etc/ssh/sshd_config.d/ && sudo sshd -T | grep -Ei 'passwordauth|kbdinteractive|permitroot|permitempty|x11forwarding'`
 
-nftables (nftables/): single inet table; input DROP, forward DROP. nft
-verdicts across tables are ANDed. DHCP allow (udp 67→68; v6 547→546) must
-stay ABOVE `ct state invalid drop` or renewal breaks silently. Reject is
-`pkttype host` + rate-limited; `iif lo accept`; inbound-ssh/virbr0
-commented; mDNS not allowed.
+nftables (nftables/): ONE inet table, defined only in nftables.d/00-filter.nft
+(a second file redefining it used to win by load order — removed). Input DROP,
+forward ACCEPT + `iifname docker0 accept`: Docker manages forward via
+iptables-nft and nft verdicts across tables are ANDed, so a drop here would
+veto Docker's accepts. DHCP allow (udp 67→68; v6 547→546) must stay ABOVE
+`ct state invalid drop` or renewal breaks silently. Reject is `pkttype host` +
+rate-limited; `iif lo accept`; inbound-ssh/virbr0 commented; mDNS not allowed.
 Verify: `sudo nft list ruleset | grep -E 'policy|counter'`
 
 sysctl (sysctl/, 99-hardening.conf): kptr_restrict=1, yama.ptrace_scope=1,
