@@ -5,26 +5,26 @@ import Quickshell
 // State for the CC "Auto-suspend" row. `enabled` true = normal idle pipeline.
 // `enabled` false = keep-awake: Bar.qml holds a Wayland idle inhibitor
 // (zwp_idle_inhibit_manager_v1, which niri implements) on the bar surface, so
-// niri stops reporting idle and swayidle's ENTIRE timeline pauses — no 5m dim,
-// no 10m lock+screen-off, no 30m suspend. The screen simply stays on.
+// niri stops reporting idle and swayidle's ENTIRE timeline pauses — dim (where
+// there is a backlight), lock+screen-off, suspend. The screen simply stays on.
 //
 // Two earlier implementations were both wrong:
 //
 // 1. `systemd-inhibit --mode=block --what=sleep`. A block-mode sleep inhibitor
 //    blocks every logind sleep path, lid switch included — with Auto-suspend
-//    off, closing the lid was a no-op and the machine stayed awake in a closed
-//    bag (suspected cause of the previous battery's death). It also did NOT do
-//    what the row implies: dim and lock+screen-off still fired on schedule, so
-//    the screen went dark anyway.
+//    off, closing a laptop lid was a no-op and the machine stayed awake in a
+//    closed bag (suspected cause of a dead battery). It also did NOT do what
+//    the row implies: dim and lock+screen-off still fired on schedule, so the
+//    screen went dark anyway.
 // 2. A flag file gating only swayidle's 30m step. Fixed the lid bug, but still
-//    let the 5m dim and 10m lock+screen-off run.
+//    let dim and lock+screen-off run.
 //
 // The idle inhibitor is the same mechanism mpv and fullscreen video already
 // use, so keep-awake now behaves identically to "a video is playing".
 //
 // Deliberately NOT affected — lid close still suspends, unconditionally.
 // zwp_idle_inhibit only suppresses idle notifications to swayidle; it has no
-// bearing on logind's HandleLidSwitch. Shutting the lid always sleeps.
+// bearing on logind's HandleLidSwitch. Shutting a lid always sleeps.
 //
 // No persistence and no child process: state dies with qs, so a crash fails
 // safe (idle pipeline resumes) instead of leaking an inhibit that outlives the

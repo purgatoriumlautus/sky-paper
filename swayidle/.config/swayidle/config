@@ -3,7 +3,8 @@
 # One config for AC and battery (deliberate — see README.md / spec).
 #
 # Flow: 5m dim → 10m lock+screen-off (together) → 30m suspend.
-# CC "Auto-suspend" toggle blocks the 30m step via systemd-inhibit.
+# CC "Auto-suspend" toggle pauses the WHOLE timeline via a Wayland idle
+# inhibitor held by Bar.qml (see below / SuspendInhibit.qml).
 #
 # NOTE: swayidle has no `\` line continuation — each directive must be
 # on one physical line (verified: backslash → wordexp syntax error).
