@@ -25,15 +25,29 @@ fi
 install -m 644 "$SRC/etc/systemd/system/restic-backup.timer" /etc/systemd/system/restic-backup.timer
 install -m 644 "$SRC/etc/systemd/system/restic-backup.service" /etc/systemd/system/restic-backup.service
 
+# Reminder runs in the session, so it is a user unit — /etc/systemd/user is the
+# root-installable location for those.
+install -d -m 755 /etc/systemd/user
+install -m 644 "$SRC/etc/systemd/user/restic-reminder.service" /etc/systemd/user/restic-reminder.service
+install -m 644 "$SRC/etc/systemd/user/restic-reminder.timer" /etc/systemd/user/restic-reminder.timer
+
 systemctl daemon-reload
 systemctl enable --now restic-backup.timer
+systemctl --global enable restic-reminder.timer
 
 echo "Installed."
 cat <<'EOF'
+Finish as aru (--global only takes effect for the running user manager after a reload):
+systemctl --user daemon-reload
+systemctl --user start restic-reminder.timer
+
 Rollback:
 sudo systemctl disable --now restic-backup.timer
+sudo systemctl --global disable restic-reminder.timer
+systemctl --user stop restic-reminder.timer
 sudo rm /etc/systemd/system/restic-backup.timer
 sudo rm /etc/systemd/system/restic-backup.service
+sudo rm /etc/systemd/user/restic-reminder.timer
+sudo rm /etc/systemd/user/restic-reminder.service
 sudo systemctl daemon-reload
 EOF
-

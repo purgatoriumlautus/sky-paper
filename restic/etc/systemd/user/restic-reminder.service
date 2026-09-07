@@ -1,0 +1,10 @@
+[Unit]
+Description=restic backup reminder
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=oneshot
+# Метку кладёт restic-backup.service после успешного прогона. Нет метки —
+# stat падает, age становится огромным, уведомление уходит.
+ExecStart=/usr/bin/bash -c 'test $(( $(date +%%s) - $(stat -c %%Y /var/lib/restic-last-backup 2>/dev/null || echo 0) )) -lt 604800 || notify-send -u normal "Пора сделать бекап" "Последний: $(date -r /var/lib/restic-last-backup "+%%-d %%b" 2>/dev/null || echo никогда) — sudo systemctl start restic-backup"'

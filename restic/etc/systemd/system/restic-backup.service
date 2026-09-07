@@ -8,6 +8,8 @@ Type=oneshot
 Environment=RESTIC_REPOSITORY=sftp:storagebox:restic
 Environment=RESTIC_PASSWORD_FILE=/root/.restic-pass
 Environment=HOME=/root
+# NetworkManager считает соединение лимитным (см. README) — тихо пропустить прогон.
+ExecCondition=/usr/bin/bash -c '! nmcli -t -f METERED general | grep -q "^yes"'
 ExecStart=/usr/bin/restic backup / --one-file-system --exclude-caches \
   --exclude /dev --exclude /proc --exclude /sys --exclude /run \
   --exclude /tmp --exclude /var/tmp \
@@ -18,3 +20,4 @@ ExecStart=/usr/bin/restic backup / --one-file-system --exclude-caches \
   --exclude /var/lib/libvirt \
   --exclude /home/*/.local/share/Trash
 ExecStartPost=/usr/bin/restic forget --host laniakea --keep-weekly 8 --keep-monthly 12 --prune
+ExecStartPost=/usr/bin/touch /var/lib/restic-last-backup
