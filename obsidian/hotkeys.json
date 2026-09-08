@@ -154,17 +154,17 @@
   "app:go-back": [
     {
       "modifiers": [
-        "Mod"
+        "Alt"
       ],
-      "key": "ArrowLeft"
+      "key": "["
     }
   ],
   "app:go-forward": [
     {
       "modifiers": [
-        "Mod"
+        "Alt"
       ],
-      "key": "ArrowRight"
+      "key": "]"
     }
   ],
   "insert-template": [

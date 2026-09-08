@@ -49,12 +49,32 @@ OBSIDIAN HOTKEYS — added by this pkg (hotkeys.json)
   Ctrl+\           toggle left sidebar (file tree)
 
 -------------------------------------------------------------------------
-NOT MIRRORED  — no Obsidian analog, runs unbound:
+ALT TIER — the container layer from docs/keybinds.md §3
 -------------------------------------------------------------------------
-  <leader>rn / ca          LSP rename / code action
-  ]c / [c / <leader>h[prb] gitsigns hunks
-  <leader>g*               DiffView
-  <leader>t / q            terminal toggle
+An Obsidian tab is the container here, same role tmux windows and VSCode
+editor tabs play elsewhere, so the Alt tier maps onto tabs.
+
+  Alt+1..8         go to tab N
+  Alt+9            go to the LAST tab   (not tab 9 — Obsidian's own command)
+  Alt+N / Alt+P    next / previous tab
+  Alt+Enter        new file
+  Alt+W            close tab
+  Alt+B            bookmark the current view
+  Alt+T            insert template
+  Alt+[ / Alt+]    navigate back / forward through opened notes
+
+  Two deliberate departures from §3, both because Obsidian's command list
+  has no better fit:
+    - close is Alt+W, not the scheme's Alt+Q.
+    - Alt+T is a template, not the terminal toggle — Obsidian has no
+      terminal, so the scheme's central bind has nothing to point at.
+
+  Back/forward sit on Alt+[ / Alt+] and NOT on Obsidian's own default
+  Ctrl+←/→: keyd rewrites Alt+←/→ into Ctrl+←/→ so that word motion is one
+  chord everywhere (docs/keybinds.md §7.4), and leaving history there would
+  mean every word jump inside a note navigated back instead. Brackets read
+  as prev/next in the vim vocabulary anyway (]d / [d), and Ctrl+Alt+[ / ]
+  stays free for the heading cycle above.
 
 -------------------------------------------------------------------------
 THEME (Flexoki)
