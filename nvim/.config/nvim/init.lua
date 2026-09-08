@@ -583,13 +583,9 @@ require('lazy').setup({
           changedelete = { text = '~' },
         },
         on_attach = function(bufnr)
-          local opts = { buffer = bufnr }
-
-          -- Navigation between hunks
-          vim.keymap.set('n', ']c', gitsigns.next_hunk, opts)
-          vim.keymap.set('n', '[c', gitsigns.prev_hunk, opts)
-
-          -- Actions (git group: <leader>g*)
+          -- Navigation and actions, all in the git group (<leader>g*)
+          vim.keymap.set('n', '<leader>gn', gitsigns.next_hunk, { buffer = bufnr, desc = 'Git: next hunk' })
+          vim.keymap.set('n', '<leader>gN', gitsigns.prev_hunk, { buffer = bufnr, desc = 'Git: prev hunk' })
           vim.keymap.set('n', '<leader>gp', gitsigns.preview_hunk, { buffer = bufnr, desc = 'Git: preview hunk' })
           vim.keymap.set('n', '<leader>gr', gitsigns.reset_hunk, { buffer = bufnr, desc = 'Git: reset hunk' })
           vim.keymap.set('n', '<leader>gb', gitsigns.blame_line, { buffer = bufnr, desc = 'Git: blame line' })

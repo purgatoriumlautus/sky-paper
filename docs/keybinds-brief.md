@@ -213,8 +213,8 @@ n: Ctrl+A         ggVG (select all)
 <leader>t         terminal toggle,  <leader>q  close panel
 <F19>t / <F19>q   то же из terminal-режима
 <leader>d         dashboard
+<leader>gn/gN     gitsigns: next / prev hunk
 <leader>gp/gr/gb  gitsigns: preview / reset / blame hunk
-]c / [c           next / prev hunk
 <leader>lr / la   LSP rename / code action
 gd / gr / K       LSP definition / references / hover
 ]d / [d           diagnostic next / prev
