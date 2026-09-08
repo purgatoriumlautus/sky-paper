@@ -164,8 +164,6 @@ bind ctrl-t __fzf_edit_widget
 
 bind ctrl-g fzf-cd-widget
 
-bind ctrl-g fzf-cd-widget
-
 # -----------------
 # eza - smart ls
 # -----------------
