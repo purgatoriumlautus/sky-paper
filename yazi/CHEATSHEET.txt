@@ -1,4 +1,4 @@
-YAZI KEYBIND CHEATSHEET  —  stock defaults (no keymap.toml override)
+YAZI KEYBIND CHEATSHEET  —  stock defaults, plus the one override below
 Press ~ or <F1> inside yazi for the live, searchable help.
 =====================================================================
 
@@ -19,7 +19,9 @@ SELECT
   v / V            visual select / visual unset
   <C-a>            select all
   <C-r>            invert selection
-  <Esc>            clear selection / cancel
+  <Esc>            OVERRIDDEN in keymap.toml → go to parent dir (mirrors `h`).
+                   Stock <Esc> — clear selection / clear find / clear filter —
+                   is gone; use `,` or <Bspace> to clear a find or filter.
 
 FILE OPS
   o / <Enter>      open                    O   open interactively (pick app)

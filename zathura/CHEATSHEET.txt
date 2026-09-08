@@ -1,58 +1,69 @@
 ZATHURA KEYBIND CHEATSHEET  —  stock defaults (no rebinds in zathurarc)
-Press F1 inside zathura for the built-in help.
+Checked against `man zathura`. If a key isn't here, it isn't bound.
 =====================================================================
 
-NAVIGATE WITHIN PAGE
-  j / k            scroll down / up
+SCROLL WITHIN PAGE
+  j / k            scroll down / up          (arrows work too)
   h / l            scroll left / right
-  d / u            half page down / up
   <C-d> / <C-u>    half page down / up
-  <Space>          page down
-  <S-Space>        page up
+  <C-t> / <C-y>    half page left / right
+  <Space> / <C-f>  full page down
+  <S-Space>/<C-b>  full page up
+  t / y            full page left / right
+  H / L            top / bottom of current page
 
 PAGES
-  J / K            next page  /  previous page
-  <C-PgDn>/<PgUp>  same
+  J / <PgDn>       next page
+  K / <PgUp>       previous page
   gg               first page
   G                last page
   <N>G             jump to page <N>          (e.g. 42G)
-  o                "open page <n>" prompt
+  P                snap to the current page
   <Tab>            toggle index (table of contents)
 
 ZOOM / FIT
-  +  /  -          zoom in / out
-  =                zoom to default
-  a                fit width
-  s                fit page (best fit)
-  <N>z             set zoom to N%            (e.g. 150z)
-  <C-r>            rotate 90°
+  +  /  -          zoom in / out             (zI / zO do the same)
+  =                zoom to default           (z0 does the same)
+  <N>=             set zoom to N%            (e.g. 150=)
+  a                fit page (best fit)
+  s                fit width
 
 VIEW
-  r                recolor mode (toggle; uses palette via zathurarc)
+  r                rotate 90°
+  <C-r>            recolor (grayscale + invert; uses the zathurarc palette)
   d                dual-page toggle
-  i                invert colors
+  D                cycle the opening column in dual-page view
+  w                single-page mode toggle
+  <C-m> / <C-n>    toggle inputbar / statusbar
+  F5               presentation mode
+  F11              fullscreen
 
 SEARCH
   /pattern         search forward
   ?pattern         search backward
   n / N            next / previous match
-  Esc              clear
+  Esc              hide the notification bar
 
 MARKS / JUMPS
-  m<a..z>          set mark
-  '<a..z>          jump to mark
+  m<X>             set quickmark at letter/number X — X may shadow its
+                   own default action (e.g. mO, mP)
+  '<X>             jump to quickmark X
   <C-o> / <C-i>    jump history back / forward
+  <C-j> / <C-k>    bisect between the last two jump points
 
-ANNOTATIONS / LINKS
+LINKS
   f                follow link on page (hint-style)
-  F                copy link target
-  <C-c>            copy selection (mouse-drag to select first)
+  F                display link target
+  c                copy link target to the clipboard
+  (selection)      mouse-drag copies straight to the clipboard —
+                   `set selection-clipboard "clipboard"` in zathurarc
 
 FILES
+  o / O            open document
   :open <path>     open file
   :write <path>    save copy
   R                reload current file
-  <C-c>            cancel current prompt
+  <C-c> / Esc      abort the current prompt or search
   q                quit
 
 DEPLOY
