@@ -75,7 +75,7 @@ Super / Cmd      →  окна на десктопе                (Super+l = �
 
 | Что | Linux | Mac |
 |---|---|---|
-| `CapsLock` → `Ctrl` | keyd: `capslock = leftcontrol` | System Settings → Keyboard → Modifier Keys |
+| `CapsLock` → `Ctrl` | keyd: `capslock = layer(control)` | System Settings → Keyboard → Modifier Keys |
 | порядок под большим пальцем | **стоковый, не трогаем** | Modifier Keys: `Command`→`Option`, `Option`→`Command` |
 | leader | `Пробел` (было `F19`) | `Пробел` |
 
@@ -162,12 +162,12 @@ fish, ни в kitty.
 | `Alt+v` | tmux **+** nvim | вертикальный сплит | split editor right | `workbench.action.splitEditor` |
 | `Alt+s` | tmux **+** nvim | горизонтальный сплит | split editor down | `workbench.action.splitEditorDown` |
 | `Alt+q` | tmux **+** nvim | закрыть окно/панель | закрыть редактор/терминал | `workbench.action.closeActiveEditor` |
-| `Alt+z` | tmux | zoom панели | maximize группы | `workbench.action.toggleMaximizeEditorGroup` |
+| `Alt+z` | tmux | copy-mode (скроллбэк) | maximize панели | `workbench.action.toggleMaximizedPanel` |
 | `Alt+1..9` | tmux | окно tmux N | вкладка редактора N | `workbench.action.openEditorAtIndex1..9` |
 | `Alt+n` / `Alt+p` | tmux | следующее / предыдущее окно | следующая / предыдущая вкладка | `workbench.action.next/previousEditor` |
 | `Alt+Space` | tmux | `sesh` popup — прыжок в проект | Open Recent | `workbench.action.openRecent` |
 | `Alt+Enter` | tmux | новое окно tmux | новый терминал | `workbench.action.terminal.new` |
-| `Alt+u` | tmux | copy-mode (скроллбэк) | поиск в терминале | `workbench.action.terminal.focusFind` |
+| `Alt+u` | — | свободен на Linux | поиск в терминале | `workbench.action.terminal.focusFind` |
 | `Alt+r` | tmux | перечитать `tmux.conf` | Reload Window | `workbench.action.reloadWindow` |
 | `Alt+d` | tmux | detach | — | — |
 
@@ -244,9 +244,11 @@ VSCode+Vim одинаково.
 | `Пробел :` | история команд / command palette |
 | `Пробел w` | сохранить |
 | `Пробел q` | закрыть вкладку |
-| `Пробел e` | дерево файлов |
-| `Пробел h` | dashboard |
+| `Пробел n` | дерево файлов: показать / скрыть |
+| `Пробел e` | дерево файлов: фокус туда и обратно |
+| `Пробел d` | dashboard |
 | `Пробел 1..9` | вкладка N (= файл N, см. §1) |
+| `Пробел 0` | последняя вкладка |
 
 `Пробел Пробел` — самое частое действие, самый дешёвый бинд: двойное
 нажатие большим пальцем.
@@ -258,28 +260,32 @@ VSCode+Vim одинаково.
 
 ```
 f  ФАЙЛЫ                    g  ГИТ                     c  КОД
- ff  файлы                   gg  lazygit                ca  code action
- fr  недавние                gs  status                 cr  переименовать
- fg  grep                    gd  diff                   cf  форматировать
- ft  вкладки                 gb  blame                  cd  диагностика строки
- fs  символы файла           gl  log                    cs  символы файла
- fh  help                    gp  preview hunk
- fk  список всех биндов      gr  reset hunk
-                             gS  stage hunk
+ ff  файлы (/home /etc /mnt)  gd  открыть diffview       ca  code action
+ fr  недавние                gq  закрыть diffview       cr  переименовать
+ fg  grep                    gh  история файла          cf  форматировать
+ ft  вкладки                 gH  история репозитория    cd  диагностика строки
+ fs  символы файла           gn  следующий hunk
+ fh  help                    gN  предыдущий hunk
+ fk  список всех биндов      gp  preview hunk
+                             gr  reset hunk
+                             gb  blame строки
 
-t  ВКЛАДКИ                  x  ОШИБКИ                  u  ИНТЕРФЕЙС
- tt  список                  xx  список диагностик      uw  перенос строк
- td  закрыть                 xq  quickfix               un  номера строк
- to  закрыть все кроме       xl  loclist                us  проверка орфографии
- tp  предыдущая                                         ut  тема
+t  ВКЛАДКИ                  x  ОШИБКИ                  s  СЕССИИ
+ tt  список                  xx  диагностика файла      ss  восстановить для cwd
+ td  закрыть                 xw  диагностика проекта    sl  восстановить последнюю
+ to  закрыть все кроме       xq  quickfix               sd  эту не сохранять
+ tp  предыдущая
 ```
 
 Ветка была `b` (БУФЕРЫ), пока файлы жили в буферах. С переходом на
 вкладку-на-файл (§1) буферных действий не осталось, поэтому namespace
 переехал в `t`, а не остался неверным ярлыком.
 
-Свободны ещё `a b d i j k l m n o p r s v y z` — места больше, чем
-понадобится.
+Свободны ещё `a b i j k l m o p v y z` — места больше, чем понадобится.
+
+На маке ветка вкладок пока `b*` (`bb/bd/bo/bp`, `fb`) — `settings.json`
+не переведён на `t*` вслед за nvim. Единственное место схемы, где машины
+сейчас расходятся не по замыслу.
 
 ### 4.3 Голые клавиши — без leader вообще
 
@@ -292,7 +298,6 @@ t  ВКЛАДКИ                  x  ОШИБКИ                  u  ИНТЕ�
 | `gr` | найти использования |
 | `K` | документация |
 | `]d` / `[d` | следующая / предыдущая ошибка |
-| `]c` / `[c` | следующий / предыдущий git-ханк |
 | `gc` | закомментировать |
 | `s` / `S` | flash-прыжок |
 | `Ctrl+O` / `Ctrl+I` | назад / вперёд по местам, где ты был |
@@ -350,7 +355,7 @@ fish на обеих машинах один и тот же, поэтому по
 | `Ctrl+P` / `Ctrl+N` | история назад / вперёд |
 | `Alt+←` / `Alt+→` | по словам — **везде**, не только в шелле (§7.5) |
 | `Ctrl+R` | fzf по истории |
-| `Ctrl+T` | fzf по файлам |
+| `Ctrl+T` | fzf по файлам от `/` — Enter открывает файл в `$EDITOR` |
 | `Ctrl+G` | fzf cd |
 | `Ctrl+L` | очистить экран |
 | `Ctrl+D` | стереть символ вперёд — **не выход** (пресетный `exit` перебит: пустая строка + `Ctrl+D` убивала pane) |
@@ -384,7 +389,7 @@ fish на обеих машинах один и тот же, поэтому по
 это стандартный роллинг, привыкается за день. Все остальные — разные
 пальцы или разные руки.
 
-### 5.1 Списки с полем ввода — везде `Ctrl+j` / `Ctrl+k`
+### 5.3 Списки с полем ввода — везде `Ctrl+j` / `Ctrl+k`
 
 Голые `j`/`k` там невозможны, есть текстовое поле. Одно правило на три
 места:
@@ -397,7 +402,7 @@ fish на обеих машинах один и тот же, поэтому по
 
 С fish не конфликтует: пока открыт fzf, он владеет терминалом целиком.
 
-### 5.2 Что должен отдать VSCode
+### 5.4 Что должен отдать VSCode
 
 | Настройка | Значение и зачем |
 |---|---|
@@ -476,10 +481,13 @@ Super-бинды (`Super+hjkl`, `Super+1..9` в niri) не затронуты.
 keyd матчит физические keycode'ы.
 
 Цена, чтобы не переоткрывать: kitty и VSCode больше **никогда не увидят**
-`Super+C` — keyd забирает нажатие ниже композитора. Поэтому они биндят
-Insert-пару (`kitty.conf`, `docs/vscode/keybindings.json` через поля
-`key`/`mac`). Из-за того, что `Shift+Insert` уехал на буфер обмена,
-primary selection в kitty остался только на `kitty_mod+s`.
+`Super+C` — keyd забирает нажатие ниже композитора. Поэтому Insert-пару
+биндит kitty (`kitty.conf:93-94`). Из-за того, что `Shift+Insert` уехал на
+буфер обмена, primary selection в kitty остался только на `kitty_mod+s`.
+
+На маке keyd нет, поэтому `docs/vscode/keybindings.json` Insert-пару не
+биндит вообще — там нативные `Cmd+C/V/X`, и в терминале они разведены по
+`terminalFocus`.
 
 **Внутри терминала цепочка идёт дальше.** kitty вешает `Ctrl+Insert` не на
 `copy_to_clipboard`, а на **`copy_or_noop`**: скопировать своё выделение, а
@@ -507,8 +515,10 @@ Super он сворачивает в Meta. Проверено: скормили 
 
 Всё, что niri забирает себе, до терминала не доходит. Утекают только дыры —
 клавиши, где у niri нет `Mod+<key>`, а у tmux есть root-бинд `M-<key>`:
-`s`, `n`, `p`, `u`, `z`, `/`, `` ` ``, `Shift+Q`. Их глотает kitty через
-`discard_event`.
+`s`, `n`, `p`, `/`, `Shift+Q`. Их глотает kitty через `discard_event`.
+
+`z` в этот список не входит: его забирает сам keyd (`[meta] z = C-z`,
+§7.3), до kitty он не доходит.
 
 Именно `discard_event`, а не `no_op`: `no_op` в kitty означает «отвязать и
 **отдать программе**» — ровно тот баг, который чиним.
@@ -607,7 +617,7 @@ Alt, как `Option+←/→` на маке. Ничего не теряется:
 снятие vi-mode не только не сломало копирование, а сделало его дешевле,
 чем было (`Esc v` + motion + `y`).
 
-tmux copy-mode (`Alt+u`) остаётся только для скроллбэка вывода.
+tmux copy-mode (`Alt+z`) остаётся только для скроллбэка вывода.
 
 ### 7.6 Через SSH — OSC 52
 
@@ -755,7 +765,7 @@ native messenger — бинарь **вне песочницы браузера**
 - `Пробел :` — command palette. `?` (`showHelp`) делает то же одной
   клавишей и работает по умолчанию.
 - `Пробел w` — save. В браузере не бывает.
-- `Пробел h` — dashboard. У Vimium нет команды «домой», только нативный
+- `Пробел d` — dashboard. У Vimium нет команды «домой», только нативный
   `Alt+Home`.
 - `Пробел 1..9` — цифры забрал `Alt` (§9.2).
 
@@ -820,7 +830,7 @@ mappings. Файл авторитетен, живой браузер — нет.
 |---|---|
 | **nvim** | опция `langmap` — одна строка, отображает кириллический ряд на латинский в normal/visual mode. Заменяет все подушные дубли. |
 | **tmux** | `langmap` нет, дубли неизбежны. Но их станет ~12 вместо 28: ярус `Alt` ужался, copy-mode нужен только для скроллбэка. |
-| **kitty** | 6 дублей, оставить. |
+| **kitty** | 7 дублей (`с м ы щ л о р`), оставить. |
 | **niri** | раскладка уезжает на бинд `Ctrl+Space` — снимается главный источник аварий. |
 | **VSCode** | `Ctrl`+буква и `Alt`+буква от раскладки не зависят, дублей не нужно. |
 | **Vimium** | `langmap` нет и не будет (§9.1), дубли неизбежны — 38 строк в `firefox/vimium-keymap.txt`. Хинты дублями не чинятся вообще, их закрывает filtered mode (§9.5). |
@@ -861,9 +871,9 @@ mappings. Файл авторитетен, живой браузер — нет.
 | Файл | Изменение |
 |---|---|
 | `keyd/etc/keyd/default.conf` | `capslock = f19` → `capslock = layer(control)`; добавить `leftcontrol = compose` (переключатель раскладки). Свапа Super/Alt нет — он на маке |
-| `niri/config.kdl` | убрать `grp:alt_shift_toggle`, добавить бинд `Ctrl+Space { switch-layout "next"; }`; освободить `Mod+C`/`Mod+V` под kitty (центрирование → `Mod+Shift+C`, floating → `Mod+G`/`Mod+Shift+G`) |
+| `niri/config.kdl` | `grp:alt_shift_toggle` → `grp:menu_toggle` (раскладку переключает угловой `Ctrl` через keyd → Menu, §2). Бинда `switch-layout` быть НЕ должно — с ним раскладка переключалась бы дважды. Освободить `Mod+C`/`Mod+V` под kitty (центрирование → `Mod+Shift+C`, floating → `Mod+G`/`Mod+Shift+G`) |
 | `niri/config.kdl` binds | без изменений |
-| `tmux.conf` | `C-M-hjkl` → `M-S-hjkl`; `M-=`/`M--` → `M-v`/`M-s`; `M-c` + `M-q` → один `M-q`; `M-s` → `M-Space`; `M-z` → `M-u`, `M-z` = zoom; `M-n` удалить; добавить `M-n`/`M-p`; **не биндить `M-t`**; обернуть `M-v/s/x` и `M-S-hjkl` в `if-shell` по nvim; кириллические дубли пересобрать |
+| `tmux.conf` | `C-M-hjkl` → `M-S-hjkl`; `M-=`/`M--` → `M-v`/`M-s`; `M-c` + `M-q` → один `M-q`; `M-s` → `M-Space`; `M-z` = copy-mode (toggle), зум панели снят совсем; `M-n` удалить; добавить `M-n`/`M-p`; **не биндить `M-t`**; обернуть `M-v/s/x` и `M-S-hjkl` в `if-shell` по nvim; кириллические дубли пересобрать |
 | `config.fish` | `:72` `fish_vi_key_bindings` → `fish_default_key_bindings`; удалить `-M visual` блок (`:113-116`); снять `-M insert` со всех `bind`; оставить только переопределение `ctrl-u` → `kill-whole-line`; остальные (`ctrl-a/e/k/y/p/n`, `alt-backspace`) идут из пресета и дублировать их не надо; `ctrl-g` → `fzf-cd-widget` оставить |
 | `nvim/init.lua` | `mapleader = ' '`; удалить алиас `<F19>`; удалить `<leader>w*` (7 биндов); `<leader>t`/`<F19>t`/`<leader>q`/`<F19>q` → `Alt+t` в normal **и** terminal режиме; `Alt+v/s/x` и `Alt+hjkl` (vim-tmux-navigator); добавить `langmap`; `<leader>l*` → `<leader>c*`; `<leader>gp/gr/gb` уже совпадают; nvim-tree `Ctrl+v`/`Ctrl+h` → `Alt+v`/`Alt+s`; собрать дерево из §4 |
 | `kitty.conf` | без изменений |
