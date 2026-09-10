@@ -312,11 +312,39 @@ layout {
 // See the binds section below for more spawn examples.
 
 // quickshell (qs) provides the bar + control-center + lock + launcher.
-spawn-at-startup "qs"
+//
+// Wrapped in systemd-cat so the shell's output lands in the journal:
+//   journalctl --user -t quickshell
+// Without it niri gives spawned children /dev/null for stdout AND stderr
+// (verified on /proc/<qs>/fd/{1,2}), so every QML error — parse failure,
+// undefined property, exception in a signal handler — was invisible, and
+// the only symptom was the bar visibly misbehaving.
+//
+// quickshell also keeps its own log, readable with `qs log`, but that file
+// lives in /run/user/1000/quickshell/by-id/<id>/log.qslog — tmpfs, so it
+// does NOT survive a reboot. The journal here is persistent
+// (/var/log/journal), and 48 h of shell log is ~92 KB.
+//
+// systemd-cat execs its argument rather than staying as a parent (verified),
+// so this costs zero extra processes. --no-color: quickshell does not drop
+// ANSI codes when stdout is not a tty, and they would land in the journal.
+spawn-at-startup "systemd-cat" "-t" "quickshell" "qs" "--no-color"
 spawn-at-startup "swaybg" "-i" "/home/aru/Pictures/wallpapers/mntvagaflexoki.png" "-m" "fill"
 spawn-at-startup "swayidle" "-w"
 spawn-at-startup "mako"
-spawn-at-startup "xwayland-satellite" ":0"
+// spawn-at-startup для xwayland-satellite убран: niri 26.04 поднимает его САМ
+// и лениво. Он держит X11-сокеты с начала сессии и запускает сателлит только
+// когда клиент подключится. Подтверждено журналом этой сессии:
+//   07:50:29  niri: listening on X11 socket: :0
+//   08:01:39  niri::utils::xwayland::satellite: connection to X11 abstract
+//             socket; spawning xwayland-satellite
+// — то есть через 11 минут после логина, по первому клиенту. У живого процесса
+// ppid = niri, а в аргументах `-listenfd 94 -listenfd 47`, которые добавляет
+// только niri. Ручной spawn при этом умирал молча (сокет :0 уже занят самим
+// niri, а stderr порождённых процессов уходит в /dev/null).
+//
+// environment { DISPLAY } ниже оставлен: он нужен, чтобы порождаемые
+// приложения знали, где искать X.
 environment {
     DISPLAY ":0"
 }
@@ -437,15 +465,13 @@ overview {
     }
 }
 
-// Fuzzel launcher — square + shadow on layer surface.
-layer-rule {
-    match namespace="^launcher$"
-
-    geometry-corner-radius 0
-    shadow {
-        on
-    }
-}
+// Здесь было layer-rule на namespace="^launcher$" — мёртвое с момента перехода
+// с fuzzel на launcher внутри quickshell. Живые namespace: "wallpaper",
+// "quickshell-bar", "quickshell-cc", "quickshell-launcher" (Launcher.qml:20),
+// так что регулярка не совпадала ни с чем и тень, которую правило включало, не
+// рисовалась никогда — за месяцы этого никто не заметил. Правило удалено, а не
+// поправлено: тени окон выключены целиком (основной shadow { } выше), и CONTEXT.md §2
+// требует "no blur".
 
 binds {
     // Keys consist of modifiers separated by + signs, followed by an XKB key name
