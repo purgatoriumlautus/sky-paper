@@ -34,4 +34,4 @@ stow zathura                      # symlinks ~/.config/zathura → here
 
 ## Cheatsheet
 
-See `CHEATSHEET.txt` for stock binds.
+Every bind: `docs/keybinds-reference.md` §8.

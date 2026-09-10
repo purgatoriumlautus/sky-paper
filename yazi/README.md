@@ -25,7 +25,10 @@ stow yazi                       # symlinks ~/.config/yazi → here
   formats need nothing extra.
 - **Video / PDF preview:** needs `ffmpegthumbnailer` + `poppler` —
   run `install.sh`. Without them, yazi shows file info instead of a thumbnail.
-- **Delete:** stock yazi — `d` trashes (recoverable), `D` deletes permanently.
+- **Keybinds:** every one of them, stock and overridden, is in
+  `docs/keybinds-reference.md` §7.
+- **Delete:** `d` trashes (recoverable), `D` deletes permanently — the same
+  way round as the nvim file tree, which had them inverted until 2026-09.
 - **Regenerate the icon table** (if upstream changes): re-run Task 5 of the
   plan — fetch `theme-dark.toml`, `sed -E 's/, fg = "[^"]*"//g'` the
   `[icon]`→EOF slice, replace the section in `theme.toml`.

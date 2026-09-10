@@ -29,7 +29,6 @@ README.*
 
 # --- package-specific: nothing in this pkg goes to $HOME via stow ---
 ^/install\.sh$
-^/CHEATSHEET\.txt$
 ^/flexoki$
 ^/vimrc$
 ^/hotkeys\.json$

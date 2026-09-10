@@ -24,4 +24,3 @@ README.*
 
 # --- package-specific: docs/install lives in the repo, not in $HOME ---
 ^/install\.sh$
-^/CHEATSHEET\.txt$
