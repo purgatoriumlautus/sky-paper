@@ -11,12 +11,16 @@
 # What it links:
 #   conf.d/                  -> global fontconfig rules (Terminess bitmap at
 #                               native sizes, Unifont fallback, Terminus alias).
+#   obsidian-fonts.conf      -> ~/.config/fontconfig/ (a SIBLING of conf.d, not
+#                               inside it: fontconfig only auto-reads fonts.conf
+#                               and conf.d/*, so this file stays inert globally
+#                               and loads only via FONTCONFIG_FILE).
 #   applications/obsidian.desktop -> overrides the pacman .desktop so Obsidian
 #                               launches with FONTCONFIG_FILE=obsidian-fonts.conf
 #                               (smooth Terminess at any size; bar stays crisp).
 #
-# obsidian-fonts.conf itself is NOT linked into conf.d on purpose — it must
-# stay inert globally and only load via FONTCONFIG_FILE from the .desktop.
+# The .desktop resolves that path through $HOME at runtime, so the same entry
+# works on laniakea and celestia despite their different repo locations.
 set -euo pipefail
 
 SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -34,6 +38,7 @@ link() {  # link <target> <linkname>
 }
 
 link "$SRC/conf.d"                     "$HOME/.config/fontconfig/conf.d"
+link "$SRC/obsidian-fonts.conf"        "$HOME/.config/fontconfig/obsidian-fonts.conf"
 link "$SRC/applications/obsidian.desktop" "$HOME/.local/share/applications/obsidian.desktop"
 
 fc-cache -f "$HOME/.config/fontconfig" >/dev/null
@@ -41,5 +46,6 @@ update-desktop-database "$HOME/.local/share/applications" 2>/dev/null || true
 
 echo
 echo "Done. Restart Obsidian FROM A LAUNCHER (not 'obsidian' in a shell) so the"
-echo ".desktop env var applies. Verify: FONTCONFIG_FILE=$SRC/obsidian-fonts.conf \\"
-echo "  fc-match -v 'Terminess Nerd Font:pixelsize=16' | grep antialias  # -> True"
+echo ".desktop env var applies. Verify:"
+echo "  FONTCONFIG_FILE=\$HOME/.config/fontconfig/obsidian-fonts.conf \\"
+echo "    fc-match -v 'Terminess Nerd Font:pixelsize=16' | grep antialias  # -> True"
