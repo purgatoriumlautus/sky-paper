@@ -37,10 +37,12 @@ Verified: 2026-08-23
 Stow modules (from `~/dotfiles`, target under `~/.config`):
 - niri/ — Wayland compositor. Spawns qs, swaybg, swayidle, mako and
   xwayland-satellite `:0` (arg must match the exported DISPLAY).
-- quickshell/ — bar + control center + locker + launcher (CC and launcher
-  are layer surfaces), plus battery widget, EPP cycler, wifi/BT/airplane
-  and mako-DND rows; polkit rules + set-epp (dir symlink; rules/set-epp =
-  manual sudo install to /etc/polkit-1/rules.d, /usr/local/bin).
+- quickshell/ — bar + control center + locker + launcher + clipboard picker
+  (CC, launcher and picker are layer surfaces; the picker reads cliphist,
+  whose watcher is the wl-paste niri spawns), plus battery widget, EPP
+  cycler, wifi/BT/airplane and mako-DND rows; polkit rules + set-epp (dir
+  symlink; rules/set-epp = manual sudo install to /etc/polkit-1/rules.d,
+  /usr/local/bin).
 - swayidle/ — 5m dim → 10m lock+screen-off → 30m suspend; lock before
   sleep. Lid handling belongs to logind (power/).
 - fish/ (login shell; default/emacs binds not vi; zoxide `cd`; conf.d/ +
@@ -105,8 +107,9 @@ keepers: passim (masked, fwupd hard dep), swaylock (manual fallback lock),
 cage (greeter runs on it), smartmontools (battery/disk health), imv (xdg
 image handler), xwayland-satellite (X11 apps under niri), tree-sitter-cli
 (nvim-treesitter main compiles parsers with it), sesh-bin (tmux popup on
-M-Space), fontforge (build dep for terminus-italic; deploy needs only the
-prebuilt TTFs).
+M-Space), fuse3 (rclone mount), cliphist (clipboard history; its watcher is
+the wl-paste niri spawns). fontforge is NOT installed — terminus-italic
+deploys the prebuilt TTFs; build.sh needs it back only to regenerate them.
 
 ## 4. Security posture — deltas from Arch defaults, each with a live check
 Verified: 2026-08-23

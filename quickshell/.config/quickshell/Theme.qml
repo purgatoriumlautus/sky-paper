@@ -48,4 +48,9 @@ Singleton {
 
     // launcher glyph — paired with the CC's λ. Core-Terminus letter (crisp).
     readonly property string launcherGlyph: "Δ";
+
+    // clipboard-picker glyph — three stacked bars, i.e. a stack of past
+    // copies. Greek like Δ and λ, so it comes from the same core-Terminus
+    // block and renders crisp at the bar's native pixel size.
+    readonly property string clipGlyph: "Ξ";
 }

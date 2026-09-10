@@ -31,12 +31,12 @@ PanelWindow {
 
     // center — clock. Integer-snapped position (centerIn gives fractional
     // x/y → Qt Quick renders text blurry; Pango always pixel-snaps).
-    // Fades out while the launcher owns the center.
+    // Fades out while the launcher or the clipboard picker owns the center.
     Clock {
         id: clockMod
         x: Math.round((parent.width - width) / 2)
         y: Math.round((parent.height - height) / 2)
-        opacity: launcher.visible ? 0 : 1
+        opacity: launcher.visible || clip.visible ? 0 : 1
         Behavior on opacity { NumberAnimation { duration: 280; easing.type: Easing.OutCubic } }
     }
 
@@ -85,6 +85,28 @@ PanelWindow {
     ControlCenter { id: cc }
 
     Launcher { id: launcher }
+
+    ClipPicker { id: clip }
+
+    // One keyboard surface at a time. CC, launcher and picker each take
+    // exclusive keyboard focus and each sit on the bar, so opening one closes
+    // the other two. Wired here rather than inside the components: none of
+    // them can see the others' ids, and a second `onVisibleChanged` written on
+    // an instance would REPLACE the handler the component declares (focus +
+    // query reset), not add to it. No loop — the close functions start an
+    // animation and leave `visible` true until it finishes.
+    Connections {
+        target: cc
+        function onVisibleChanged() { if (cc.visible) { launcher.close(); clip.close(); } }
+    }
+    Connections {
+        target: launcher
+        function onVisibleChanged() { if (launcher.visible) { cc.closeCc(); clip.close(); } }
+    }
+    Connections {
+        target: clip
+        function onVisibleChanged() { if (clip.visible) { cc.closeCc(); launcher.close(); } }
+    }
 
     // niri binds:
     //   Mod+Space     → `qs ipc call controlcenter toggle`      (lands on row 0, power hidden)

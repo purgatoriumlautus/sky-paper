@@ -332,6 +332,11 @@ spawn-at-startup "systemd-cat" "-t" "quickshell" "qs" "--no-color"
 spawn-at-startup "swaybg" "-i" "/home/aru/Pictures/wallpapers/mntvagaflexoki.png" "-m" "fill"
 spawn-at-startup "swayidle" "-w"
 spawn-at-startup "mako"
+// Clipboard history. cliphist has no daemon of its own — wl-paste IS the
+// watcher and cliphist only appends, so this is the whole backend; the picker
+// (Mod+Y) is ClipPicker.qml inside the same qs process. Text only: images in
+// the history bloat the store and are never what you go back for.
+spawn-at-startup "wl-paste" "--type" "text" "--watch" "cliphist" "store"
 // spawn-at-startup для xwayland-satellite убран: niri 26.04 поднимает его САМ
 // и лениво. Он держит X11-сокеты с начала сессии и запускает сателлит только
 // когда клиент подключится. Подтверждено журналом этой сессии:
@@ -468,6 +473,7 @@ overview {
 // Здесь было layer-rule на namespace="^launcher$" — мёртвое с момента перехода
 // с fuzzel на launcher внутри quickshell. Живые namespace: "wallpaper",
 // "quickshell-bar", "quickshell-cc", "quickshell-launcher" (Launcher.qml:20),
+// "quickshell-clip" (ClipPicker.qml:19),
 // так что регулярка не совпадала ни с чем и тень, которую правило включало, не
 // рисовалась никогда — за месяцы этого никто не заметил. Правило удалено, а не
 // поправлено: тени окон выключены целиком (основной shadow { } выше), и CONTEXT.md §2
@@ -522,6 +528,10 @@ binds {
     // window, matching nvim.desktop.
     Mod+N hotkey-overlay-title="Editor: nvim" { spawn-sh "[ \"$(niri msg -j focused-window | jq -r .app_id)\" = kitty ] && s=$(tmux list-clients -F \"#{client_activity} #{client_session}\" | sort -rn | head -1 | cut -d\" \" -f2-) && [ -n \"$s\" ] && exec tmux new-window -t \"$s:\" -c \"#{pane_current_path}\" nvim; exec kitty --single-instance -e nvim"; }
     Mod+D hotkey-overlay-title="Run an Application" { spawn "qs" "ipc" "call" "launcher" "toggle"; }
+    // Clipboard history. Y for yank, and it has to be a letter keyd does not
+    // claim: the [meta] layer rewrites c/v/x/a/z below the compositor, so
+    // Mod+V never reaches niri at all (see keyd/etc/keyd/default.conf).
+    Mod+Y hotkey-overlay-title="Clipboard history" { spawn "qs" "ipc" "call" "clip" "toggle"; }
     Super+Alt+L hotkey-overlay-title="Lock the Screen" { spawn "qs" "ipc" "call" "lock" "lock"; }
 
     // Use spawn-sh to run a shell command. Do this if you need pipes, multiple commands, etc.
