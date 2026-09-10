@@ -68,7 +68,9 @@ install.sh modules (root-owned or per-profile targets, not stowable):
   VIA/QMK tools reach it without root. Rule file only, deployed by hand.
 - nftables/, sysctl/, sshd/ → their /etc paths (see §4); firefox/ (user.js
   → random-hash *.default-release profile; vimium-keymap.txt is paste-only —
-  Vimium keeps binds in extension storage, docs/keybinds.md §9); obsidian/
+  Vimium keeps binds in extension storage; tab create/close/restore live in
+  about:keybinds → customKeys.json, in-profile and untracked,
+  docs/keybinds.md §9); obsidian/
   (official Flexoki theme + vimrc/hotkeys → per-vault .obsidian/);
   crossgrub/ (GRUB theme + Terminess .pf2 fonts); tlp/ →
   /etc/tlp.d/00-aru.conf (thresholds 85/90).
