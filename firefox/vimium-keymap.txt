@@ -6,13 +6,20 @@
 # УСТАНОВКА (руками, скриптом нельзя — Vimium держит бинды в storage
 # расширения, а не в файле):
 #   1. Vimium Options → Custom key mappings → вставить всё ниже
-#   2. Там же включить filtered hints («Use link text for filtering»):
-#      метки хинтов становятся цифрами, и `f` начинает работать в RU
-#      раскладке тоже. Буквенные метки в RU не набираются в принципе,
-#      дублями это не чинится (§9.5).
+#   2. Там же, ниже по странице, включить «Ignore keyboard layout».
+#
+# Про «Ignore keyboard layout» — почему кириллических дублей здесь больше
+# нет. Галка переключает Vimium с `event.key` на `event.code`
+# (lib/keyboard_utils.js, getKeyChar): клавиша опознаётся по физической
+# позиции, а не по букве, которую печатает раскладка. Один бинд `map о
+# scrollDown` в EN-нотации ловится и в RU. Хинты идут через тот же путь,
+# так что и `f` работает в RU — filtered hints для этого больше не нужны
+# (как режим они по-прежнему годятся, но это уже вкус, а не костыль).
 #
 # Не работает на about:*, view-source:*, addons.mozilla.org и странице
-# новой вкладки — WebExtensions туда не инжектятся.
+# новой вкладки — WebExtensions туда не инжектятся. Там остаются только
+# родные чорды Firefox, перебить их Vimium не может в принципе: они
+# обрабатываются в chrome-слое, до контент-скрипта.
 #
 # У части действий два входа: канон схемы и то, что уже наработано пальцами.
 # Vimium держит и короткий бинд, и длинный с тем же префиксом, а команда
@@ -22,7 +29,10 @@
 # ─── Снятые дефолты ──────────────────────────────────────────────────
 # J/K — у Vimium это вкладки, а в схеме вкладки на H/L (§9.3).
 # t/T/x — создание, поиск и закрытие вкладки одной голой буквой:
-# слишком легко нажать случайно. Остаются <a-enter> и <a-q>.
+# слишком легко нажать случайно. Жизненный цикл вкладки теперь вообще не
+# здесь, а в about:keybinds — см. блок «Вкладки» ниже.
+# Заглавная X (restoreTab) не снимается — промахнуться ею нечем, и это
+# запасной вход на случай, если about:keybinds опять сломается.
 
 unmap J
 unmap K
@@ -33,6 +43,20 @@ unmap x
 
 # ─── Вкладки ─────────────────────────────────────────────────────────
 # Alt+1..9 = вкладка N делает сам Firefox, биндить нечего.
+#
+# Создание, закрытие и возврат вкладки здесь НЕ биндятся — они живут в
+# about:keybinds (Firefox 153+, экспериментальный компонент customkeys,
+# пишет ~/.config/mozilla/firefox/<профиль>/customKeys.json).
+#
+# Почему там, а не тут: Vimium — контент-скрипт, он не инжектится в
+# about:*, view-source:*, addons.mozilla.org и новую вкладку. То есть
+# сразу после «открыть вкладку» бинд «закрыть вкладку» уже не работал бы.
+# Родной XUL-<key> работает в окне всегда. Один чорд — один владелец,
+# иначе они дерутся: Vimium перехватывает keydown первым и делает
+# preventDefault, и до chrome-слоя событие не доходит.
+#
+# Переключение вкладок (H/L, Alt+h/l, Alt+p/n) остаётся здесь: нативного
+# эквивалента для «предыдущая/следующая» в customkeys нет.
 
 map H previousTab
 map L nextTab
@@ -40,8 +64,6 @@ map <a-h> previousTab
 map <a-l> nextTab
 map <a-p> previousTab
 map <a-n> nextTab
-map <a-enter> createTab
-map <a-q> removeTab
 
 
 # ─── История ─────────────────────────────────────────────────────────
@@ -56,15 +78,18 @@ map <a-k> goForward
 
 
 # ─── Omnibar (ярус Пробел, §9.4) ─────────────────────────────────────
-# Одиночный пробел — быстрый вход; <space><space> оставлен, потому что
-# именно он записан в схеме и жмётся одинаково во всех редакторах.
+# Одиночного `map <space> Vomnibar.activate` здесь намеренно нет.
+# Vimium строит из биндов дерево (installKeyStateMapping в
+# background_scripts/commands.js) и на узле, у которого уже есть своя
+# команда, обрывает ветку — «existing command bindings take priority».
+# Пробел-как-команда объявлялся первым, поэтому весь ярус <space>X ниже
+# просто не устанавливался. Быстрый вход одним пробелом стоил всего
+# яруса; ярус дороже.
 
-map <space> Vomnibar.activate
 map <space><space> Vomnibar.activate
 map <space>, Vomnibar.activateTabSelection
 map <space>e Vomnibar.activateBookmarks
 map <space>b Vomnibar.activateBookmarks
-map <space>q removeTab
 
 
 # ─── Прыжки по ссылкам ───────────────────────────────────────────────
@@ -78,79 +103,3 @@ map S LinkHints.activateModeToOpenInNewTab
 # Alt+z — то же место, что copy-mode в tmux.
 
 map <a-z> enterVisualMode
-
-
-# ─── Кириллица (§10) ─────────────────────────────────────────────────
-# langmap у Vimium нет, поэтому дубли по физической позиции клавиши.
-# Хинты сюда не входят — их закрывает filtered mode, см. шапку.
-
-# вкладки и история
-map Р previousTab
-map Д nextTab
-map <a-р> previousTab
-map <a-д> nextTab
-map <a-з> previousTab
-map <a-т> nextTab
-map <a-й> removeTab
-map <c-щ> goBack
-map <c-ш> goForward
-map <a-о> goBack
-map <a-л> goForward
-
-# omnibar
-map <space>б Vomnibar.activateTabSelection
-map <space>у Vomnibar.activateBookmarks
-map <space>и Vomnibar.activateBookmarks
-map <space>й removeTab
-
-# выделение
-map <a-я> enterVisualMode
-
-# скролл
-map о scrollDown
-map л scrollUp
-map в scrollPageDown
-map г scrollPageUp
-map <c-в> scrollPageDown
-map <c-г> scrollPageUp
-map пп scrollToTop
-map П scrollToBottom
-
-# прыжки по ссылкам
-map а LinkHints.activateMode
-map А LinkHints.activateModeToOpenInNewTab
-map ы LinkHints.activateMode
-map Ы LinkHints.activateModeToOpenInNewTab
-
-# поиск по странице
-# `.` — дубль `/` по физической позиции. Побочка: в EN-раскладке точка
-# тоже начнёт поиск. Vimium её ничем не занимает, цена нулевая.
-map . enterFindMode
-map т performFind
-map Т performBackwardsFind
-
-# адреса и вкладки
-map щ Vomnibar.activate
-map Щ Vomnibar.activateInNewTab
-map Е Vomnibar.activateTabSelection
-map и Vomnibar.activateBookmarks
-map И Vomnibar.activateBookmarksInNewTab
-map Ч restoreTab
-map нн copyCurrentUrl
-map на LinkHints.activateModeToCopyLinkUrl
-map к reload
-
-# прочее
-map ш enterInsertMode
-map пш focusInput
-map пг goUp
-map хх goPrevious
-map ъъ goNext
-
-# Дубля на `?` (showHelp) нет намеренно: по физической позиции он дал бы
-# `,`, а запятая читается в обеих раскладках — в EN она бы отбирала
-# клавишу ради бинда, который жмут раз в месяц. В RU help = Shift+7.
-#
-# Нет дублей `е` (createTab) и `ч` (removeTab): голые t и x сняты выше,
-# и RU-эквиваленты вернули бы ровно тот случайный промах, ради которого
-# они снимались.
