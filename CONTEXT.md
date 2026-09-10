@@ -43,8 +43,9 @@ Stow modules (from `~/dotfiles`, target under `~/.config`):
   manual sudo install to /etc/polkit-1/rules.d, /usr/local/bin).
 - swayidle/ — 5m dim → 10m lock+screen-off → 30m suspend; lock before
   sleep. Lid handling belongs to logind (power/).
-- fish/ (login shell; default/emacs binds not vi; zoxide `cd`), kitty/
-  (Terminess 12pt; clipboard on Ctrl/Shift+Insert), tmux/ (256-idx bar, TPM,
+- fish/ (login shell; default/emacs binds not vi; zoxide `cd`; conf.d/ +
+  autoloaded functions/, config.fish is just the map), kitty/ (Terminess
+  12pt; clipboard on Ctrl/Shift+Insert), tmux/ (256-idx bar, TPM,
   sesh popup on M-Space; Alt tier forwarded into nvim via is_vim), nvim/
   (native treesitter, flexoki lualine, fzf-lua, session start-screen,
   Space leader), mako/ (Quiet/DND wired to CC), xdg/ (mimeapps.list +
@@ -52,17 +53,17 @@ Stow modules (from `~/dotfiles`, target under `~/.config`):
   mpv/, yazi/ + zathura/ (config stows; their install.sh only pulls pacman
   deps and sets xdg-mime defaults). Modules whose top-level files would
   leak into $HOME carry `.stow-local-ignore`.
-- fontconfig/ — NOT stowed: install.sh links conf.d/ and the Obsidian
-  .desktop, two targets one stow tree can't share (Terminus alias,
-  Terminess AA-off on native px).
+- fontconfig/ — NOT stowed: install.sh links conf.d/, obsidian-fonts.conf
+  and the Obsidian .desktop (targets one stow tree can't share; Terminus
+  alias, Terminess AA-off on native px, AA-on inside Obsidian).
 
 install.sh modules (root-owned or per-profile targets, not stowable):
 - quickshell-greeter/ → /etc/quickshell-greeter + /etc/greetd/config.toml
   (mirrors the lock state-machine; `cage -s`, XKB_DEFAULT_LAYOUT=us).
-- keyd/ → /etc/keyd (CapsLock tap→Ctrl; Shift+CapsLock→real CapsLock;
-  corner Ctrl→Menu → layout switch via grp:menu_toggle in niri/; [meta]/[alt]
-  layers carry the Mac's Cmd tier — docs/keybinds.md §7); hid_apple/ →
-  /etc/modprobe.d (external kbd F1-F12, fnmode=2).
+- keyd/ → /etc/keyd (CapsLock tap→Ctrl; Shift+CapsLock→real CapsLock; corner
+  Ctrl→Menu = layout switch via grp:menu_toggle in niri/; [meta]/[alt] carry
+  the Mac's Cmd tier; Fn→rightalt→[fnrow] rebuilds F-row media/brightness —
+  docs/keybinds.md §7); hid_apple/ → /etc/modprobe.d (external kbd, fnmode=2).
 - udev/ → /etc/udev/rules.d — hidraw uaccess for the Keychron (VID 3434) so
   VIA/QMK tools reach it without root. Rule file only, deployed by hand.
 - nftables/, sysctl/, sshd/ → their /etc paths (see §4); firefox/ (user.js
@@ -87,10 +88,12 @@ install.sh modules (root-owned or per-profile targets, not stowable):
 
 Not deployed / manual: wallpapers/ (Flexoki duotone sources +
 `mntvagaflexoki.png` current → ~/Pictures/wallpapers), docs/ (specs,
-screenshots, keybinds.md = cross-machine bind scheme and the only
-cheatsheet — generated png/html/pdf copies are banned, they drift;
-keybinds-brief.md = its source brief, remote/ = work Ubuntu box, vscode/ =
-Mac keymap), bin/ (user scripts incl. pd-bt → ~/.local/bin), telegram/
+screenshots, keybinds.md = the bind scheme and why it is that way,
+keybinds-reference.md = every bind in every layer, tables only — the two are
+the ONLY cheatsheets, per-module CHEATSHEET.txt and generated png/html/pdf
+copies are banned, they drift; keybinds-brief.md = source brief, remote/ =
+work Ubuntu box, vscode/ = Mac keymap, unused), bin/ (user scripts incl.
+pd-bt → ~/.local/bin), telegram/
 (Telegram Desktop theme — imported via the app, not stowed).
 
 ### Packages
@@ -159,7 +162,7 @@ Verified: 2026-09-07
   restic/+rclone/ on both, METERED skip laptop-only.
 
 ## §META — maintenance rules
-Verified: 2026-07-11
+Verified: 2026-09-09
 
 Root whitelist — module dirs plus exactly: README.md, CLAUDE.md,
 CONTEXT.md, PALETTE.md, packages.txt, .gitignore, bin/, docs/, skills/.
@@ -170,7 +173,11 @@ identity 12 · ideology 12 · stack ~1/module · security 30 · deltas 15 ·
 §META 25.
 
 Update triggers: module change → same-commit stack-map line update;
-package install/remove → packages.txt in the same sitting.
+package install/remove → packages.txt in the same sitting; ANY bind added,
+moved or dropped → same-commit edit of docs/keybinds.md (scheme) AND
+docs/keybinds-reference.md (tables). Those two are the contract, and the
+only place the whole scheme is visible at once — edit them deliberately; a
+config that disagrees is drift to reconcile now, not a silent new rule.
 
 Drift check — run at the start of any repo work session (on the laptop):
 `diff <(grep -v '^#\|^$' packages.txt | sort) <(pacman -Qqe | sort)`
