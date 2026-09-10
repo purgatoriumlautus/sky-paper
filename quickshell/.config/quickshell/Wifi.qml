@@ -41,12 +41,32 @@ Item {
         return 0;
     }
 
-    // hovered → poll the tooltip-only data (IP + bytes) and run fast.
-    // Background mode runs only the cheap signal probe every 30s.
+    // hovered → also poll the IP (tooltip-only). Background mode runs just the
+    // link probe, which is a single process and already carries everything the
+    // bar needs.
+    //
+    // What changed and why: this used to spawn 5 processes per idle tick and up
+    // to 11 per hover tick. Three causes, all removed:
+    //   1. every tick re-discovered the interface name with `iw dev | awk` —
+    //      3 processes for a value that does not change while the machine runs;
+    //   2. every probe went through `sh -c "…"`, so a pipeline cost sh + each
+    //      stage. Process takes an argv array; no shell is needed;
+    //   3. throughput was read from /sys/class/net/*/statistics separately,
+    //      but `iw dev <iface> link` ALREADY prints "RX: N bytes" / "TX: N bytes"
+    //      — the byte counters come free with the signal probe.
+    // Now: 1 process per idle tick, 2 per hover tick. Parsing moved into QML,
+    // which is where awk/cut were doing work the JS engine can do for nothing.
+    //
+    // Note on the counters: `iw link` bytes are per-association and reset on
+    // reconnect, unlike the lifetime counters in /sys. The Math.max(0, …) below
+    // already absorbs that — one tick reads 0 B/s after a reconnect.
     property bool hovered: false
 
     function poll() {
-        ifaceProc.running = true;
+        // The interface name is cached: discovered once, reused after that.
+        if (!root.iface) { ifaceProc.running = true; return; }
+        linkProc.running = true;
+        if (root.hovered) ipProc.running = true;
     }
 
     Timer {
@@ -56,69 +76,76 @@ Item {
         onTriggered: root.poll()
     }
 
-    // 1. find first wireless iface, then kick off followups.
-    //    Always: linkProc (cheap, drives signal bars).
-    //    Hovered only: ipProc + bytesProc (only used by the tooltip).
+    // 1. Interface discovery — runs once, then only if the interface vanishes.
+    //    `iw dev` also lists the P2P "Unnamed/non-netdev interface"; the regex
+    //    anchors on a capitalised "Interface" at line start, which that line
+    //    does not have.
     Process {
         id: ifaceProc
-        command: ["sh", "-c", "iw dev | awk '/Interface/{print $2; exit}'"]
+        command: ["iw", "dev"]
         stdout: StdioCollector {
             onStreamFinished: {
-                root.iface = text.trim();
+                var m = text.match(/^\s*Interface\s+(\S+)/m);
+                root.iface = m ? m[1] : "";
                 if (!root.iface) {
                     root.ssid = ""; root.signalDbm = 0; root.ip = "";
                     root.rxBps = 0; root.txBps = 0;
                     return;
                 }
-                linkProc.running = true;
-                if (root.hovered) { ipProc.running = true; bytesProc.running = true; }
+                root.poll();          // iface now cached → falls through to linkProc
             }
         }
     }
 
-    // 4. throughput — sample rx_bytes/tx_bytes, derive B/s from delta
-    Process {
-        id: bytesProc
-        command: ["sh", "-c", "cat /sys/class/net/" + root.iface + "/statistics/rx_bytes /sys/class/net/" + root.iface + "/statistics/tx_bytes"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                var nums = text.trim().split('\n');
-                if (nums.length < 2) return;
-                var rx = parseFloat(nums[0]), tx = parseFloat(nums[1]);
-                var now = Date.now() / 1000;
-                if (root.prevRx >= 0 && now > root.prevT) {
-                    var dt = now - root.prevT;
-                    root.rxBps = Math.max(0, (rx - root.prevRx) / dt);
-                    root.txBps = Math.max(0, (tx - root.prevTx) / dt);
-                }
-                root.prevRx = rx; root.prevTx = tx; root.prevT = now;
-            }
-        }
-    }
-
-    // 2. SSID + signal
+    // 2. One probe for everything the bar and tooltip show: SSID, signal, bytes.
     Process {
         id: linkProc
-        command: ["sh", "-c", "iw dev " + root.iface + " link"]
+        command: ["iw", "dev", root.iface, "link"]
         stdout: StdioCollector {
             onStreamFinished: {
+                if (!text.trim()) {
+                    // interface gone (rfkill, adapter removed) → re-discover next tick
+                    root.iface = ""; root.ssid = ""; root.signalDbm = 0; root.ip = "";
+                    root.rxBps = 0; root.txBps = 0;
+                    root.prevRx = -1; root.prevTx = -1;
+                    return;
+                }
                 if (text.indexOf("Not connected") >= 0) {
-                    root.ssid = ""; root.signalDbm = 0; return;
+                    root.ssid = ""; root.signalDbm = 0;
+                    root.rxBps = 0; root.txBps = 0;
+                    root.prevRx = -1; root.prevTx = -1;
+                    return;
                 }
                 var s = text.match(/SSID:\s*(.+)/);
                 root.ssid = s ? s[1].trim() : "";
                 var sig = text.match(/signal:\s*(-?\d+)/);
                 root.signalDbm = sig ? parseInt(sig[1]) : 0;
+
+                var rxm = text.match(/RX:\s*(\d+)\s*bytes/);
+                var txm = text.match(/TX:\s*(\d+)\s*bytes/);
+                if (rxm && txm) {
+                    var rx = parseFloat(rxm[1]), tx = parseFloat(txm[1]);
+                    var now = Date.now() / 1000;
+                    if (root.prevRx >= 0 && now > root.prevT) {
+                        var dt = now - root.prevT;
+                        root.rxBps = Math.max(0, (rx - root.prevRx) / dt);
+                        root.txBps = Math.max(0, (tx - root.prevTx) / dt);
+                    }
+                    root.prevRx = rx; root.prevTx = tx; root.prevT = now;
+                }
             }
         }
     }
 
-    // 3. IPv4
+    // 3. IPv4 — tooltip only, hover-gated.
     Process {
         id: ipProc
-        command: ["sh", "-c", "ip -4 -o addr show dev " + root.iface + " 2>/dev/null | awk '{print $4}' | cut -d/ -f1"]
+        command: ["ip", "-4", "-o", "addr", "show", "dev", root.iface]
         stdout: StdioCollector {
-            onStreamFinished: root.ip = text.trim()
+            onStreamFinished: {
+                var m = text.match(/\binet\s+(\d+\.\d+\.\d+\.\d+)/);
+                root.ip = m ? m[1] : "";
+            }
         }
     }
 
