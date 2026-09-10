@@ -463,9 +463,38 @@ binds {
     Mod+Shift+Slash { show-hotkey-overlay; }
 
     // Suggested binds for running programs: terminal, app launcher, screen locker.
-    Mod+Return hotkey-overlay-title="Open a Terminal: kitty" { spawn "kitty"; }
-    // kitty running yazi directly — no tmux (the `shell` directive only applies with no command).
-    Mod+E hotkey-overlay-title="File manager: yazi" { spawn "kitty" "yazi"; }
+    // --single-instance: каждое новое окно — top-level окно в УЖЕ запущенном
+    // процессе kitty, а не свой процесс на 229 MB со своим растеризатором
+    // шрифтов, своим GPU-кэшем спрайтов и своим стартовым fish. Флаг стоит на
+    // всех четырёх точках запуска (здесь, Mod+E, yazi-kitty.desktop,
+    // nvim.desktop) — иначе часть окон окажется вне общего процесса.
+    Mod+Return hotkey-overlay-title="Open a Terminal: kitty" { spawn "kitty" "--single-instance"; }
+    // yazi as a tmux pane when a terminal is what's in front of you, and as its
+    // own kitty window otherwise. Which session gets the pane is decided by the
+    // ATTACHED CLIENT, most recent first — `tmux split-window` with no target
+    // picks tmux's own "current session", which is the most recently *active*
+    // one and not necessarily the one on screen (verified: with several
+    // sessions on a server, the pane landed in a detached one).
+    //
+    // The app_id check is what keeps the pane from being buried: fired from a
+    // browser the split would land in a terminal nobody is looking at, so
+    // anything but kitty in focus opens a window instead. Same fallback when no
+    // client is attached at all — then there is no session to split.
+    //
+    // kitty runs yazi directly there, no tmux (the `shell` directive only
+    // applies with no command).
+    Mod+E hotkey-overlay-title="File manager: yazi" { spawn-sh "[ \"$(niri msg -j focused-window | jq -r .app_id)\" = kitty ] && s=$(tmux list-clients -F \"#{client_activity} #{client_session}\" | sort -rn | head -1 | cut -d\" \" -f2-) && [ -n \"$s\" ] && exec tmux split-window -h -t \"$s:\" -c \"#{pane_current_path}\" yazi; exec kitty --single-instance yazi"; }
+    // nvim as a WINDOW in the session already on screen, not a session of its
+    // own: here a session is a project (sesh on Mod+Space picks between them)
+    // and windows inside it are tasks. A dedicated "nvim" session would put the
+    // editor outside the project — wrong cwd, and code↔terminal would cost a
+    // session switch instead of Alt+2. Opening in the active pane's directory
+    // lands it in the project you are actually in.
+    //
+    // Same shape as Mod+E above: attached client picks the session, and with no
+    // terminal in focus (or no client attached) it falls back to its own kitty
+    // window, matching nvim.desktop.
+    Mod+N hotkey-overlay-title="Editor: nvim" { spawn-sh "[ \"$(niri msg -j focused-window | jq -r .app_id)\" = kitty ] && s=$(tmux list-clients -F \"#{client_activity} #{client_session}\" | sort -rn | head -1 | cut -d\" \" -f2-) && [ -n \"$s\" ] && exec tmux new-window -t \"$s:\" -c \"#{pane_current_path}\" nvim; exec kitty --single-instance -e nvim"; }
     Mod+D hotkey-overlay-title="Run an Application" { spawn "qs" "ipc" "call" "launcher" "toggle"; }
     Super+Alt+L hotkey-overlay-title="Lock the Screen" { spawn "qs" "ipc" "call" "lock" "lock"; }
 
@@ -596,14 +625,18 @@ binds {
     // Makes the column "fill the rest of the space".
     Mod+Ctrl+F { expand-column-to-available-width; }
 
-    // Mod+C and Mod+V are deliberately NOT bound: they are left free so they
-    // fall through to the focused app, where kitty maps super+c / super+v to
-    // copy/paste. That puts copy on the same physical key as Cmd+C on the Mac.
-    // See docs/keybinds.md.
-    Mod+Shift+C { center-column; }
+    // Centering is on M, not C. Mod+C and Mod+V are free by design (they fall
+    // through to the app, where kitty maps super+c / super+v to copy/paste,
+    // putting copy on the same physical key as Cmd+C on the Mac) — but keyd
+    // takes the whole letter, not just the bare chord: [meta] c = C-insert
+    // fires with Shift or Ctrl still held, so Mod+Shift+C reached the
+    // compositor as Shift+Ctrl+Insert and these two bindings never ran.
+    // Verified with `keyd monitor`. M is the neighbouring verb — Mod+M below
+    // is maximize-window-to-edges. See docs/keybinds.md §7.3.
+    Mod+Shift+M { center-column; }
 
     // Center all fully visible columns on screen.
-    Mod+Ctrl+C { center-visible-columns; }
+    Mod+Ctrl+M { center-visible-columns; }
 
     // Finer width adjustments.
     // This command can also:

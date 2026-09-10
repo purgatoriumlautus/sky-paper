@@ -65,3 +65,55 @@ set sandbox                 "none"
 set window-title-basename   "true"
 set statusbar-basename      "true"
 set guioptions              ""
+
+# ── mappings ────────────────────────────────────────────────────────────
+# JCUKEN duplicates: zathura has no langmap, so without these a Cyrillic
+# layout leaves the reader dead, `q` included. Each key is repeated at its
+# physical position. See docs/keybinds.md §10.
+#
+# Two stock keys are deliberately NOT touched:
+#   H/L stay "top/bottom of the screen" — that is vim's own meaning, and
+#   zathura has no tabs for the scheme's H/L pair to switch between.
+#   s stays "fit width". The scheme puts screen-jumps on s, but zathura
+#   already has that on `f` (follow link), and fit-width is a daily key
+#   here, so aliasing s would cost more than it buys.
+
+# Scrolling and pages
+map о scroll down
+map л scroll up
+map р scroll left
+map д scroll right
+map О navigate next
+map Л navigate previous
+map <C-в> scroll half-down
+map <C-г> scroll half-up
+map п goto top
+map П goto bottom
+map Р scroll page-top
+map Д scroll page-bottom
+map е scroll full-left
+map н scroll full-right
+
+# Zoom and fit
+map ф adjust_window best-fit
+map ы adjust_window width
+map к rotate
+map <C-к> recolor
+
+# View
+map в toggle_page_mode
+map ц toggle_single_page_mode
+map <C-ь> toggle_inputbar
+map <C-т> toggle_statusbar
+
+# Search and links
+map т search forward
+map Т search backward
+map а follow
+map А display_link
+map с copy_link
+
+# Files
+map щ file_chooser
+map К reload
+map й quit

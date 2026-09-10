@@ -38,7 +38,13 @@
       "modifiers": [
         "Alt"
       ],
-      "key": "W"
+      "key": "Q"
+    },
+    {
+      "modifiers": [
+        "Alt"
+      ],
+      "key": "Й"
     }
   ],
   "command-palette:open": [],
@@ -115,6 +121,12 @@
         "Alt"
       ],
       "key": "B"
+    },
+    {
+      "modifiers": [
+        "Alt"
+      ],
+      "key": "И"
     }
   ],
   "workspace:close-window": [],
@@ -133,6 +145,12 @@
         "Alt"
       ],
       "key": "N"
+    },
+    {
+      "modifiers": [
+        "Alt"
+      ],
+      "key": "Т"
     }
   ],
   "workspace:previous-tab": [
@@ -141,6 +159,12 @@
         "Alt"
       ],
       "key": "P"
+    },
+    {
+      "modifiers": [
+        "Alt"
+      ],
+      "key": "З"
     }
   ],
   "workspace:goto-last-tab": [
@@ -173,6 +197,30 @@
         "Alt"
       ],
       "key": "T"
+    },
+    {
+      "modifiers": [
+        "Alt"
+      ],
+      "key": "Е"
+    }
+  ],
+  "switcher:open": [
+    {
+      "modifiers": [
+        "Mod",
+        "Shift"
+      ],
+      "key": "O"
+    }
+  ],
+  "editor:toggle-italics": [
+    {
+      "modifiers": [
+        "Mod",
+        "Alt"
+      ],
+      "key": "I"
     }
   ]
 }

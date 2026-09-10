@@ -1,12 +1,14 @@
 " Obsidian vimrc — loaded by the 'Vimrc Support' community plugin.
 "
-" Scope: PURE VIM ONLY. CodeMirror 6 vim doesn't support
-"   - `let mapleader` (ignored)
+" What CodeMirror 6's vim does and does not give you here:
+"   - `let mapleader` — supported per the README, but every mapping below
+"     writes <Space> literally so the file reads like the key you press
 "   - `set langmap` (ignored)
 "   - `noremap`/`nnoremap`/`xnoremap` family (only `nmap`/`vmap`/`imap`)
-"   - Multi-key <Space>-leader sequences fire unreliably.
-" so the leader-prefix file/edit binds went to hotkeys.json (Obsidian's
-" app-level Ctrl-chord system, works in all modes uniformly).
+"   - <Space> is bound to a motion and must be `unmap`-ed before it can
+"     start a chord (done below) — see the plugin README.
+" hotkeys.json carries the same actions on the Alt tier, which also works
+" in the graph, canvas and settings — places this file never loads into.
 
 nmap <Esc> :nohlsearch<CR>
 vmap p     "_dP
@@ -18,3 +20,80 @@ nmap <Up>    <Nop>
 nmap <Down>  <Nop>
 nmap <Left>  <Nop>
 nmap <Right> <Nop>
+
+" ── scheme vocabulary (docs/keybinds.md) ───────────────────────────────
+" The Vimrc Support plugin can call app commands: `exmap <name> obcommand
+" <id>` then map the alias. Type :obcommand to list ids in the console.
+"
+" History on the vim jumplist pair, the same keys nvim, zathura and Vimium
+" use. Obsidian's own Ctrl+O (quick switcher) and Ctrl+I (italic) were moved
+" in hotkeys.json to free them; Alt+[ / Alt+] stay bound at app level for the
+" graph and settings, where this file is not running.
+exmap back    obcommand app:go-back
+exmap forward obcommand app:go-forward
+nmap <C-o> :back<CR>
+nmap <C-i> :forward<CR>
+
+" H/L are prev/next tab everywhere in the scheme.
+exmap tabprev obcommand workspace:previous-tab
+exmap tabnext obcommand workspace:next-tab
+nmap H :tabprev<CR>
+nmap L :tabnext<CR>
+
+" ── Leader tier (docs/keybinds.md §4.1) ────────────────────────────────
+" Obsidian is an editor, not a container the way tmux is, so the whole top
+" level of the leader tier applies here exactly as it does in nvim — a tab
+" is a file (§1). The Alt binds in hotkeys.json stay as the second entrance:
+" they keep working in the graph, canvas and settings, where this file does
+" not run.
+"
+" <Space> is a motion (move right) out of the box, and a bound key cannot
+" start a chord — every <Space>x below is dead without this unmap. The
+" plugin README names this as the required first step.
+unmap <Space>
+exmap switcher  obcommand switcher:open
+exmap gsearch   obcommand global-search:open
+exmap palette   obcommand command-palette:open
+exmap newfile   obcommand file-explorer:new-file
+exmap template  obcommand insert-template
+exmap savefile  obcommand editor:save-file
+exmap closetab  obcommand workspace:close
+exmap sidebar   obcommand app:toggle-left-sidebar
+exmap reveal    obcommand file-explorer:reveal-active-file
+exmap graph     obcommand graph:open
+
+nmap <Space><Space> :switcher<CR>
+nmap <Space>/       :gsearch<CR>
+nmap <Space>:       :palette<CR>
+nmap <Space><CR>    :newfile<CR>
+nmap <Space>w       :savefile<CR>
+nmap <Space>q       :closetab<CR>
+nmap <Space>n       :sidebar<CR>
+nmap <Space>e       :reveal<CR>
+nmap <Space>t       :template<CR>
+" <Space>d is the dashboard in nvim; the nearest thing Obsidian has is the
+" graph — there is no start screen to open.
+nmap <Space>d       :graph<CR>
+
+" Tabs are files here (§1), so they sit on the leader digits, same as nvim.
+" Obsidian has goto-tab-1..8 and no ninth, so 9 lands on the last tab —
+" which is what its own Alt+9 does. 0 is the last tab as in nvim.
+exmap tab1 obcommand workspace:goto-tab-1
+exmap tab2 obcommand workspace:goto-tab-2
+exmap tab3 obcommand workspace:goto-tab-3
+exmap tab4 obcommand workspace:goto-tab-4
+exmap tab5 obcommand workspace:goto-tab-5
+exmap tab6 obcommand workspace:goto-tab-6
+exmap tab7 obcommand workspace:goto-tab-7
+exmap tab8 obcommand workspace:goto-tab-8
+exmap tablast obcommand workspace:goto-last-tab
+nmap <Space>1 :tab1<CR>
+nmap <Space>2 :tab2<CR>
+nmap <Space>3 :tab3<CR>
+nmap <Space>4 :tab4<CR>
+nmap <Space>5 :tab5<CR>
+nmap <Space>6 :tab6<CR>
+nmap <Space>7 :tab7<CR>
+nmap <Space>8 :tab8<CR>
+nmap <Space>9 :tablast<CR>
+nmap <Space>0 :tablast<CR>

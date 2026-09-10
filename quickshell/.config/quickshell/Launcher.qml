@@ -150,8 +150,19 @@ PanelWindow {
 
                 // nav keys intercepted here; printable keys fall through
                 Keys.onPressed: (event) => {
+                    // Ctrl+j / Ctrl+k are the scheme's list pair for any list
+                    // that has a text field in it — fzf and fzf-lua already
+                    // work this way (docs/keybinds.md §5.3). Matched on
+                    // event.text as well so the Cyrillic layout hits the same
+                    // physical keys (Qt's event.key is unreliable there).
+                    const ctrl = (event.modifiers & Qt.ControlModifier) !== 0;
+                    const t = (event.text || "").toLowerCase();
                     if (event.key === Qt.Key_Escape) {
                         launcher.close(); event.accepted = true;
+                    } else if (ctrl && (event.key === Qt.Key_J || t === "о" || t === "\n")) {
+                        launcher.move(+1); event.accepted = true;
+                    } else if (ctrl && (event.key === Qt.Key_K || t === "л")) {
+                        launcher.move(-1); event.accepted = true;
                     } else if (event.key === Qt.Key_Down
                                || (event.key === Qt.Key_Tab && !(event.modifiers & Qt.ShiftModifier))) {
                         launcher.move(+1); event.accepted = true;
