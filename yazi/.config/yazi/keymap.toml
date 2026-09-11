@@ -2,6 +2,11 @@
 
 # Flexoki Dark — keymap overrides only. `prepend_keymap` wins over stock binds.
 # Stock keymap otherwise inherited verbatim — see CHEATSHEET.txt.
+#
+# Two groups below: the scheme's shared vocabulary (docs/keybinds.md), and
+# JCUKEN duplicates so the file manager still works with a Cyrillic layout —
+# yazi has no langmap, so each key is repeated at its physical position.
+# Every `run` string below is copied from yazi's own keymap-default.toml.
 
 [mgr]
 prepend_keymap = [
@@ -9,4 +14,101 @@ prepend_keymap = [
   # Trade-off: clobbers the default Esc-clears-find/filter behavior;
   # use `,` or `<Bspace>` to clear find/filter instead.
   { on = "<Esc>", run = "leave", desc = "Go to parent directory" },
+
+  # ── Scheme vocabulary ───────────────────────────────────────────────
+  # H/L are prev/next tab everywhere in the scheme, not history. Stock yazi
+  # puts back/forward there; history moves to the vim jumplist pair below.
+  { on = "H", run = "tab_switch -1 --relative", desc = "Previous tab" },
+  { on = "L", run = "tab_switch 1 --relative",  desc = "Next tab" },
+
+  # Back/forward on vim's jumplist pair. <Tab>, not <C-i>: a terminal sends
+  # the same byte (0x09) for both and tmux's extended-keys is off, so <C-i>
+  # would never fire — in vim they are literally the same key anyway.
+  # Stock <Tab> (spot the hovered file) moves to <S-Tab>, which sends its own
+  # sequence and stays distinguishable.
+  { on = "<C-o>",   run = "back",    desc = "Go back" },
+  { on = "<Tab>",   run = "forward", desc = "Go forward" },
+  { on = "<S-Tab>", run = "spot",    desc = "Spot hovered file" },
+
+  # `q` closes the tab and exits on the last one — the scheme's close verb,
+  # and what stock <C-c> already did. <C-c> keeps working.
+  { on = "q", run = "close", desc = "Close tab (quit if last)" },
+
+  # ── JCUKEN duplicates ───────────────────────────────────────────────
+  # Navigation
+  { on = "р", run = "leave", desc = "h" },
+  { on = "о", run = "arrow next", desc = "j" },
+  { on = "л", run = "arrow prev", desc = "k" },
+  { on = "д", run = "enter", desc = "l" },
+  { on = "Р", run = "tab_switch -1 --relative", desc = "H" },
+  { on = "Д", run = "tab_switch 1 --relative", desc = "L" },
+  { on = [ "п", "п" ], run = "arrow top", desc = "gg" },
+  { on = "П", run = "arrow bot", desc = "G" },
+  { on = [ "п", "р" ], run = "cd ~", desc = "gh" },
+  { on = [ "п", "с" ], run = "cd ~/.config", desc = "gc" },
+  { on = [ "п", "в" ], run = "cd ~/Downloads", desc = "gd" },
+  { on = [ "п", "а" ], run = "follow", desc = "gf" },
+  { on = "я", run = "plugin fzf", desc = "z" },
+  { on = "Я", run = "plugin zoxide", desc = "Z" },
+
+  # Selection
+  { on = "м", run = "visual_mode", desc = "v" },
+  { on = "М", run = "visual_mode --unset", desc = "V" },
+
+  # File operations
+  { on = "щ", run = "open", desc = "o" },
+  { on = "Щ", run = "open --interactive", desc = "O" },
+  { on = "н", run = "yank", desc = "y" },
+  { on = "ч", run = "yank --cut", desc = "x" },
+  { on = "з", run = "paste", desc = "p" },
+  { on = "З", run = "paste --force", desc = "P" },
+  { on = "Н", run = "unyank", desc = "Y" },
+  { on = "Ч", run = "unyank", desc = "X" },
+  { on = "в", run = "remove", desc = "d (trash)" },
+  { on = "В", run = "remove --permanently", desc = "D (delete)" },
+  { on = "ф", run = "create", desc = "a" },
+  { on = "к", run = "rename --cursor=before_ext", desc = "r" },
+
+  # Copy path
+  { on = [ "с", "с" ], run = "copy path", desc = "cc" },
+  { on = [ "с", "в" ], run = "copy dirname", desc = "cd" },
+  { on = [ "с", "а" ], run = "copy filename", desc = "cf" },
+  { on = [ "с", "т" ], run = "copy name_without_ext", desc = "cn" },
+
+  # Preview / view
+  { on = "Л", run = "seek -5", desc = "K" },
+  { on = "О", run = "seek 5", desc = "J" },
+  { on = "ю", run = "hidden toggle", desc = ". (show hidden)" },
+
+  # Find / filter / search
+  { on = "а", run = "filter --smart", desc = "f" },
+  { on = "ы", run = "search --via=fd", desc = "s" },
+  { on = "Ы", run = "search --via=rg", desc = "S" },
+  { on = "т", run = "find_arrow", desc = "n" },
+  { on = "Т", run = "find_arrow --previous", desc = "N" },
+  # No duplicate for `/`: the JCUKEN character on that physical key is `.`,
+  # which is the hidden-files toggle in the Latin layout. Search in Cyrillic
+  # goes through `а` (filter) or `ы` (fd) above.
+
+  # Sort
+  { on = [ "б", "ф" ], run = "sort alphabetical --reverse=no", desc = ",a" },
+  { on = [ "б", "ы" ], run = "sort size --reverse=no", desc = ",s" },
+  { on = [ "б", "ь" ], run = "sort mtime --reverse=no", desc = ",m" },
+  { on = [ "б", "т" ], run = "sort natural --reverse=no", desc = ",n" },
+
+  # Shell
+  { on = "ж", run = "shell --interactive", desc = ";" },
+  { on = "Ж", run = "shell --block --interactive", desc = ":" },
+
+  # Tabs
+  { on = [ "е", "е" ], run = "tab_create --current", desc = "tt" },
+  { on = [ "е", "к" ], run = "tab_rename --interactive", desc = "tr" },
+  { on = "х", run = "tab_switch -1 --relative", desc = "[" },
+  { on = "ъ", run = "tab_switch 1 --relative", desc = "]" },
+
+  # Tasks / misc
+  { on = "ц", run = "tasks:show", desc = "w" },
+  { on = "й", run = "close", desc = "q" },
+  { on = "Й", run = "quit --no-cwd-file", desc = "Q" },
+  { on = "Ё", run = "help", desc = "~" },
 ]
