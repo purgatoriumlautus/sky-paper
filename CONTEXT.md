@@ -71,7 +71,7 @@ install.sh modules (root-owned or per-profile targets, not stowable):
 - nftables/, sysctl/, sshd/ → their /etc paths (see §4); firefox/ (user.js
   → random-hash *.default-release profile; vimium-keymap.txt is paste-only —
   Vimium keeps binds in extension storage; tab create/close/restore live in
-  about:keybinds → customKeys.json, in-profile and untracked,
+  about:keyboard → customKeys.json, in-profile and untracked,
   docs/keybinds.md §9); obsidian/
   (official Flexoki theme + vimrc/hotkeys → per-vault .obsidian/);
   crossgrub/ (GRUB theme + Terminess .pf2 fonts); tlp/ →
