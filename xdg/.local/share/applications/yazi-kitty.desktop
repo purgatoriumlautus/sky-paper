@@ -1,7 +1,13 @@
 [Desktop Entry]
+Version=1.0
 Type=Application
-Name=Yazi
-Exec=kitty yazi %f
+Name=Yazi (kitty)
+GenericName=File Manager
+Comment=Open folders in yazi running inside kitty
+TryExec=kitty
+Exec=kitty --single-instance yazi %f
+Icon=yazi
 Terminal=false
-MimeType=inode/directory
-NoDisplay=true
+Categories=System;FileManager;FileTools;
+MimeType=inode/directory;
+Keywords=File;Manager;Explorer;Browser;
