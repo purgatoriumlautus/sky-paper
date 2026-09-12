@@ -23,13 +23,17 @@
 
 ## Машины
 
-### 1. `celestia` — домашний ПК (Arch Linux, Wayland)
+### 1. Домашняя Linux-машина (Arch Linux, Wayland)
+
+Две штуки, схема биндов у них общая: `laniakea` (ThinkPad X280) и
+`celestia` (ПК). Отличия между ними — мониторы, батарея, wifi — на бинды не
+влияют.
 
 Стек: `niri` (компоновщик) → `kitty` → `tmux` → `fish` → `nvim`.
 Плюс `keyd` (ремап на уровне ядра, есть root), `quickshell` (бар/лаунчер).
-Клавиатуры: Epomaker X80 (основная, рапортует Apple VID 05AC:024F, ей рулит
-`hid_apple`), Keychron Q3 Max (QMK/VIA, программируется Keychron Launcher по
-проводу).
+Клавиатуры: Epomaker X80 / Feker Galaxy80 (рапортуют Apple VID 05AC:024F, ими
+рулит `hid_apple`), Keychron Q3 Max (QMK/VIA, программируется Keychron
+Launcher по проводу), встроенная клавиатура ноутбука.
 Раскладки: `us,ru`, переключение на `Alt+Shift` (`grp:alt_shift_toggle`).
 
 ### 2. Рабочий MacBook — managed
@@ -84,8 +88,9 @@ Mod+H / J / K / L    focus column/window влево/вниз/вверх/впра
 Mod+Shift+H/J/K/L    move column/window
 Mod+Home / End       focus-column-first / last
 Mod+Ctrl+Home/End    move-column-to-first / last
-Mod+Ctrl+H / L       focus-monitor-left / right
-Mod+1..9             переключение воркспейса (через скрипт sync-ws)
+Mod+Ctrl+H / L       focus-monitor-left / right (только мультимонитор)
+Mod+1..9             переключение воркспейса (на celestia — через скрипт sync-ws,
+                     оба монитора разом; на laniakea обычный focus-workspace)
 Mod+Shift+1..9       move-window-to-workspace
 Mod+BracketLeft/Right   consume-or-expel-window
 Mod+Comma / Period      consume / expel window into column
@@ -208,8 +213,8 @@ n: Ctrl+A         ggVG (select all)
 <leader>t         terminal toggle,  <leader>q  close panel
 <F19>t / <F19>q   то же из terminal-режима
 <leader>d         dashboard
+<leader>gn/gN     gitsigns: next / prev hunk
 <leader>gp/gr/gb  gitsigns: preview / reset / blame hunk
-]c / [c           next / prev hunk
 <leader>lr / la   LSP rename / code action
 gd / gr / K       LSP definition / references / hover
 ]d / [d           diagnostic next / prev
