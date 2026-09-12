@@ -292,7 +292,23 @@ layout {
 // See the binds section below for more spawn examples.
 
 // quickshell (qs) provides the bar + control-center + lock + launcher.
-spawn-at-startup "qs"
+//
+// Wrapped in systemd-cat so the shell's output lands in the journal:
+//   journalctl --user -t quickshell
+// Without it niri gives spawned children /dev/null for stdout AND stderr
+// (verified on /proc/<qs>/fd/{1,2}), so every QML error — parse failure,
+// undefined property, exception in a signal handler — was invisible, and
+// the only symptom was the bar visibly misbehaving.
+//
+// quickshell also keeps its own log, readable with `qs log`, but that file
+// lives in /run/user/1000/quickshell/by-id/<id>/log.qslog — tmpfs, so it
+// does NOT survive a reboot. The journal here is persistent
+// (/var/log/journal), and 48 h of shell log is ~92 KB.
+//
+// systemd-cat execs its argument rather than staying as a parent (verified),
+// so this costs zero extra processes. --no-color: quickshell does not drop
+// ANSI codes when stdout is not a tty, and they would land in the journal.
+spawn-at-startup "systemd-cat" "-t" "quickshell" "qs" "--no-color"
 spawn-at-startup "xwayland-satellite" ":0"
 spawn-at-startup "swaybg" "-i" "/home/segfault/Pictures/wallpapers/mntvagaflexoki.png" "-m" "fill"
 spawn-at-startup "swayidle" "-w"
@@ -333,7 +349,7 @@ animations {
     on
 
     // Slow down all animations by this factor. Values below 1 speed them up instead.
-    slowdown 0.75
+    slowdown 0.30
 }
 
 // Window rules let you adjust behavior for individual windows.
