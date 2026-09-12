@@ -6,8 +6,8 @@ Name=Obsidian
 # bar/greeter keep the global pixel-crisp (AA off) config.
 #
 # XDG does not expand ~ or $HOME in Exec, and the repo lives at a different
-# absolute path on each machine (laniakea /home/aru/dotfiles, celestia
-# /home/segfault/celestia) — so go through sh -c and read $HOME at runtime.
+# absolute path on each machine — so go through sh -c and read $HOME at
+# runtime.
 # fontconfig/install.sh links obsidian-fonts.conf to the path below.
 Exec=sh -c "exec env FONTCONFIG_FILE=\\$HOME/.config/fontconfig/obsidian-fonts.conf /usr/bin/obsidian \\"\\$@\\"" _ %U
 Terminal=false
