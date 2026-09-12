@@ -64,7 +64,11 @@ install.sh modules (root-owned or per-profile targets, not stowable):
   (official Flexoki theme + vimrc → vault); crossgrub/ (GRUB theme);
   terminus-italic/ → ~/.local/share/fonts (custom Terminus Italic for kitty;
   install.sh ships prebuilt TTFs, build.sh regenerates via fontforge).
-- restic/ → /etc/systemd/system. Weekly `/` snapshot, forget 8w+12m, via
+- skills/ → ~/.claude/skills (personal Claude Code skills, symlinked per
+  skill so repo edits are live; `.claude/` is gitignored, hence not stow).
+- restic/ → /etc/systemd/system + /etc/systemd/user. Weekly `/` snapshot,
+  forget 8w+12m, plus a session reminder timer when the last run is over a
+  week old, via
   restic's own sftp backend (ssh alias in /root/.ssh/config, not rclone).
   /root/.restic-pass untracked — lose it and the repo is unrecoverable.
 - udev/ → /etc/udev/rules.d. hidraw access for the Keychron (VID 3434)
@@ -137,7 +141,8 @@ Verified: 2026-09-12 (both sides, diffed against origin/laniakea)
 Verified: 2026-07-11
 
 Root whitelist — module dirs plus exactly: README.md, CLAUDE.md,
-CONTEXT.md, PALETTE.md, packages.txt, .gitignore, bin/, docs/. Anything
+CONTEXT.md, PALETTE.md, packages.txt, .gitignore, bin/, docs/, skills/.
+Anything
 else at root is a violation: into a module, into docs/, or deleted.
 
 Budgets (trim-don't-grow; breach = cut before commit, never raise):
