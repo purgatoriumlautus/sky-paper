@@ -46,9 +46,10 @@ Stow modules (from `~/celestia`, target under `~/.config`):
   functions/, config.fish is just the map), kitty/ (auto-attaches tmux
   `main`), tmux/ (TPM, resurrect on hooks — no continuum), nvim/ (leader =
   Space; one tab per file; LSP lazy-loaded), mako/, xdg/ (mimeapps.list →
-  ~/.config/mimeapps.list), gtk/, fontconfig/ (Obsidian .desktop resolves
-  its config through $HOME), yazi/, fastfetch/, zathura/, mpv/, xfce4/
+  ~/.config/mimeapps.list), gtk/, yazi/, fastfetch/, zathura/, mpv/, xfce4/
   (Thunar settings; deletion candidate).
+- fontconfig/ — NOT stowed: install.sh links conf.d/, obsidian-fonts.conf
+  and the Obsidian .desktop, which resolves its config through $HOME.
 
 install.sh modules (root-owned or per-profile targets, not stowable):
 - quickshell-greeter/ → /etc/quickshell-greeter + /etc/greetd. greetd
