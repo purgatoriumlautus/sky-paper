@@ -148,7 +148,7 @@ polkit (quickshell/): scoped rules (user `aru` + exact program):
 Verify: `ls /etc/polkit-1/rules.d/ && pkexec /usr/local/bin/set-epp balance_performance`
 
 ## 5. Machine deltas — vs celestia (PC repo)
-Verified: 2026-09-07
+Verified: 2026-09-12
 
 - Bind scheme (keyd/niri/nvim/tmux/fish/kitty + docs/keybinds.md) is
   IDENTICAL by design — any change to it must land on both branches.
@@ -156,15 +156,15 @@ Verified: 2026-09-07
   quickshell extras to match: Battery, Brightness, EPP cycler.
 - Wifi + Bluetooth here (WifiCtl/BtCtl + CC rows, rfkill airplane); celestia
   has no such hardware.
-- swayidle: the 5m dim step is laptop-only (no backlight there). The
-  auto-suspend Wayland idle inhibitor is now the same on both.
-- nftables table identical (forward accept + docker0); ip_forward stays
-  commented here, =1 on celestia.
-- AHEAD here, laniakea → celestia: greeter battery + F1 suspend.
+- swayidle: the 5m dim step is laptop-only (no backlight there), and the
+  auto-suspend Wayland idle inhibitor too — celestia still systemd-inhibit.
+- keyd [fnrow] is laptop-only: the X280's Fn arrives as rightalt, PC F-keys
+  are real. nftables table identical; ip_forward commented here, =1 there.
+- AHEAD here, laniakea → celestia: greeter battery + F1 suspend, clipboard
+  history (ClipPicker assumes the bar owns the popup; there shell.qml does).
 - Single display (eDP-1) vs celestia dual — sync-ws, per-output bars, shared
   CC/launcher popups. celestia AHEAD there.
 - Only here: crossgrub/, power/, tlp/; only there: xfce4/, gtk bookmarks.
-  restic/+rclone/ on both, METERED skip laptop-only.
 
 ## §META — maintenance rules
 Verified: 2026-09-09
