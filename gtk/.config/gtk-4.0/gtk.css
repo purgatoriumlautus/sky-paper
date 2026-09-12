@@ -1,4 +1,4 @@
-/* Flexoki Dark — GTK4 / libadwaita. Overrides named colors. Mirrors ~/celestia/PALETTE.md. */
+/* Flexoki Dark — GTK4 / libadwaita. Overrides named colors. Mirrors PALETTE.md. */
 
 @define-color window_bg_color   #100F0F; /* bg — flexoki black */
 @define-color window_fg_color   #CECDC3; /* fg — 12:1 */

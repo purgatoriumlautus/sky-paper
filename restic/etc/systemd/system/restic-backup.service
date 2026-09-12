@@ -18,3 +18,4 @@ ExecStart=/usr/bin/restic backup / --one-file-system --exclude-caches \
   --exclude /var/lib/libvirt \
   --exclude /home/*/.local/share/Trash
 ExecStartPost=/usr/bin/restic forget --host celestia --keep-weekly 8 --keep-monthly 12 --prune
+ExecStartPost=/usr/bin/touch /var/lib/restic-last-backup

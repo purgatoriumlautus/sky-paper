@@ -7,6 +7,9 @@
 # Show file size as the right-hand line annotation (default is "none").
 linemode = "size"
 
+# Dotfiles are visible by default; `.` (`ю` in Cyrillic) toggles them off.
+show_hidden = true
+
 # Preview adapter is left on auto-detection: inside kitty, yazi uses the
 # kitty graphics protocol for images automatically. Video/PDF thumbnails
 # need ffmpegthumbnailer + poppler (see install.sh).

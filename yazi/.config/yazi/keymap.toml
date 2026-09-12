@@ -1,7 +1,7 @@
 #:schema https://yazi-rs.github.io/schemas/keymap.json
 
 # Flexoki Dark — keymap overrides only. `prepend_keymap` wins over stock binds.
-# Stock keymap otherwise inherited verbatim — see CHEATSHEET.txt.
+# Stock keymap otherwise inherited verbatim — see docs/keybinds-reference.md §7.
 #
 # Two groups below: the scheme's shared vocabulary (docs/keybinds.md), and
 # JCUKEN duplicates so the file manager still works with a Cyrillic layout —

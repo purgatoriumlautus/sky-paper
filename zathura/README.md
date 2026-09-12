@@ -5,7 +5,7 @@ Flexoki Dark themed zathura (PDF / ePub / XPS / CBZ viewer). Stow package.
 ## Deploy
 
 ```bash
-cd ~/celestia && stow zathura     # symlinks ~/.config/zathura → here
+stow zathura                      # symlinks ~/.config/zathura → here
 ./zathura/install.sh              # pacman pkgs + xdg-mime defaults (sudo)
 ```
 
@@ -34,4 +34,4 @@ cd ~/celestia && stow zathura     # symlinks ~/.config/zathura → here
 
 ## Cheatsheet
 
-See `CHEATSHEET.txt` for stock binds.
+Every bind: `docs/keybinds-reference.md` §8.

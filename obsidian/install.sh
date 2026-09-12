@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# obsidian on celestia — links the official Flexoki theme (vendored from
+# obsidian — links the official Flexoki theme (vendored from
 # github.com/kepano/flexoki-obsidian; Flexoki's author is Obsidian's CEO)
 # + vimrc into the vault and patches appearance.json +
 # community-plugins.json.

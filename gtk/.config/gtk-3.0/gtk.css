@@ -1,4 +1,4 @@
-/* Flexoki Dark — GTK3. Overrides Adwaita named colors. Mirrors ~/celestia/PALETTE.md. */
+/* Flexoki Dark — GTK3. Overrides Adwaita named colors. Mirrors PALETTE.md. */
 
 @define-color theme_bg_color        #100F0F; /* bg — flexoki black */
 @define-color theme_base_color      #100F0F; /* entry/view surface */
