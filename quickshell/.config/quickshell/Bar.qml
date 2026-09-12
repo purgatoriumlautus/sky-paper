@@ -21,6 +21,7 @@ PanelWindow {
     // which is why the λ highlight + clock fade stopped working.
     property ControlCenter cc               // shared ControlCenter
     property Launcher launcher              // shared Launcher
+    property ClipPicker clip                // shared clipboard picker
 
     readonly property string screenName: bar.screen ? bar.screen.name : ""
     readonly property bool isFocused: NiriIpc.focusedOutput === bar.screenName
@@ -68,7 +69,8 @@ PanelWindow {
         id: clockMod
         x: Math.round((parent.width - width) / 2)
         y: Math.round((parent.height - height) / 2)
-        opacity: (launcher && launcher.visible && bar.isFocused) ? 0 : 1
+        opacity: (bar.isFocused && ((launcher && launcher.visible)
+                                 || (clip && clip.visible))) ? 0 : 1
         Behavior on opacity { NumberAnimation { duration: 280; easing.type: Easing.OutCubic } }
     }
 

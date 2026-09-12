@@ -4,16 +4,16 @@ import Quickshell.Io
 // Entry point. Flexoki Dark bar for niri — see Theme.qml / PALETTE.md.
 //
 // One Bar per monitor (Variants over Quickshell.screens), plus a SINGLE shared
-// ControlCenter + Launcher that follow the focused output via `barScreen`
-// (= the focused bar's screen). The CC/Launcher are LAYER SURFACES that take
+// ControlCenter + Launcher + clipboard picker that follow the focused output
+// via `barScreen` (= the focused bar's screen). They are LAYER SURFACES that take
 // keyboard focus themselves — not grabbing PopupWindows. A grabbing popup needs
 // its parent bar to have *received input*, which a compositor-eaten keybind
 // never delivers, so it only opened on a click and the focus-then-open
 // workaround added a visible lag. As layer surfaces they map + focus instantly
 // from a keybind. (See ControlCenter.qml header.)
 //
-// NOTE: the popup ids are ccPopup/launcherPopup (not cc/launcher) so they don't
-// shadow the Bar's `cc`/`launcher` properties in the Variants delegate below
+// NOTE: the popup ids are ccPopup/launcherPopup/clipPopup (not cc/launcher/clip)
+// so they don't shadow the Bar's properties in the Variants delegate below
 // (that shadowing caused a self-referential binding loop).
 //
 // LockScreen is dormant until `qs ipc call lock lock` flips it on.
@@ -58,12 +58,34 @@ Scope {
             host: root
             cc: ccPopup
             launcher: launcherPopup
+            clip: clipPopup
         }
     }
 
     // Shared popups — re-home to the focused bar's screen (see header).
     ControlCenter { id: ccPopup; barScreen: root.focusedBar ? root.focusedBar.screen : null }
     Launcher { id: launcherPopup; barScreen: root.focusedBar ? root.focusedBar.screen : null }
+    ClipPicker { id: clipPopup; barScreen: root.focusedBar ? root.focusedBar.screen : null }
+
+    // Одна клавиатурная поверхность за раз. CC, launcher и пикер буфера берут
+    // эксклюзивный клавиатурный фокус и садятся на бар, поэтому открытие одной
+    // закрывает две другие. Провод здесь, а не внутри компонентов: ни один из
+    // них не видит id остальных, а второй `onVisibleChanged`, написанный на
+    // экземпляре, ЗАМЕНИЛ бы обработчик, объявленный компонентом (фокус +
+    // сброс запроса), а не добавился бы к нему. Цикла нет — функции close
+    // запускают анимацию и оставляют `visible` истинным до её конца.
+    Connections {
+        target: ccPopup
+        function onVisibleChanged() { if (ccPopup.visible) { launcherPopup.close(); clipPopup.close(); } }
+    }
+    Connections {
+        target: launcherPopup
+        function onVisibleChanged() { if (launcherPopup.visible) { ccPopup.closeCc(); clipPopup.close(); } }
+    }
+    Connections {
+        target: clipPopup
+        function onVisibleChanged() { if (clipPopup.visible) { ccPopup.closeCc(); launcherPopup.close(); } }
+    }
 
     LockScreen {}
 }

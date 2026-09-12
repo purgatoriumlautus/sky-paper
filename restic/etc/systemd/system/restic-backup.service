@@ -8,6 +8,9 @@ Type=oneshot
 Environment=RESTIC_REPOSITORY=sftp:storagebox:restic
 Environment=RESTIC_PASSWORD_FILE=/root/.restic-pass
 Environment=HOME=/root
+# NetworkManager считает соединение лимитным (см. README) — тихо пропустить прогон.
+# Fail-open: если nmcli нет, grep не находит ничего и условие проходит.
+ExecCondition=/usr/bin/bash -c '! nmcli -t -f METERED general | grep -q "^yes"'
 ExecStart=/usr/bin/restic backup / --one-file-system --exclude-caches \
   --exclude /dev --exclude /proc --exclude /sys --exclude /run \
   --exclude /tmp --exclude /var/tmp \

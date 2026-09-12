@@ -37,8 +37,9 @@ Stow modules (from `~/celestia`, target under `~/.config`):
 - niri/ — compositor. Spawns qs, xwayland-satellite, swaybg, swayidle,
   mako. niri never starts Xwayland itself; xwayland-satellite's `:0` arg
   must match the exported `DISPLAY :0` or X11 apps fail to open a display.
-- quickshell/ — bar per monitor + ControlCenter/Launcher/LockScreen;
-  IPC: `qs ipc call lock|launcher|controlcenter ...`.
+- quickshell/ — bar per monitor + ControlCenter/Launcher/LockScreen +
+  clipboard picker (reads cliphist; the watcher is the wl-paste niri
+  spawns); IPC: `qs ipc call lock|launcher|controlcenter|clip ...`.
 - swayidle/ — 10 min → lock + monitors off, 30 min → suspend (CC
   "Auto-suspend" toggle blocks it); lock before sleep. No dim (no backlight).
 - fish/ (login shell; default/emacs binds not vi; conf.d/ + autoloaded
@@ -132,10 +133,8 @@ Verified: 2026-09-12 (both sides, diffed against origin/laniakea)
 - PC-only: hid_apple, dual-monitor niri config, xwayland-satellite.
 - No Fn-row layer in keyd: the laptop's Fn arrives as rightalt, PC F-keys
   are real.
-- swayidle has no dim step (no backlight) and gates suspend with
-  systemd-inhibit; laniakea holds a Wayland idle inhibitor instead.
-- AHEAD on laniakea, not taken: clipboard history (Super+y). ClipPicker
-  assumes the bar owns the popup; here shell.qml owns it per output.
+- swayidle has no dim step — no backlight on a desktop. The auto-suspend
+  Wayland idle inhibitor is the same on both.
 
 ## §META — maintenance rules
 Verified: 2026-07-11

@@ -13,7 +13,7 @@ ExecStart=/usr/bin/rclone mount storagebox:archive /home/segfault/archive \
   --vfs-cache-max-size 5G \
   --dir-cache-time 24h \
   -v
-ExecStop=/bin/fusermount -u /home/segfault/archive
+ExecStop=/usr/bin/fusermount3 -u /home/segfault/archive
 Restart=on-failure
 
 [Install]

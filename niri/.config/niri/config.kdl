@@ -314,6 +314,12 @@ spawn-at-startup "swaybg" "-i" "/home/segfault/Pictures/wallpapers/mntvagaflexok
 spawn-at-startup "swayidle" "-w"
 spawn-at-startup "mako"
 
+// Clipboard history. cliphist has no daemon of its own — wl-paste IS the
+// watcher and cliphist only appends, so this is the whole backend; the picker
+// (Mod+Y) is ClipPicker.qml inside the same qs process. Text only: images in
+// the history bloat the store and are never what you go back for.
+spawn-at-startup "wl-paste" "--type" "text" "--watch" "cliphist" "store"
+
 // To run a shell command (with variables, pipes, etc.), use spawn-sh-at-startup:
 // spawn-sh-at-startup "qs -c ~/source/qs/MyAwesomeShell"
 
@@ -465,6 +471,7 @@ binds {
     Mod+E hotkey-overlay-title="File manager: yazi" { spawn-sh "[ \"$(niri msg -j focused-window | jq -r .app_id)\" = kitty ] && s=$(tmux list-clients -F \"#{client_activity} #{client_session}\" | sort -rn | head -1 | cut -d\" \" -f2-) && [ -n \"$s\" ] && exec tmux split-window -h -t \"$s:\" -c \"#{pane_current_path}\" yazi; exec kitty --single-instance yazi"; }
     Mod+N hotkey-overlay-title="Editor: nvim" { spawn-sh "[ \"$(niri msg -j focused-window | jq -r .app_id)\" = kitty ] && s=$(tmux list-clients -F \"#{client_activity} #{client_session}\" | sort -rn | head -1 | cut -d\" \" -f2-) && [ -n \"$s\" ] && exec tmux new-window -t \"$s:\" -c \"#{pane_current_path}\" nvim; exec kitty --single-instance -e nvim"; }
     Mod+D hotkey-overlay-title="Run an Application" { spawn "qs" "ipc" "call" "launcher" "toggle"; }
+    Mod+Y hotkey-overlay-title="Clipboard history" { spawn "qs" "ipc" "call" "clip" "toggle"; }
     Super+Alt+L hotkey-overlay-title="Lock the Screen" { spawn "qs" "ipc" "call" "lock" "lock"; }
 
     // Use spawn-sh to run a shell command. Do this if you need pipes, multiple commands, etc.
