@@ -4,7 +4,7 @@ if vim.g.vscode then dofile(vim.fn.stdpath('config') .. '/vscode.lua') return en
 -- Vim Cheatsheet (advanced)
 -- ===================
 -- NAVIGATION
---   { / }         jump paragraph up / down
+--   Ctrl+k / Ctrl+j   jump paragraph up / down (= { / }, works in any layout)
 --   Ctrl+d / Ctrl+u   half-page down / up
 --   gd            go to definition (LSP)
 --   gr            go to references (LSP)
@@ -63,49 +63,14 @@ if vim.g.vscode then dofile(vim.fn.stdpath('config') .. '/vscode.lua') return en
 --   "ap           paste from register a
 --   :reg          view all registers
 --
--- CUSTOM KEYBINDS  —  full scheme and rationale: docs/keybinds.md
---
---   Two tiers, and the split between them is physical, not stylistic:
---     <leader> = SPACE   actions INSIDE the editor. You're in normal mode,
---                        letters are free, no modifier needed.
---     Alt                crossing a container border. Inside a terminal
---                        letters are text, so a modifier is mandatory.
---
---   ALT (identical here and in VSCode on the work Mac)
---     M-t             terminal: open / focus toggle — works from BOTH sides
---     M-h M-j M-k M-l focus split; crosses into tmux panes at the edge
---     M-H M-J M-K M-L resize
---     M-v / M-s       split right / down   (vim's <C-w>v / <C-w>s)
---     M-q             close split; if it's the last one, dismiss
---                     the tree or terminal instead
---   ...and, handled by tmux itself: M-z zoom, M-1..9 window, M-n/M-p
---     next/prev window, M-Space session picker, M-u scrollback, M-r reload.
---
---   LEADER (grouped so which-key shows them as menus on <Space>)
---     <Space><Space>  find file            <Space>,   switch buffer
---     <Space>/        grep project         <Space>:   command history
---     <Space>w        write                <Space>q   close buffer
---     FIND    \f*   \ff \fg \fb \fr \fh \fs \fk
---     GIT     \g*   \gp \gr \gb   preview / reset / blame hunk
---                   \gd \gq       open / close diff view
---                   \gh \gH       file history (current / repo)
---     BUFFERS \b*   \bb \bd \bo \bp   list / close / close others / previous
---     CODE    \c*   \cr \ca \cf \cd  rename / action / format / diagnostics
---     ERRORS  \x*   \xx \xw \xq   diagnostics file / workspace / quickfix
---     TREE    \n \e        toggle tree / toggle focus tree<->file
---     TABS    \1..\9 \0    go to tab N / last tab   (tab = window LAYOUT,
---                          NOT a file — opening a file makes a buffer)
---     SESSION \s*   \ss \sl \sd   restore (cwd) / restore last / don't save
---     DASH    \d           start screen (:Dash); auto-shows on `nvim` no-args
---     \?            show all keymaps (which-key)
---
---   BARE KEYS (no leader — these are vim conventions and VSCodeVim maps
---   them itself, so they cost zero config on the Mac)
---     gd gr K       definition / references / hover
---     ]d / [d       next / prev diagnostic
---     ]c / [c       next / prev git hunk
---     H / L         previous / next buffer
---     s / S         flash: label-jump / treesitter-select (all windows)
+-- CUSTOM KEYBINDS
+--   Not listed here on purpose: a third copy of the bind list drifts the
+--   moment a bind moves, and this one already had. Two documents, both in
+--   the repo:
+--     docs/keybinds.md            the scheme and why it is that way
+--     docs/keybinds-reference.md  every bind of every layer, §6 is this file
+--   In nvim itself: <Space> waits and which-key draws the menu, and
+--   <Space>fk lists every mapping that is actually loaded.
 
 -- ===================
 -- Mason bin path (for LSP servers)
@@ -130,6 +95,13 @@ vim.opt.wildmode = 'longest,list'
 vim.opt.clipboard = 'unnamedplus'
 vim.opt.scrolloff = 30           -- cursor stays centered (your 'so=30')
 vim.opt.termguicolors = true     -- needed for modern colorschemes
+
+-- Tab-per-file model (see §TABS in the keymap header): a jump to a file that
+-- is already open reuses its tab instead of replacing the current window's
+-- buffer, and an unopened one gets its own tab. Without this, `gd` into
+-- another file, quickfix and diagnostic jumps silently break the model by
+-- leaving a file open with no tab of its own.
+vim.opt.switchbuf = 'usetab,newtab'
 
 -- What persistence.nvim saves per session (no globals/terminal — avoids
 -- restoring stale toggleterm shells and global-var surprises).
@@ -246,6 +218,23 @@ vim.keymap.set('x', '<C-Insert>', '"+y', { desc = 'Copy selection to system clip
 -- Ctrl+A to select all
 vim.keymap.set('n', '<C-a>', 'ggVG', { desc = 'Select all' })
 
+-- Super+Z — keyd hands it over as Ctrl+Z. In a raw-mode terminal that is a
+-- plain key, not SIGTSTP: nvim's own default for it is :suspend, which is why
+-- it used to drop you back to the shell. Rebound to undo in every mode. Visual
+-- can't use `u` (it lowercases the selection), so it leaves visual first.
+vim.keymap.set('n', '<C-z>', 'u', { desc = 'Undo' })
+vim.keymap.set('x', '<C-z>', '<Esc>u', { desc = 'Undo' })
+vim.keymap.set('i', '<C-z>', '<C-o>u', { desc = 'Undo' })
+
+-- Paragraph motion, layout-independent. `{` and `}` still do this in normal
+-- mode, but they are unreachable from the Russian layout (there they are Х/Ъ,
+-- and langmap covers letters only) and in visual mode nvim-surround claims
+-- them for wrapping. Ctrl+J/K sit next to j/k, are free in nvim and tmux
+-- alike, and a Ctrl chord is the same byte in either layout. Mapped in
+-- operator-pending too, so `d<C-j>` deletes to the next paragraph.
+vim.keymap.set({ 'n', 'x', 'o' }, '<C-j>', '}', { desc = 'Next paragraph' })
+vim.keymap.set({ 'n', 'x', 'o' }, '<C-k>', '{', { desc = 'Previous paragraph' })
+
 -- Increment/decrement numbers (+ and - in normal mode)
 vim.keymap.set('n', '+', '<C-a>', { desc = 'Increment number' })
 vim.keymap.set('n', '-', '<C-x>', { desc = 'Decrement number' })
@@ -260,11 +249,15 @@ vim.keymap.set('n', '<leader>0', ':tablast<CR>', { desc = 'Go to last tab' })
 -- <leader>w is WRITE, not window: the window namespace moved to Alt (below),
 -- which frees w for the obvious meaning.
 vim.keymap.set('n', '<leader>w', '<cmd>write<CR>', { desc = 'Write file' })
-vim.keymap.set('n', '<leader>q', '<cmd>bdelete<CR>', { desc = 'Close buffer' })
+vim.keymap.set('n', '<leader>q', '<cmd>tabclose<CR>', { desc = 'Close tab' })
+-- Space Enter = a new empty tab, mirroring Space Space (find file, which now
+-- opens into its own tab). Enter is the "make a new one" key here; <M-t> is
+-- NOT available for it — that is the terminal toggle.
+vim.keymap.set('n', '<leader><CR>', '<cmd>tabnew<CR>', { desc = 'New tab (empty)' })
 
--- Buffer cycling — bare keys, no leader. Works identically under VSCodeVim.
-vim.keymap.set('n', '<S-l>', '<cmd>bnext<CR>', { desc = 'Next buffer' })
-vim.keymap.set('n', '<S-h>', '<cmd>bprevious<CR>', { desc = 'Previous buffer' })
+-- Tab cycling — bare keys, no leader. Works identically under VSCodeVim.
+vim.keymap.set('n', '<S-l>', 'gt', { desc = 'Next tab' })
+vim.keymap.set('n', '<S-h>', 'gT', { desc = 'Previous tab' })
 
 -- ---------------------------------------------------------------
 -- Alt = containers. The same physical binds drive tmux panes here
@@ -379,13 +372,19 @@ require('lazy').setup({
     'nvim-treesitter/nvim-treesitter',
     branch = 'main',
     lazy = false,
-    build = ':TSUpdate',
-    config = function()
+    -- install() lives in `build`, not `config`. In `config` it ran on EVERY
+    -- startup: require('nvim-treesitter.install') + .parsers cost ~11 ms of a
+    -- ~137 ms start just to decide the parsers were already there. Parsers
+    -- persist on disk, so installing is a one-off job — which is what `build`
+    -- is for. Adding a language below now needs `:Lazy build nvim-treesitter`.
+    build = function()
       require('nvim-treesitter').install({
         'c', 'lua', 'vim', 'vimdoc', 'query', 'markdown', 'markdown_inline',
         'python', 'go', 'gomod', 'bash', 'yaml', 'json', 'toml',
         'dockerfile', 'sql', 'gitcommit', 'diff',
       })
+    end,
+    config = function()
       -- Start the native highlighter for any buffer whose parser is installed.
       -- pcall: silently no-ops for filetypes without a parser (or before an
       -- async install finishes on first launch — works on next open).
@@ -443,9 +442,16 @@ require('lazy').setup({
           vim.keymap.set('n', 'l', api.node.open.edit, opts)        -- enter dir / open file
           vim.keymap.set('n', 'h', api.node.navigate.parent_close, opts)  -- close dir / go up
 
-          -- Change tree root
-          vim.keymap.set('n', 'H', api.tree.change_root_to_parent, opts)  -- root up
-          vim.keymap.set('n', 'L', api.tree.change_root_to_node, opts)    -- root into dir
+          -- H/L are the tab pair everywhere else in the scheme (docs/keybinds.md
+          -- §4.3), so they are the tab pair here too. Changing the tree's root
+          -- keeps nvim-tree's own defaults: `-` up, <C-]> into the node.
+          vim.keymap.set('n', 'H', 'gT', opts)   -- previous tab
+          vim.keymap.set('n', 'L', 'gt', opts)   -- next tab
+
+          -- Show/hide dotfiles on `.`, the same key yazi uses. Upstream puts it
+          -- on H (taken above) and puts run-command on `.`, which nothing here
+          -- ever used.
+          vim.keymap.set('n', '.', api.filter.dotfiles.toggle, opts)
 
           -- File ops in vim's own vocabulary, not nvim-tree's defaults.
           -- Upstream puts copy-the-file on `c` and copy-the-NAME on `y`,
@@ -458,6 +464,34 @@ require('lazy').setup({
           -- `m` (bookmark); v is what selects in vim, and VSCode's explorer
           -- has no bookmark concept at all — only a selection.
           vim.keymap.set('n', 'v', api.marks.toggle, opts)
+          -- Upstream keeps its own key for each of those two actions as well,
+          -- so drop them: one action, one key.
+          pcall(vim.keymap.del, 'n', 'c', { buffer = bufnr })   -- copy node = y
+          pcall(vim.keymap.del, 'n', 'm', { buffer = bufnr })   -- mark = v
+
+          -- Deleting: `d` is the recoverable one in yazi, and it has to be the
+          -- recoverable one here too — the same finger must not mean trash in
+          -- one file manager and permanent delete in the other. Upstream has
+          -- them the other way round.
+          vim.keymap.set('n', 'd', api.fs.trash, opts)    -- to the trash
+          vim.keymap.set('n', 'D', api.fs.remove, opts)   -- gone for good
+
+          -- Copy path, in yazi's vocabulary (cc/cd/cf/cn) rather than
+          -- nvim-tree's (gy/Y/ge), so one set of keys covers both trees.
+          local function copy_path(mod)
+            return function()
+              local node = api.tree.get_node_under_cursor()
+              if not node or not node.absolute_path then return end
+              local s = vim.fn.fnamemodify(node.absolute_path, mod)
+              vim.fn.setreg('+', s)
+              vim.fn.setreg('"', s)
+              vim.notify(s)
+            end
+          end
+          vim.keymap.set('n', 'cc', copy_path(':p'), opts)   -- full path
+          vim.keymap.set('n', 'cd', copy_path(':h'), opts)   -- directory path
+          vim.keymap.set('n', 'cf', copy_path(':t'), opts)   -- filename
+          vim.keymap.set('n', 'cn', copy_path(':t:r'), opts) -- filename, no extension
 
           -- Disable arrow keys in tree
           vim.keymap.set('n', '<Up>', '<Nop>', opts)
@@ -490,17 +524,27 @@ require('lazy').setup({
       local fzf = require('fzf-lua')
       fzf.setup({
         winopts = { border = 'single' },   -- squared corners (Flexoki invariant, no rounded)
+        -- Tab / Shift-Tab move the selection, matching blink.cmp's completion
+        -- menu so one pair of keys walks every list in the editor. NOTE the
+        -- syntax split: the `fzf` table takes fzf's own lowercase-and-dashes
+        -- names, the `builtin` table takes vim's `<S-Tab>` form.
+        keymap = {
+          fzf = {
+            ['tab']       = 'down',
+            ['shift-tab'] = 'up',
+          },
+        },
         actions = {
           files = {
-            -- Enter opens in the CURRENT window, as a buffer. It used to be
-            -- file_tabedit, which made every opened file a new tab — that is
-            -- why buffers never seemed to accumulate: you were looking at
-            -- tabs. Tabs in vim are window LAYOUTS, not files. See
+            -- Enter opens the file in its OWN TAB. Tabs are vim's window
+            -- layouts, not files — but binding one file per tab is what makes
+            -- the tabline a visible list of open files, which the buffer list
+            -- can never be. See §TABS in the keymap header and
             -- docs/keybinds.md §1.
-            ['enter']  = fzf.actions.file_edit,
+            ['enter']  = fzf.actions.file_tabedit,
             ['alt-v']  = fzf.actions.file_vsplit,    -- same split vocabulary
             ['alt-s']  = fzf.actions.file_split,     -- as everywhere else
-            ['alt-t']  = fzf.actions.file_tabedit,   -- explicit new tab
+            ['alt-e']  = fzf.actions.file_edit,      -- override: reuse this window
           },
         },
       })
@@ -510,7 +554,7 @@ require('lazy').setup({
       -- Space is the cheapest sequence on the board and goes to the single
       -- most common editor action; <leader>f* below keeps the full menu.
       { '<leader><leader>', '<cmd>FzfLua files<CR>', desc = 'Find file (cwd)' },
-      { '<leader>,',        '<cmd>FzfLua buffers<CR>', desc = 'Switch buffer' },
+      { '<leader>,',        '<cmd>FzfLua tabs<CR>', desc = 'Switch tab' },
       { '<leader>/',        '<cmd>FzfLua live_grep<CR>', desc = 'Grep in project' },
       { '<leader>:',        '<cmd>FzfLua command_history<CR>', desc = 'Command history' },
 
@@ -523,17 +567,19 @@ require('lazy').setup({
           })
         end, desc = 'Find files in /home /etc /mnt' },
       { '<leader>fg', '<cmd>FzfLua live_grep<CR>', desc = 'Grep in project' },
-      { '<leader>fb', '<cmd>FzfLua buffers<CR>', desc = 'Open buffers' },
+      { '<leader>ft', '<cmd>FzfLua tabs<CR>', desc = 'Open tabs' },
       { '<leader>fr', '<cmd>FzfLua oldfiles<CR>', desc = 'Recent files' },
       { '<leader>fh', '<cmd>FzfLua help_tags<CR>', desc = 'Search help' },
       { '<leader>fs', '<cmd>FzfLua lsp_document_symbols<CR>', desc = 'Symbols in file' },
       { '<leader>fk', '<cmd>FzfLua keymaps<CR>', desc = 'All keymaps' },
 
-      -- Buffers (group <leader>b*)
-      { '<leader>bb', '<cmd>FzfLua buffers<CR>', desc = 'Buffers: list' },
-      { '<leader>bd', '<cmd>bdelete<CR>', desc = 'Buffers: close this one' },
-      { '<leader>bo', '<cmd>%bdelete|edit#|bdelete#<CR>', desc = 'Buffers: close all others' },
-      { '<leader>bp', '<cmd>buffer #<CR>', desc = 'Buffers: previous' },
+      -- Tabs (group <leader>t*) — one tab per file, so this is the "open
+      -- files" menu. It was <leader>b* for buffers; the b namespace went away
+      -- with the buffer-based workflow rather than being left as a misnomer.
+      { '<leader>tt', '<cmd>FzfLua tabs<CR>', desc = 'Tabs: list' },
+      { '<leader>td', '<cmd>tabclose<CR>', desc = 'Tabs: close this one' },
+      { '<leader>to', '<cmd>tabonly<CR>', desc = 'Tabs: close all others' },
+      { '<leader>tp', 'g<Tab>', desc = 'Tabs: previous' },
 
       -- Diagnostics list (group <leader>x*)
       { '<leader>xx', '<cmd>FzfLua diagnostics_document<CR>', desc = 'Diagnostics: this file' },
@@ -560,13 +606,9 @@ require('lazy').setup({
           changedelete = { text = '~' },
         },
         on_attach = function(bufnr)
-          local opts = { buffer = bufnr }
-
-          -- Navigation between hunks
-          vim.keymap.set('n', ']c', gitsigns.next_hunk, opts)
-          vim.keymap.set('n', '[c', gitsigns.prev_hunk, opts)
-
-          -- Actions (git group: <leader>g*)
+          -- Navigation and actions, all in the git group (<leader>g*)
+          vim.keymap.set('n', '<leader>gn', gitsigns.next_hunk, { buffer = bufnr, desc = 'Git: next hunk' })
+          vim.keymap.set('n', '<leader>gN', gitsigns.prev_hunk, { buffer = bufnr, desc = 'Git: prev hunk' })
           vim.keymap.set('n', '<leader>gp', gitsigns.preview_hunk, { buffer = bufnr, desc = 'Git: preview hunk' })
           vim.keymap.set('n', '<leader>gr', gitsigns.reset_hunk, { buffer = bufnr, desc = 'Git: reset hunk' })
           vim.keymap.set('n', '<leader>gb', gitsigns.blame_line, { buffer = bufnr, desc = 'Git: blame line' })
@@ -579,6 +621,10 @@ require('lazy').setup({
   {
     'sindrets/diffview.nvim',
     dependencies = { 'nvim-lua/plenary.nvim' },
+    -- `keys` alone would leave :DiffviewOpen undefined until one of them is
+    -- pressed, so the command form (the only one that takes a revision, e.g.
+    -- `:DiffviewOpen origin/celestia -- %`) failed with E492 on a fresh start.
+    cmd = { 'DiffviewOpen', 'DiffviewClose', 'DiffviewFileHistory', 'DiffviewToggleFiles', 'DiffviewFocusFiles' },
     keys = {
       { '<leader>gd', '<cmd>DiffviewOpen<CR>', desc = 'Open diff view' },
       { '<leader>gh', '<cmd>DiffviewFileHistory %<CR>', desc = 'File history (current)' },
@@ -593,7 +639,7 @@ require('lazy').setup({
     'nvim-lualine/lualine.nvim',
     dependencies = { 'nvim-tree/nvim-web-devicons' },
     config = function()
-      -- Flexoki Dark — see ~/dotfiles/PALETTE.md
+      -- Flexoki Dark — see PALETTE.md
       local flexoki_dark = {
         normal = {
           a = { bg = '#8B7EC8', fg = '#100F0F', gui = 'bold' },
@@ -648,7 +694,11 @@ require('lazy').setup({
   -- LSP installer
   {
     'williamboman/mason.nvim',
-    lazy = false,
+    -- Only needed when actually installing a server. mason + mason-registry +
+    -- mason-core cost ~12 ms at startup for a job done a few times a year.
+    -- nvim-lspconfig lists mason as a dependency, so it still loads with the
+    -- LSP stack on BufReadPre; `cmd` only makes :Mason work on its own.
+    cmd = { 'Mason', 'MasonInstall', 'MasonUninstall', 'MasonUninstallAll', 'MasonUpdate', 'MasonLog' },
     config = function()
       require('mason').setup()
     end,
@@ -671,15 +721,25 @@ require('lazy').setup({
   -- LSP config
   {
     'neovim/nvim-lspconfig',
-    lazy = false,
+    -- BufReadPre / BufNewFile: an LSP is only meaningful once a file exists.
+    -- This pulls the whole stack (mason, mason-lspconfig, blink.cmp) off the
+    -- startup path — ~20 ms — into the moment a file is opened, where a few ms
+    -- are invisible. BufReadPre fires BEFORE FileType, so blink.cmp's
+    -- vim.lsp.config('*', {capabilities=…}) is registered before
+    -- mason-lspconfig's vim.lsp.enable() starts any client.
+    event = { 'BufReadPre', 'BufNewFile' },
     dependencies = {
       'williamboman/mason.nvim',
       'williamboman/mason-lspconfig.nvim',
       'saghen/blink.cmp',
     },
     config = function()
-      local lspconfig = require('lspconfig')
-      local capabilities = require('blink.cmp').get_lsp_capabilities()
+      -- No `require('lspconfig')` and no manual capabilities here on purpose.
+      -- nvim-lspconfig is still needed as a plugin — it ships the per-server
+      -- lsp/*.lua definitions that vim.lsp.enable() consumes — but its old
+      -- `lspconfig.<server>.setup{}` API is not what configures anything now.
+      -- Capabilities come from blink.cmp itself: its plugin/blink-cmp.lua does
+      -- vim.lsp.config('*', { capabilities = … }) on load, globally.
 
       -- Keybinds on LSP attach
       vim.api.nvim_create_autocmd('LspAttach', {
@@ -712,29 +772,26 @@ require('lazy').setup({
       })
 
       -- mason-lspconfig auto-setup
+      -- Per-server overrides go through vim.lsp.config (Neovim 0.11+), which
+      -- merges into the definition nvim-lspconfig ships. This block used to be
+      -- a `handlers = { … }` table inside mason-lspconfig.setup(): that API was
+      -- REMOVED in mason-lspconfig v2 (its settings schema now accepts only
+      -- ensure_installed and automatic_enable), so it was silently ignored —
+      -- and with it, this yaml schema mapping never took effect.
+      vim.lsp.config('yamlls', {
+        settings = {
+          yaml = {
+            schemas = {
+              kubernetes = 'k8s/**/*.yaml',
+            },
+          },
+        },
+      })
+
+      -- v2 installs what's missing and enables every installed server via
+      -- vim.lsp.enable() (automatic_enable defaults to true).
       require('mason-lspconfig').setup({
         ensure_installed = { 'clangd', 'pyright', 'bashls', 'yamlls', 'dockerls', 'docker_compose_language_service', 'lua_ls', 'gopls', 'sqls' },
-        handlers = {
-          -- Default handler for all servers
-          function(server_name)
-            lspconfig[server_name].setup({
-              capabilities = capabilities,
-            })
-          end,
-          -- Custom setup for yamlls
-          ['yamlls'] = function()
-            lspconfig.yamlls.setup({
-              capabilities = capabilities,
-              settings = {
-                yaml = {
-                  schemas = {
-                    kubernetes = 'k8s/**/*.yaml',
-                  },
-                },
-              },
-            })
-          end,
-        },
       })
     end,
   },
@@ -743,7 +800,12 @@ require('lazy').setup({
   {
     'saghen/blink.cmp',
     version = '*',
-    lazy = false,
+    -- Two triggers on purpose. BufReadPre: blink's plugin/ file registers its
+    -- LSP capabilities globally via vim.lsp.config('*'), and that MUST happen
+    -- before a client starts — so it cannot wait for InsertEnter. InsertEnter:
+    -- covers buffers where no LSP is involved (scratch, dashboard) so buffer/
+    -- path/snippet completion still works there.
+    event = { 'BufReadPre', 'InsertEnter' },
     dependencies = { 'saghen/blink.download' },
     opts = {
       keymap = {
@@ -969,6 +1031,26 @@ require('lazy').setup({
           require('which-key').show({ global = true })
         end,
         desc = 'All keymaps (which-key)',
+      },
+    },
+  },
+}, {
+  -- lazy.nvim does NOT disable vim's built-in plugins on its own: in its
+  -- lua/lazy/core/config.lua the whole disabled_plugins default list is
+  -- commented out. The profiler confirmed they all loaded every start.
+  --
+  -- Disabled here (measured cost each): netrwPlugin 2.2 ms — the file browser
+  -- is nvim-tree + fzf-lua, and `gx` is native in 0.12 (vim/_core/defaults),
+  -- not netrw; gzip 0.8 ms, zipPlugin 0.3 ms, tarPlugin 0.3 ms — editing
+  -- archives in place; tutor 0.05 ms, tohtml — unused.
+  --
+  -- Deliberately NOT disabled: matchit (4.8 ms, the most expensive) still
+  -- powers `%` over if/endif and HTML tags where treesitter doesn't, and
+  -- matchparen (0.6 ms) is the visible matching-bracket highlight.
+  performance = {
+    rtp = {
+      disabled_plugins = {
+        'netrwPlugin', 'gzip', 'zipPlugin', 'tarPlugin', 'tohtml', 'tutor',
       },
     },
   },

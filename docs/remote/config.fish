@@ -1,7 +1,7 @@
 # fish for the corporate Ubuntu box reached over Remote-SSH — copy to
 #   ~/.config/fish/config.fish
 #
-# Derived from fish/.config/fish/config.fish on celestia. Same shell, same
+# Derived from fish/.config/fish/config.fish in this repo. Same shell, same
 # muscle memory; what is gone is only what has no meaning on a headless server
 # (Wayland clipboard, libvirt, DISPLAY, rclone).
 #
@@ -25,7 +25,7 @@
 #   Why 4.x matters, concretely: `bind ctrl-u` is fish 4 syntax. On 3.x the
 #   same line is silently a no-op and every override below quietly does
 #   nothing. 3.x wants `bind \cu`. Rather than maintain two dialects, pin the
-#   version — this file must stay diffable against celestia's.
+#   version — this file must stay diffable against the repo's.
 #
 #   No sudo on that box? Then fish alone is the blocker; everything else here
 #   degrades on its own (see the `type -q` guards). Ask for fish, skip the rest.
@@ -71,7 +71,7 @@ else
     set -gx EDITOR vim
 end
 
-# NOT set here, unlike celestia: DISPLAY. The box is headless, and an exported
+# NOT set here, unlike the home config: DISPLAY. The box is headless, and an exported
 # DISPLAY only makes fish_clipboard_copy try xsel/xclip before giving up.
 
 # -----------------
@@ -205,7 +205,7 @@ else
 end
 set -gx FZF_CTRL_T_COMMAND $FZF_DEFAULT_COMMAND
 
-# Search from the current directory, not from / — unlike celestia, where the
+# Search from the current directory, not from / — unlike the home config, where the
 # roots are fixed (/home /etc /mnt). On a shared server the useful scope is
 # wherever the project is.
 

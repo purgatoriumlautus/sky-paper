@@ -4,7 +4,7 @@ import QtQuick
 import Quickshell
 
 // Flexoki Dark — single source of truth for the whole shell.
-// Edit here, everything re-themes. Mirrors ~/celestia/PALETTE.md.
+// Edit here, everything re-themes. Mirrors PALETTE.md.
 // Purple pulls both accent roles (fill AND readable text, 5.4:1), so
 // accentSoft/accentText collapse to the same value. Text ON the purple
 // accent is always dark (Theme.bg) — light fg on it drops to 2.2:1.
