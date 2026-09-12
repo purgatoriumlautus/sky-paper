@@ -4,7 +4,7 @@ if vim.g.vscode then dofile(vim.fn.stdpath('config') .. '/vscode.lua') return en
 -- Vim Cheatsheet (advanced)
 -- ===================
 -- NAVIGATION
---   { / }         jump paragraph up / down
+--   Ctrl+k / Ctrl+j   jump paragraph up / down (= { / }, works in any layout)
 --   Ctrl+d / Ctrl+u   half-page down / up
 --   gd            go to definition (LSP)
 --   gr            go to references (LSP)
@@ -217,6 +217,23 @@ vim.keymap.set('x', '<C-Insert>', '"+y', { desc = 'Copy selection to system clip
 
 -- Ctrl+A to select all
 vim.keymap.set('n', '<C-a>', 'ggVG', { desc = 'Select all' })
+
+-- Super+Z — keyd hands it over as Ctrl+Z. In a raw-mode terminal that is a
+-- plain key, not SIGTSTP: nvim's own default for it is :suspend, which is why
+-- it used to drop you back to the shell. Rebound to undo in every mode. Visual
+-- can't use `u` (it lowercases the selection), so it leaves visual first.
+vim.keymap.set('n', '<C-z>', 'u', { desc = 'Undo' })
+vim.keymap.set('x', '<C-z>', '<Esc>u', { desc = 'Undo' })
+vim.keymap.set('i', '<C-z>', '<C-o>u', { desc = 'Undo' })
+
+-- Paragraph motion, layout-independent. `{` and `}` still do this in normal
+-- mode, but they are unreachable from the Russian layout (there they are Х/Ъ,
+-- and langmap covers letters only) and in visual mode nvim-surround claims
+-- them for wrapping. Ctrl+J/K sit next to j/k, are free in nvim and tmux
+-- alike, and a Ctrl chord is the same byte in either layout. Mapped in
+-- operator-pending too, so `d<C-j>` deletes to the next paragraph.
+vim.keymap.set({ 'n', 'x', 'o' }, '<C-j>', '}', { desc = 'Next paragraph' })
+vim.keymap.set({ 'n', 'x', 'o' }, '<C-k>', '{', { desc = 'Previous paragraph' })
 
 -- Increment/decrement numbers (+ and - in normal mode)
 vim.keymap.set('n', '+', '<C-a>', { desc = 'Increment number' })
