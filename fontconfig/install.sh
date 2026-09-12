@@ -20,7 +20,7 @@
 #                               (smooth Terminess at any size; bar stays crisp).
 #
 # The .desktop resolves that path through $HOME at runtime, so the same entry
-# works on laniakea and celestia despite their different repo locations.
+# works on both machines despite their different repo locations.
 set -euo pipefail
 
 SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
