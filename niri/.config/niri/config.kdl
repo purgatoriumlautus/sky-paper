@@ -444,9 +444,10 @@ binds {
     Mod+Shift+Slash { show-hotkey-overlay; }
 
     // Suggested binds for running programs: terminal, app launcher, screen locker.
-    Mod+Return hotkey-overlay-title="Open a Terminal: kitty" { spawn "kitty"; }
+    Mod+Return hotkey-overlay-title="Open a Terminal: kitty" { spawn "kitty" "--single-instance"; }
     // kitty running yazi directly — no tmux (the `shell` directive only applies with no command).
-    Mod+E hotkey-overlay-title="File manager: yazi" { spawn "kitty" "yazi"; }
+    Mod+E hotkey-overlay-title="File manager: yazi" { spawn-sh "[ \"$(niri msg -j focused-window | jq -r .app_id)\" = kitty ] && s=$(tmux list-clients -F \"#{client_activity} #{client_session}\" | sort -rn | head -1 | cut -d\" \" -f2-) && [ -n \"$s\" ] && exec tmux split-window -h -t \"$s:\" -c \"#{pane_current_path}\" yazi; exec kitty --single-instance yazi"; }
+    Mod+N hotkey-overlay-title="Editor: nvim" { spawn-sh "[ \"$(niri msg -j focused-window | jq -r .app_id)\" = kitty ] && s=$(tmux list-clients -F \"#{client_activity} #{client_session}\" | sort -rn | head -1 | cut -d\" \" -f2-) && [ -n \"$s\" ] && exec tmux new-window -t \"$s:\" -c \"#{pane_current_path}\" nvim; exec kitty --single-instance -e nvim"; }
     Mod+D hotkey-overlay-title="Run an Application" { spawn "qs" "ipc" "call" "launcher" "toggle"; }
     Super+Alt+L hotkey-overlay-title="Lock the Screen" { spawn "qs" "ipc" "call" "lock" "lock"; }
 
@@ -587,10 +588,18 @@ binds {
     // fall through to the focused app, where kitty maps super+c / super+v to
     // copy/paste. That puts copy on the same physical key as Cmd+C on the Mac.
     // See docs/keybinds.md.
-    Mod+Shift+C { center-column; }
+    // Centering is on M, not C. Mod+C and Mod+V are free by design (they fall
+    // through to the app, where kitty maps super+c / super+v to copy/paste,
+    // putting copy on the same physical key as Cmd+C on the Mac) — but keyd
+    // takes the whole letter, not just the bare chord: [meta] c = C-insert
+    // fires with Shift or Ctrl still held, so Mod+Shift+C reached the
+    // compositor as Shift+Ctrl+Insert and these two bindings never ran.
+    // Verified with `keyd monitor`. M is the neighbouring verb — Mod+M below
+    // is maximize-window-to-edges. See docs/keybinds.md §7.3.
+    Mod+Shift+M { center-column; }
 
     // Center all fully visible columns on screen.
-    Mod+Ctrl+C { center-visible-columns; }
+    Mod+Ctrl+M { center-visible-columns; }
 
     // Finer width adjustments.
     // This command can also:
@@ -608,7 +617,7 @@ binds {
     Mod+Shift+Equal { set-window-height "+10%"; }
 
     // Move the focused window between the floating and the tiling layout.
-    // On G, not V: V is reserved for kitty's super+v paste (see Mod+Shift+C).
+    // On G, not V: V is reserved for kitty's super+v paste (see Mod+Shift+M).
     Mod+G       { toggle-window-floating; }
     Mod+Shift+G { switch-focus-between-floating-and-tiling; }
 

@@ -41,10 +41,13 @@ Stow modules (from `~/celestia`, target under `~/.config`):
   IPC: `qs ipc call lock|launcher|controlcenter ...`.
 - swayidle/ — 10 min → lock + monitors off, 30 min → suspend (CC
   "Auto-suspend" toggle blocks it); lock before sleep. No dim (no backlight).
-- fish/ (login shell, default/emacs binds not vi), kitty/ (auto-attaches
-  tmux `main`), tmux/, nvim/ (leader = Space), mako/, xdg/ (mimeapps.list →
-  ~/.config/mimeapps.list — new), gtk/, fontconfig/, yazi/, fastfetch/,
-  zathura/, mpv/, xfce4/ (Thunar settings; deletion candidate).
+- fish/ (login shell; default/emacs binds not vi; conf.d/ + autoloaded
+  functions/, config.fish is just the map), kitty/ (auto-attaches tmux
+  `main`), tmux/ (TPM, resurrect on hooks — no continuum), nvim/ (leader =
+  Space; one tab per file; LSP lazy-loaded), mako/, xdg/ (mimeapps.list →
+  ~/.config/mimeapps.list), gtk/, fontconfig/ (Obsidian .desktop resolves
+  its config through $HOME), yazi/, fastfetch/, zathura/, mpv/, xfce4/
+  (Thunar settings; deletion candidate).
 
 install.sh modules (root-owned or per-profile targets, not stowable):
 - quickshell-greeter/ → /etc/quickshell-greeter + /etc/greetd. greetd
@@ -113,7 +116,7 @@ as half-screen siblings — shared app_id, late title). Deploy: firefox/install.
 faillock: active via /etc/pam.d/system-auth. Verify: `faillock`
 
 ## 5. Machine deltas — vs laniakea (ThinkPad X280 repo)
-Verified: 2026-08-03 (both sides, diffed against origin/laniakea)
+Verified: 2026-09-12 (both sides, diffed against origin/laniakea)
 
 - Docker + libvirt here → ip_forward=1 and nftables forward-accept;
   laniakea has neither (ip_forward commented out, forward drop).
@@ -123,6 +126,12 @@ Verified: 2026-08-03 (both sides, diffed against origin/laniakea)
 - Shell/niri: celestia is AHEAD (multi-monitor bars, layer-surface popups,
   sync-ws); sync direction celestia → laniakea.
 - PC-only: hid_apple, dual-monitor niri config, xwayland-satellite.
+- No Fn-row layer in keyd: the laptop's Fn arrives as rightalt, PC F-keys
+  are real.
+- swayidle has no dim step (no backlight) and gates suspend with
+  systemd-inhibit; laniakea holds a Wayland idle inhibitor instead.
+- AHEAD on laniakea, not taken: clipboard history (Super+y). ClipPicker
+  assumes the bar owns the popup; here shell.qml owns it per output.
 
 ## §META — maintenance rules
 Verified: 2026-07-11
